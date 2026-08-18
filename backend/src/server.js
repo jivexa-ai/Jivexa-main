@@ -24,6 +24,7 @@ app.use(cookieParser());
 
 // Auth API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/health-id', require('./routes/healthIdRoutes'));
 
 // System Health Check Endpoint
 app.get('/api/health', (req, res) => {
