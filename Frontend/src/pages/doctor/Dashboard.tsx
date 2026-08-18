@@ -61,6 +61,7 @@ export const DoctorDashboard: React.FC = () => {
   const [isRequestingConsent, setIsRequestingConsent] = useState(false);
   const [jhidError, setJhidError] = useState('');
   const [jhidToast, setJhidToast] = useState('');
+  const [viewingReportModal, setViewingReportModal] = useState<any | null>(null);
 
   useEffect(() => {
     if (!selectedPatientId) return;
@@ -363,9 +364,85 @@ export const DoctorDashboard: React.FC = () => {
                         </div>
 
                         <div>
-                          <h4 style={{ fontSize: '0.92rem', fontWeight: 800, marginBottom: '8px' }}>Recent Diagnostic Reports & AI Summary</h4>
-                          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', backgroundColor: '#f0fdfa', padding: '14px', borderRadius: '12px', border: '1px solid rgba(15,118,110,0.2)' }}>
-                            <strong>CBC Blood Test Analysis (Score 88/100):</strong> All hematology parameters optimal. Mild attention suggested for hydration levels.
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <h4 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <FileText size={18} style={{ color: 'var(--primary)' }} />
+                              Patient Diagnostic Reports & AI Summaries ({searchedPatientInfo.reports?.length || 3})
+                            </h4>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--secondary)' }}>
+                              ✓ Linked to Health ID: {searchedPatientInfo.healthId}
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {(searchedPatientInfo.reports || [
+                              {
+                                id: 'rep_cbc_01',
+                                name: 'Complete Blood Count (CBC) Panel & Hematology Analysis',
+                                type: 'Lab Report',
+                                date: '2026-08-10',
+                                fileSize: '2.4 MB',
+                                summary: 'Hemoglobin: 14.2 g/dL (Normal: 13.5-17.5). WBC: 7,200/mcL (Normal). Platelet Count: 250,000/mcL. Overall hematology profile is optimal.',
+                                score: 92,
+                                status: 'Verified Optimal'
+                              },
+                              {
+                                id: 'rep_xray_02',
+                                name: 'Digital Chest X-Ray (PA View) & AI Diagnostic Imaging Summary',
+                                type: 'Imaging / Radiology',
+                                date: '2026-07-28',
+                                fileSize: '5.8 MB',
+                                summary: 'Lungs clear bilaterally. No focal parenchymal consolidation, pleural effusion, or pneumothorax observed. Cardiac size within normal limits.',
+                                score: 96,
+                                status: 'Normal Diagnostic'
+                              },
+                              {
+                                id: 'rep_lipid_03',
+                                name: 'Comprehensive Lipid & Metabolic Function Profile',
+                                type: 'Lab Report',
+                                date: '2026-06-15',
+                                fileSize: '1.8 MB',
+                                summary: 'Total Cholesterol: 175 mg/dL (Desirable < 200). HDL: 52 mg/dL. LDL: 98 mg/dL. Triglycerides: 120 mg/dL. Fasting Glucose: 92 mg/dL.',
+                                score: 90,
+                                status: 'Normal'
+                              }
+                            ]).map((rep: any) => (
+                              <div key={rep.id} style={{ border: '1px solid var(--border)', borderRadius: '14px', padding: '16px', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                                  <div>
+                                    <h5 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>{rep.name}</h5>
+                                    <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', display: 'inline-block', marginTop: '2px' }}>
+                                      Date: {rep.date} • Size: {rep.fileSize} • Type: <strong>{rep.type}</strong>
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '4px 10px', borderRadius: '12px', backgroundColor: 'var(--secondary-light)', color: 'var(--secondary)' }}>
+                                    {rep.status} ({rep.score}/100)
+                                  </span>
+                                </div>
+
+                                <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0, backgroundColor: 'white', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                  <strong>AI Diagnostic Breakdown:</strong> {rep.summary}
+                                </p>
+
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                                  <Button 
+                                    size="sm" 
+                                    onClick={() => setViewingReportModal(rep)}
+                                    style={{ fontSize: '0.78rem', height: '34px', fontWeight: 700 }}
+                                  >
+                                    <Eye size={14} /> View Report Details
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => setJhidToast(`Downloading report PDF: "${rep.name}"`)}
+                                    style={{ fontSize: '0.78rem', height: '34px', fontWeight: 700 }}
+                                  >
+                                    <FileDown size={14} /> Download PDF
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -801,6 +878,67 @@ export const DoctorDashboard: React.FC = () => {
           )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '12px' }}>
             <Button onClick={() => { setSelectedPatientId(null); setPatientDetails(null); }}>Close File</Button>
+          </div>
+        </Modal>
+      )}
+
+      {viewingReportModal && (
+        <Modal isOpen={!!viewingReportModal} onClose={() => setViewingReportModal(null)} title={viewingReportModal.name}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '8px 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>Document Type</span>
+                <p style={{ fontWeight: 800, color: 'var(--primary)', margin: 0 }}>{viewingReportModal.type}</p>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>Date Verified</span>
+                <p style={{ fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>{viewingReportModal.date}</p>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>Diagnostic Score</span>
+                <p style={{ fontWeight: 800, color: 'var(--secondary)', margin: 0 }}>{viewingReportModal.score}/100</p>
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#f0fdfa', border: '1px solid rgba(15,118,110,0.2)', padding: '16px', borderRadius: '12px' }}>
+              <h5 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f766e', marginBottom: '6px' }}>AI Diagnostic Clinical Breakdown</h5>
+              <p style={{ fontSize: '0.86rem', color: 'var(--text-main)', lineHeight: '1.6', margin: 0 }}>
+                {viewingReportModal.summary}
+              </p>
+            </div>
+
+            <div>
+              <h5 style={{ fontSize: '0.88rem', fontWeight: 800, marginBottom: '8px' }}>Key Test Parameters & Reference Ranges</h5>
+              <div style={{ border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', fontSize: '0.84rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '10px 14px', backgroundColor: '#f8fafc', fontWeight: 800, borderBottom: '1px solid var(--border)' }}>
+                  <span>Parameter</span>
+                  <span>Observed Value</span>
+                  <span>Reference Limit</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '10px 14px', borderBottom: '1px solid #f1f5f9' }}>
+                  <span>Hemoglobin (Hb)</span>
+                  <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>14.2 g/dL</span>
+                  <span style={{ color: 'var(--text-muted)' }}>13.5 - 17.5</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '10px 14px', borderBottom: '1px solid #f1f5f9' }}>
+                  <span>Total WBC Count</span>
+                  <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>7,200 /mcL</span>
+                  <span style={{ color: 'var(--text-muted)' }}>4,500 - 11,000</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', padding: '10px 14px' }}>
+                  <span>Platelet Count</span>
+                  <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>250,000 /mcL</span>
+                  <span style={{ color: 'var(--text-muted)' }}>150,000 - 450,000</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '14px' }}>
+              <Button variant="outline" onClick={() => setViewingReportModal(null)}>Close</Button>
+              <Button onClick={() => { setJhidToast(`Downloading PDF: ${viewingReportModal.name}`); setViewingReportModal(null); }}>
+                <FileDown size={16} /> Download Full PDF Report
+              </Button>
+            </div>
           </div>
         </Modal>
       )}
