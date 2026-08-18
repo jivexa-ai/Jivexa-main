@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-import { nodeAuthLogin, nodeAuthSignup, nodeAuthGetMe, nodeAuthSendOTP, nodeAuthVerifyOTP } from '../services/nodeAuthService';
+import { nodeAuthLogin, nodeAuthSignup, nodeAuthLogout, nodeAuthGetMe, nodeAuthSendOTP, nodeAuthVerifyOTP } from '../services/nodeAuthService';
 
 export type UserRole = 'PATIENT' | 'DOCTOR' | 'PHARMACY' | 'ADMIN' | 'AMBULANCE_PARTNER';
 
