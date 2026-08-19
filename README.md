@@ -94,7 +94,6 @@ npm run dev
 Navigate to **`http://localhost:5173`** in your browser.
 
 ---
-
 ## 🌐 Live Production Deployment
 
 [![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
