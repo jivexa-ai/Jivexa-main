@@ -70,6 +70,7 @@ import { AmbulancePartnerDashboard } from './pages/partner/AmbulancePartnerDashb
 
 // Admin platform views
 import { AdminDashboard } from './pages/admin/Dashboard';
+import { DoctorOnboardingAdmin } from './pages/admin/DoctorOnboardingAdmin';
 
 
 // ============================================================
@@ -622,6 +623,17 @@ export const App: React.FC = () => {
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <DashboardLayout>
                   <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/doctors"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <DashboardLayout>
+                  <DoctorOnboardingAdmin />
                 </DashboardLayout>
               </ProtectedRoute>
             }

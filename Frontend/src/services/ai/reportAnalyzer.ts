@@ -103,7 +103,7 @@ const PARAMETER_RULES: ParameterRule[] = [
     name: 'Platelet Count',
     keywords: ['platelet'],
     extractValue: (text) => {
-      const match = text.match(/platelet.*?:\s*([0-9,]+)\s*(\/cumm)?.*?(\((.*?)\))?/i);
+      const match = text.match(/(?:platelet).*?:\s*([0-9,]+)\s*(\/cumm)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       return {
         value: `${match[1]} /cumm`,
@@ -117,53 +117,25 @@ const PARAMETER_RULES: ParameterRule[] = [
     name: 'Total Cholesterol',
     keywords: ['total cholesterol'],
     extractValue: (text) => {
-      const match = text.match(/total cholesterol.*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
+      const match = text.match(/(?:total cholesterol).*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       const valNum = parseFloat(match[1]);
-      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum > 200 ? 'Attention' : 'Normal';
+      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum > 200 ? 'Abnormal' : 'Normal';
       return {
         value: `${match[1]} mg/dL`,
         ref: match[4] || '< 200 mg/dL',
         status,
-        explanation: status === 'Attention'
-          ? `Total cholesterol (${match[1]} mg/dL) is slightly above ideal threshold (< 200 mg/dL).`
-          : `Total cholesterol (${match[1]} mg/dL) is in healthy range.`
+        explanation: status === 'Abnormal'
+          ? `Total cholesterol (${match[1]} mg/dL) is above optimal target (< 200 mg/dL).`
+          : `Total cholesterol (${match[1]} mg/dL) is within healthy limits.`
       };
     }
   },
   {
-    name: 'Triglycerides',
-    keywords: ['triglycerides'],
-    extractValue: (text) => {
-      const match = text.match(/triglycerides.*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
-      if (!match) return null;
-      return {
-        value: `${match[1]} mg/dL`,
-        ref: match[4] || '< 150 mg/dL',
-        status: 'Normal',
-        explanation: `Triglycerides level (${match[1]} mg/dL) is normal.`
-      };
-    }
-  },
-  {
-    name: 'HDL Cholesterol (Good)',
-    keywords: ['hdl'],
-    extractValue: (text) => {
-      const match = text.match(/hdl.*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
-      if (!match) return null;
-      return {
-        value: `${match[1]} mg/dL`,
-        ref: match[4] || '> 40 mg/dL',
-        status: 'Normal',
-        explanation: `HDL protective cholesterol (${match[1]} mg/dL) is in healthy range.`
-      };
-    }
-  },
-  {
-    name: 'LDL Cholesterol (Bad)',
+    name: 'LDL Cholesterol',
     keywords: ['ldl'],
     extractValue: (text) => {
-      const match = text.match(/ldl.*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
+      const match = text.match(/(?:ldl).*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       const valNum = parseFloat(match[1]);
       const status: 'Normal' | 'Abnormal' | 'Attention' = valNum > 100 ? 'Abnormal' : 'Normal';
@@ -172,84 +144,139 @@ const PARAMETER_RULES: ParameterRule[] = [
         ref: match[4] || '< 100 mg/dL',
         status,
         explanation: status === 'Abnormal'
-          ? `LDL cholesterol (${match[1]} mg/dL) is elevated above baseline target of 100 mg/dL.`
-          : `LDL cholesterol (${match[1]} mg/dL) is optimal.`
+          ? `LDL cholesterol (${match[1]} mg/dL) is above optimal target (< 100 mg/dL).`
+          : `LDL cholesterol (${match[1]} mg/dL) is within target range.`
+      };
+    }
+  },
+  {
+    name: 'HDL Cholesterol',
+    keywords: ['hdl'],
+    extractValue: (text) => {
+      const match = text.match(/(?:hdl).*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
+      if (!match) return null;
+      return {
+        value: `${match[1]} mg/dL`,
+        ref: match[4] || '> 40 mg/dL',
+        status: 'Normal',
+        explanation: `HDL protective cholesterol (${match[1]} mg/dL) is healthy.`
       };
     }
   },
   {
     name: 'Fasting Blood Sugar',
-    keywords: ['fasting', 'glucose'],
+    keywords: ['fasting', 'blood sugar', 'glucose'],
     extractValue: (text) => {
-      const match = text.match(/(?:fasting blood sugar|fasting glucose).*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
+      const match = text.match(/(?:fasting|blood sugar|glucose).*?:\s*([0-9\.]+)\s*(mg\/dl)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       const valNum = parseFloat(match[1]);
-      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum > 99 ? 'Attention' : 'Normal';
+      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum > 100 ? 'Attention' : 'Normal';
       return {
         value: `${match[1]} mg/dL`,
         ref: match[4] || '70 - 99 mg/dL',
         status,
         explanation: status === 'Attention'
-          ? `Fasting blood sugar (${match[1]} mg/dL) is slightly above fasting reference range (70 - 99 mg/dL).`
-          : `Fasting blood sugar (${match[1]} mg/dL) is in normal range.`
+          ? `Fasting glucose (${match[1]} mg/dL) is slightly elevated above 99 mg/dL target.`
+          : `Fasting glucose (${match[1]} mg/dL) is normal.`
       };
     }
   },
   {
-    name: 'HbA1c (Glycated Hemoglobin)',
+    name: 'HbA1c',
     keywords: ['hba1c', 'glycated'],
     extractValue: (text) => {
       const match = text.match(/(?:hba1c|glycated).*?:\s*([0-9\.]+)\s*(%)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       const valNum = parseFloat(match[1]);
-      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum >= 5.7 ? 'Abnormal' : 'Normal';
+      const status: 'Normal' | 'Abnormal' | 'Attention' = valNum >= 5.7 ? 'Attention' : 'Normal';
       return {
         value: `${match[1]} %`,
-        ref: match[4] || '< 5.7 % Normal',
+        ref: match[4] || '< 5.7 %',
         status,
-        explanation: status === 'Abnormal'
-          ? `HbA1c level (${match[1]} %) indicates elevated 3-month average blood glucose.`
-          : `HbA1c level (${match[1]} %) is normal.`
+        explanation: status === 'Attention'
+          ? `HbA1c (${match[1]} %) indicates prediabetes range (5.7 - 6.4 %).`
+          : `HbA1c (${match[1]} %) is normal.`
       };
     }
   },
   {
-    name: 'TSH (Thyroid Stimulating Hormone)',
-    keywords: ['tsh', 'thyroid stimulating'],
+    name: 'TSH',
+    keywords: ['tsh', 'thyroid'],
     extractValue: (text) => {
-      const match = text.match(/(?:tsh|thyroid stimulating).*?:\s*([0-9\.]+)\s*(uiu\/ml)?.*?(\((.*?)\))?/i);
+      const match = text.match(/(?:tsh|thyroid).*?:\s*([0-9\.]+)\s*(uiu\/ml)?.*?(\((.*?)\))?/i);
       if (!match) return null;
       return {
         value: `${match[1]} uIU/mL`,
         ref: match[4] || '0.4 - 4.2 uIU/mL',
         status: 'Normal',
-        explanation: `TSH level (${match[1]} uIU/mL) indicates normal thyroid gland stimulation.`
-      };
-    }
-  },
-  {
-    name: 'Free T4',
-    keywords: ['free t4', 't4'],
-    extractValue: (text) => {
-      const match = text.match(/(?:free t4|t4).*?:\s*([0-9\.]+)\s*(ng\/dl)?.*?(\((.*?)\))?/i);
-      if (!match) return null;
-      return {
-        value: `${match[1]} ng/dL`,
-        ref: match[4] || '0.8 - 1.8 ng/dL',
-        status: 'Normal',
-        explanation: `Free T4 level (${match[1]} ng/dL) is optimal.`
+        explanation: `Thyroid stimulating hormone (${match[1]} uIU/mL) is within target range.`
       };
     }
   }
 ];
 
+/**
+ * Deep Clinical Document Analyzer with Real-Time LLM & Fake Document Detection
+ */
 export const processAndAnalyzeReport = async (
   fileName: string,
-  rawContentText?: string
+  rawContentText: string
 ): Promise<AIReportAnalysisResult> => {
-  await new Promise((resolve) => setTimeout(resolve, 1800));
-
   const textToAnalyze = (rawContentText || '').trim();
+
+  // 1. Try Backend LLM Document Analyzer API
+  try {
+    const res = await fetch('http://localhost:4000/api/ai/analyze-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileName, documentText: textToAnalyze })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      
+      // Fake / Non-Clinical Document Warning Guardrail
+      if (data.isValidReport === false) {
+        return {
+          id: `rep_${Date.now()}`,
+          reportId: `rep_${Date.now()}`,
+          reportTitle: fileName,
+          healthScore: 0,
+          scoreStatus: 'Needs Review',
+          summary: `⚠️ Fake / Non-Clinical Document Warning: ${data.invalidReason || 'The uploaded file does not contain valid clinical lab parameters. Please upload an authentic medical lab report (PDF/Image) to receive 100% accurate health analysis.'}`,
+          normalFindings: [],
+          abnormalFindings: [],
+          attentionParameters: [],
+          possibleFactors: ['Document is non-medical, blurry, or downloaded from an unverified source.'],
+          questionsForDoctor: ['Obtain an official clinical lab report from a certified lab.'],
+          lifestyleSuggestions: ['Upload a valid clinical PDF or high-res image report.'],
+          disclaimer: 'JIVEXA AI invalid document detection guardrail.',
+          analyzedAt: new Date().toLocaleDateString()
+        };
+      }
+
+      return {
+        id: `rep_${Date.now()}`,
+        reportId: `rep_${Date.now()}`,
+        reportTitle: data.reportTitle || fileName,
+        healthScore: data.healthScore || 80,
+        scoreStatus: data.scoreStatus || 'Requires Attention',
+        summary: data.summary || 'Clinical parameters extracted successfully.',
+        normalFindings: data.normalFindings || [],
+        abnormalFindings: data.abnormalFindings || [],
+        attentionParameters: data.attentionParameters || [],
+        possibleFactors: ['Parameters evaluated by JIVEXA AI Clinical Engine.'],
+        questionsForDoctor: data.questionsForDoctor || ['Review these lab results with your doctor.'],
+        lifestyleSuggestions: data.lifestyleRecommendations || ['Maintain a healthy diet and hydration.'],
+        disclaimer: 'Educational healthcare information only. Share flagged values with your doctor.',
+        analyzedAt: new Date().toLocaleDateString()
+      };
+    }
+  } catch (e) {
+    console.warn('[Report Analyzer] Backend AI endpoint unavailable, using local OCR fallback engine...');
+  }
+
+  // 2. Local Heuristic Extraction Fallback
   const reportId = `rep_analysis_${Date.now()}`;
   const analyzedAt = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -264,7 +291,6 @@ export const processAndAnalyzeReport = async (
   const abnormalFindings: ReportParameter[] = [];
   const attentionParameters: ReportParameter[] = [];
 
-  // Parse ONLY parameters present in rawContentText
   if (textToAnalyze.length > 20) {
     for (const rule of PARAMETER_RULES) {
       const isKeywordPresent = rule.keywords.some((kw) => textToAnalyze.toLowerCase().includes(kw));
@@ -289,7 +315,6 @@ export const processAndAnalyzeReport = async (
 
   const totalDetected = normalFindings.length + abnormalFindings.length + attentionParameters.length;
 
-  // RULE #6 & #7: Low OCR Confidence / Unreadable Document protection
   if (totalDetected === 0) {
     return {
       id: reportId,
@@ -298,7 +323,7 @@ export const processAndAnalyzeReport = async (
       healthScore: 0,
       scoreStatus: 'Needs Review',
       summary:
-        '⚠️ OCR Confidence Low / Unreadable Document: No valid laboratory test parameters were detected in the uploaded file text. Please upload a clearer digital PDF or high-resolution image report to ensure accurate medical parsing without guessing.',
+        '⚠️ OCR Confidence Low / Unreadable Document: No valid laboratory test parameters were detected in the uploaded file text. Please upload a clearer digital PDF or high-resolution image report to ensure accurate medical parsing.',
       normalFindings: [],
       abnormalFindings: [],
       attentionParameters: [],
@@ -317,69 +342,29 @@ export const processAndAnalyzeReport = async (
     };
   }
 
-  // Calculate health score strictly from detected values
-  let calculatedScore = 100 - (abnormalFindings.length * 12 + attentionParameters.length * 6);
-  if (calculatedScore < 50) calculatedScore = 50;
-
-  const scoreStatus: 'Optimal' | 'Requires Attention' | 'Needs Review' =
-    abnormalFindings.length > 0 ? 'Requires Attention' : attentionParameters.length > 0 ? 'Requires Attention' : 'Optimal';
-
-  // Construct traceable summary exclusively from detected parameters
-  const detectedNames = normalFindings.concat(abnormalFindings, attentionParameters).map(p => p.name).join(', ');
-  let summaryText = `Analyzed ${totalDetected} laboratory parameter(s) detected in this report: ${detectedNames}.\n\n`;
-
-  if (abnormalFindings.length > 0) {
-    summaryText += `Parameters requiring clinical review: ${abnormalFindings.map(p => `${p.name} (${p.value})`).join(', ')}. `;
-  }
-  if (attentionParameters.length > 0) {
-    summaryText += `Parameters requiring attention: ${attentionParameters.map(p => `${p.name} (${p.value})`).join(', ')}. `;
-  }
-  if (abnormalFindings.length === 0 && attentionParameters.length === 0) {
-    summaryText += `All ${totalDetected} detected parameters are within normal reference ranges.`;
-  }
-
-  // Construct traceable questions and lifestyle suggestions exclusively for detected findings
-  const possibleFactors: string[] = [];
-  const questionsForDoctor: string[] = [];
-  const lifestyleSuggestions: string[] = [];
-
-  if (abnormalFindings.some(p => p.name.includes('Hemoglobin'))) {
-    possibleFactors.push('Suboptimal dietary iron or Vitamin B12 intake.');
-    questionsForDoctor.push('Should I take iron supplements or recheck Ferritin levels?');
-    lifestyleSuggestions.push('Increase iron-rich foods (spinach, lentils, beetroot) paired with Vitamin C.');
-  }
-
-  if (abnormalFindings.some(p => p.name.includes('LDL')) || attentionParameters.some(p => p.name.includes('Total Cholesterol'))) {
-    possibleFactors.push('Higher intake of dietary saturated fats or reduced physical exercise.');
-    questionsForDoctor.push('What target LDL cholesterol level should I aim for?');
-    lifestyleSuggestions.push('Reduce saturated fats and incorporate 30 minutes of aerobic exercise 5 days a week.');
-  }
-
-  if (abnormalFindings.some(p => p.name.includes('HbA1c')) || attentionParameters.some(p => p.name.includes('Glucose'))) {
-    possibleFactors.push('Elevated intake of refined sugars or dietary carbohydrates.');
-    questionsForDoctor.push('Should I repeat an HbA1c test in 3 months to monitor progress?');
-    lifestyleSuggestions.push('Limit refined sugars and replace simple carbs with fiber-rich complex grains.');
-  }
-
-  if (questionsForDoctor.length === 0) {
-    questionsForDoctor.push('Are there any routine health screenings I should schedule based on these normal results?');
-    lifestyleSuggestions.push('Maintain balanced nutrition, stay well-hydrated, and engage in regular exercise.');
-    possibleFactors.push('Healthy metabolic baseline observed across all detected values.');
-  }
+  let healthScore = 100 - (abnormalFindings.length * 15 + attentionParameters.length * 8);
+  if (healthScore < 50) healthScore = 55;
+  const scoreStatus = healthScore >= 85 ? 'Optimal' : healthScore >= 70 ? 'Requires Attention' : 'Needs Review';
 
   return {
     id: reportId,
     reportId: `rep_${Date.now()}`,
     reportTitle: fileName,
-    healthScore: calculatedScore,
+    healthScore,
     scoreStatus,
-    summary: summaryText,
+    summary: `Analysis of ${fileName} completed. Extracted ${totalDetected} parameters (${abnormalFindings.length} requiring clinical review).`,
     normalFindings,
     abnormalFindings,
     attentionParameters,
-    possibleFactors,
-    questionsForDoctor,
-    lifestyleSuggestions,
+    possibleFactors: ['Extracted parameters evaluated against clinical reference intervals.'],
+    questionsForDoctor: [
+      'What lifestyle adjustments are recommended for my flagged parameters?',
+      'Should any of these tests be re-evaluated in 3-6 months?'
+    ],
+    lifestyleSuggestions: [
+      'Focus on iron-dense nutrition and good hydration.',
+      'Maintain regular aerobic activity as advised by your doctor.'
+    ],
     disclaimer,
     analyzedAt
   };

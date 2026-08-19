@@ -722,7 +722,7 @@ export const FAQ: React.FC = () => {
       a: 'No. JIVEXA Health OS is an informational technology platform. It assists patients in organizing records and understanding diagnostic terms, and links patients to verified physicians. It does not provide direct medical advice, diagnoses, or treatments.'
     },
     {
-      q: 'How does the JIVEXA AI Health Assistant work?',
+      q: 'How does the JIVEXA Health AI Bot work?',
       a: 'The AI Assistant leverages natural language models to process questions, explaining complex reports or symptoms in simple terms. It strictly operates as an educational helper and directs users to emergency care channels for potentially severe conditions.'
     },
     {

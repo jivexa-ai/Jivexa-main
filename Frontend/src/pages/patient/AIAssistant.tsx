@@ -3,10 +3,12 @@ import { useAuth } from '../../context/AuthContext';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { askAIHealthAssistant, AIResponse } from '../../services/ai';
+import { Modal } from '../../components/ui/Modal';
+import { MarkdownText } from '../../components/common/MarkdownText';
+import { streamAIHealthAssistant, fetchUserTokenUsage, upgradeUserToPro, AIResponse } from '../../services/ai';
 import { 
   MessageSquare, Plus, Search, Trash2, Send, Heart, 
-  AlertTriangle, Shield, Check, Info, Loader2 
+  AlertTriangle, Shield, Check, Info, Loader2, Sparkles, Zap, Lock, Crown, Bot, User, CheckCircle
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -15,6 +17,8 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
   isEmergency?: boolean;
+  provider?: string;
+  isStreaming?: boolean;
 }
 
 interface Conversation {
@@ -32,7 +36,25 @@ export const AIAssistantChat: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Token tracking & subscription state
+  const [tokensUsed, setTokensUsed] = useState(0);
+  const [maxTokens, setMaxTokens] = useState(1000);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'free' | 'active'>('free');
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly');
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Fetch token usage on load
+  useEffect(() => {
+    const loadUsage = async () => {
+      const stats = await fetchUserTokenUsage(user?.id);
+      setTokensUsed(stats.tokensUsedThisPeriod || 0);
+      setMaxTokens(stats.maxTokens || 1000);
+    };
+    loadUsage();
+  }, [user?.id]);
 
   useEffect(() => {
     const saved = localStorage.getItem(`jivexa_chats_${user?.id}`);
@@ -77,8 +99,18 @@ export const AIAssistantChat: React.FC = () => {
     setActiveConvId(newConv.id);
   };
 
+  const handleUpgradeToPro = async () => {
+    setIsUpgrading(true);
+    const res = await upgradeUserToPro(user?.id);
+    setIsUpgrading(false);
+    if (res.success) {
+      setSubscriptionStatus('active');
+      setIsPaywallOpen(false);
+    }
+  };
+
   const handleSendMessage = async (textToSend: string) => {
-    if (!textToSend.trim()) return;
+    if (!textToSend.trim() || isLoading) return;
 
     let currentConvId = activeConvId;
     let currentConvs = [...conversations];
@@ -124,37 +156,96 @@ export const AIAssistantChat: React.FC = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    try {
-      const response: AIResponse = await askAIHealthAssistant(textToSend);
-      const aiMsg: ChatMessage = {
-        id: `msg_ai_${Date.now()}`,
-        sender: 'ai',
-        text: response.text,
-        timestamp: new Date(),
-        isEmergency: response.isEmergency
-      };
+    const aiMsgId = `msg_ai_${Date.now()}`;
+    let streamingText = '';
+    let currentProvider = 'Groq AI (Llama 3.3)';
+    let isEmergencyFlag = false;
 
-      const updatedConvs = sorted.map((c) => {
+    // Insert initial "Thinking..." placeholder
+    setConversations((prev) => 
+      prev.map((c) => {
         if (c.id === currentConvId) {
           return {
             ...c,
-            messages: [...c.messages, aiMsg],
-            lastUpdated: new Date()
+            messages: [
+              ...c.messages,
+              {
+                id: aiMsgId,
+                sender: 'ai',
+                text: '',
+                timestamp: new Date(),
+                isStreaming: true
+              }
+            ]
           };
         }
         return c;
-      });
+      })
+    );
 
-      syncConversations(updatedConvs);
+    let lastUpdate = 0;
+
+    try {
+      const result = await streamAIHealthAssistant(
+        textToSend,
+        targetConv.messages.map(m => ({ sender: m.sender, text: m.text })),
+        (chunk, provider, isEmerg) => {
+          streamingText += chunk;
+          if (provider) currentProvider = provider;
+          if (isEmerg) isEmergencyFlag = true;
+
+          const now = Date.now();
+          if (now - lastUpdate > 20 || chunk.includes('\n')) {
+            lastUpdate = now;
+            setConversations((prev) => 
+              prev.map((c) => {
+                if (c.id === currentConvId) {
+                  const existingAiIndex = c.messages.findIndex(m => m.id === aiMsgId);
+                  const aiMsgObj: ChatMessage = {
+                    id: aiMsgId,
+                    sender: 'ai',
+                    text: streamingText,
+                    timestamp: new Date(),
+                    provider: currentProvider,
+                    isEmergency: isEmergencyFlag,
+                    isStreaming: true
+                  };
+                  if (existingAiIndex === -1) {
+                    return { ...c, messages: [...c.messages, aiMsgObj] };
+                  } else {
+                    const updatedMsgs = [...c.messages];
+                    updatedMsgs[existingAiIndex] = aiMsgObj;
+                    return { ...c, messages: updatedMsgs };
+                  }
+                }
+                return c;
+              })
+            );
+          }
+        },
+        user?.id
+      );
+
+      // Finalize streaming message state
+      setConversations((prev) => 
+        prev.map((c) => {
+          if (c.id === currentConvId) {
+            return {
+              ...c,
+              messages: c.messages.map((m) => 
+                m.id === aiMsgId ? { ...m, isStreaming: false, text: streamingText || m.text } : m
+              )
+            };
+          }
+          return c;
+        })
+      );
+
+      const stats = await fetchUserTokenUsage(user?.id);
+      setTokensUsed(stats.tokensUsedThisPeriod || 0);
+      setMaxTokens(stats.maxTokens || 1000);
     } catch (err) {
-      const errMsg: ChatMessage = {
-        id: `msg_err_${Date.now()}`,
-        sender: 'ai',
-        text: 'Sorry, I encountered an issue processing your request. Please try again.',
-        timestamp: new Date()
-      };
-      const updatedConvs = sorted.map((c) => c.id === currentConvId ? { ...c, messages: [...c.messages, errMsg] } : c);
-      syncConversations(updatedConvs);
+      console.error('[AI Chat Error]', err);
     } finally {
       setIsLoading(false);
     }
@@ -187,8 +278,48 @@ export const AIAssistantChat: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '24px', height: 'calc(100vh - var(--header-height) - 48px)' }} className="chat-layout-mobile">
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px', height: 'calc(100vh - var(--header-height) - 48px)' }}>
+      {/* BRAND HEADER BANNER */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #10b981 100%)',
+        borderRadius: '20px',
+        padding: '20px 28px',
+        color: 'white',
+        boxShadow: '0 8px 24px -6px rgba(15, 118, 110, 0.3)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexShrink: 0
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            backdropFilter: 'blur(8px)'
+          }}>
+            <MessageSquare size={24} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white' }}>JIVEXA Health AI Bot</h2>
+              <span style={{ backgroundColor: 'rgba(255, 255, 255, 0.25)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '10px' }}>24/7 Clinical & Health AI Bot</span>
+            </div>
+            <p style={{ opacity: 0.9, fontSize: '0.82rem', marginTop: '2px' }}>
+              Ask health queries, medicine issues, or get instant JIVEXA platform guidance with visual flowcharts.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '20px', flex: 1, minHeight: 0 }} className="chat-layout-mobile">
       
+      {/* SIDEBAR HISTORY */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '16px', overflow: 'hidden' }} className="chat-history-sidebar">
         <Button onClick={() => startNewConversation()} style={{ height: '38px', fontSize: '0.85rem' }} fullWidth>
           <Plus size={16} />
@@ -260,21 +391,37 @@ export const AIAssistantChat: React.FC = () => {
         )}
       </div>
 
+      {/* MAIN CHAT WORKSPACE */}
       <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', position: 'relative' }}>
         
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* HEADER BAR WITH TOKEN TRACKING */}
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>AI Health Assistant</h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Educational health info companion</span>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-dark)' }}>JIVEXA Health AI Bot</h3>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Exclusively Health, Medicine & JIVEXA Platform Guidance</span>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--secondary)', fontSize: '0.78rem', fontWeight: 600 }}>
-            <Shield size={14} />
-            <span>Secure consultation channel</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* 6-Hour Token Quota Badge with Progress Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#f8fafc', padding: '6px 14px', borderRadius: '20px', border: '1px solid var(--border)' }}>
+              <Zap size={14} style={{ color: 'var(--primary)' }} />
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dark)' }}>
+                Tokens: {tokensUsed.toLocaleString()} / {maxTokens.toLocaleString()}
+              </span>
+              <div style={{ width: '60px', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.min((tokensUsed / maxTokens) * 100, 100)}%`, height: '100%', backgroundColor: tokensUsed >= maxTokens ? 'var(--error)' : 'var(--primary)' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--secondary)', fontSize: '0.78rem', fontWeight: 600 }}>
+              <Shield size={14} />
+              <span className="sr-mobile-hide">Secure Channel</span>
+            </div>
           </div>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* CHAT MESSAGES CONTAINER */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div style={{
             backgroundColor: 'var(--info-light)',
             border: '1px solid var(--info)',
@@ -286,7 +433,7 @@ export const AIAssistantChat: React.FC = () => {
           }}>
             <Info size={18} style={{ color: 'var(--info)', flexShrink: 0, marginTop: '2px' }} />
             <p style={{ fontSize: '0.78rem', color: 'var(--text-main)', lineHeight: '1.5' }}>
-              **Educational Disclaimer:** This AI provides general healthcare information and does not replace diagnostic assessments by a qualified physician. **Do not use this system for active medical emergencies.**
+              <strong>Educational Disclaimer:</strong> This AI provides general healthcare information and does not replace diagnostic assessments by a qualified physician. <strong>Do not use this system for active medical emergencies.</strong>
             </p>
           </div>
 
@@ -334,65 +481,72 @@ export const AIAssistantChat: React.FC = () => {
                   key={msg.id}
                   style={{
                     display: 'flex',
-                    justifyContent: isUser ? 'flex-end' : 'flex-start',
-                    width: '100%'
+                    flexDirection: 'column',
+                    alignItems: isUser ? 'flex-end' : 'flex-start',
+                    width: '100%',
+                    animation: 'chatBubbleFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
-                  <div 
-                    style={{
-                      maxWidth: '80%',
-                      padding: '14px 18px',
-                      borderRadius: isUser ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                      backgroundColor: isUser ? 'var(--primary)' : msg.isEmergency ? 'var(--error-light)' : 'var(--surface-raised)',
-                      color: isUser ? 'white' : 'var(--text-main)',
-                      border: msg.isEmergency ? '1px solid var(--error)' : 'none',
-                      boxShadow: 'var(--shadow-sm)',
-                      fontSize: '0.88rem',
-                      lineHeight: '1.6',
-                      whiteSpace: 'pre-line'
-                    }}
-                  >
-                    {msg.text.split('\n').map((line, lIdx) => {
-                      if (line.startsWith('###')) {
-                        return <h4 key={lIdx} style={{ fontSize: '1rem', fontWeight: 700, margin: '12px 0 6px 0', color: isUser ? 'white' : 'var(--primary)' }}>{line.replace('###', '')}</h4>;
-                      }
-                      if (line.startsWith('**') && line.endsWith('**')) {
-                        return <strong key={lIdx} style={{ display: 'block', margin: '8px 0 4px 0' }}>{line.replace(/\*\*/g, '')}</strong>;
-                      }
-                      return <p key={lIdx} style={{ margin: '4px 0' }}>{line}</p>;
-                    })}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', maxWidth: isUser ? '65%' : '76%' }}>
+                    {!isUser && (
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary)',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: '2px',
+                        boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+                      }}>
+                        <Sparkles size={16} />
+                      </div>
+                    )}
+
+                    <div 
+                      style={{
+                        padding: '14px 18px',
+                        borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                        backgroundColor: isUser ? 'var(--primary)' : msg.isEmergency ? '#fef2f2' : '#f8fafc',
+                        color: isUser ? 'white' : '#0f172a',
+                        border: isUser ? 'none' : msg.isEmergency ? '1.5px solid var(--error)' : '1px solid var(--border)',
+                        boxShadow: isUser ? '0 4px 12px rgba(2, 132, 199, 0.25)' : '0 2px 8px rgba(0,0,0,0.03)',
+                        fontSize: '0.92rem',
+                        lineHeight: '1.6'
+                      }}
+                    >
+                      {!isUser && msg.provider && !msg.isStreaming && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          <span>{msg.provider}</span>
+                        </div>
+                      )}
+
+                      {!isUser && (!msg.text || !msg.text.trim()) ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 4px' }}>
+                          <span className="dot-bounce dot-1" style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }} />
+                          <span className="dot-bounce dot-2" style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }} />
+                          <span className="dot-bounce dot-3" style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block' }} />
+                        </div>
+                      ) : (
+                        <MarkdownText content={msg.text} isUser={isUser} />
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })
           )}
 
-          {isLoading && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
-              <div style={{
-                maxWidth: '80%',
-                padding: '14px 18px',
-                borderRadius: '16px 16px 16px 2px',
-                backgroundColor: 'var(--surface-raised)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '0.88rem',
-                color: 'var(--text-muted)'
-              }}>
-                <Loader2 size={16} className="animate-pulse" />
-                <span>Simulating clinical guidance lookup...</span>
-              </div>
-            </div>
-          )}
-
           <div ref={chatEndRef} />
         </div>
 
         {activeConv && activeConv.messages.length > 0 && !isLoading && (
-          <div style={{ padding: '0 24px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ padding: '0 24px 8px 24px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {activeConv.messages[activeConv.messages.length - 1].sender === 'ai' && (
-              ['How can I preparing for a consult?', 'Explain lipid profile levels.', 'Find a general physician'].map((q, idx) => (
+              ['How can I prepare for a consult?', 'Explain lipid profile levels.', 'Find a general physician'].map((q, idx) => (
                 <button 
                   key={idx}
                   onClick={() => handleSendMessage(q)}
@@ -416,29 +570,31 @@ export const AIAssistantChat: React.FC = () => {
           </div>
         )}
 
-        <div style={{ padding: '20px 24px', borderTop: '1px solid var(--border)', display: 'flex', gap: '12px' }}>
+        {/* INPUT FORM */}
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)', display: 'flex', gap: '12px', backgroundColor: 'white' }}>
           <form 
             onSubmit={(e) => { e.preventDefault(); handleSendMessage(inputMessage); }}
             style={{ display: 'flex', width: '100%', gap: '12px' }}
           >
             <input 
-              placeholder="Ask JIVEXA Health Assistant..."
+              placeholder={isLoading ? "JIVEXA Assistant is generating response..." : "Ask JIVEXA Health Assistant..."}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={isLoading}
               style={{
                 flex: 1,
                 padding: '12px 18px',
-                borderRadius: 'var(--radius-sm)',
+                borderRadius: '12px',
                 border: '1px solid var(--border)',
                 outline: 'none',
                 fontFamily: 'var(--font-sans)',
-                fontSize: '0.92rem'
+                fontSize: '0.92rem',
+                backgroundColor: isLoading ? '#f8fafc' : 'white'
               }}
               onFocus={(e) => e.currentTarget.style.borderColor = 'var(--border-focus)'}
               onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
             />
-            <Button type="submit" disabled={isLoading || !inputMessage.trim()}>
+            <Button type="submit" disabled={isLoading || !inputMessage.trim()} style={{ borderRadius: '12px', padding: '0 20px' }}>
               <Send size={16} />
               <span className="sr-mobile-hide">Send</span>
             </Button>
@@ -447,7 +603,147 @@ export const AIAssistantChat: React.FC = () => {
 
       </div>
 
+      {/* JIVEXA PRO PREMIUM UPGRADE MODAL */}
+      <Modal isOpen={isPaywallOpen} onClose={() => setIsPaywallOpen(false)} title="👑 UNLOCK JIVEXA PRO UNLIMITED HEALTH AI">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', alignItems: 'center', padding: '10px 0' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Crown size={36} />
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--text-dark)' }}>
+              Free 1,000 Token Limit Reached
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '6px', lineHeight: '1.5', maxWidth: '420px' }}>
+              Upgrade to <strong>JIVEXA Pro</strong> to continue asking unlimited healthcare questions with 24/7 priority response speed.
+            </p>
+          </div>
+
+          {/* SUBSCRIPTION PLAN SELECTION CARDS */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', width: '100%' }}>
+            {/* MONTHLY PLAN */}
+            <div 
+              onClick={() => setSelectedPlan('monthly')}
+              style={{
+                border: selectedPlan === 'monthly' ? '2px solid #d97706' : '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '16px',
+                backgroundColor: selectedPlan === 'monthly' ? '#fffbebfb' : '#fafafa',
+                cursor: 'pointer',
+                textAlign: 'left',
+                position: 'relative',
+                transition: 'all 0.2s'
+              }}
+            >
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Monthly Plan
+              </div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-dark)', marginTop: '4px' }}>
+                ₹149 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ month</span>
+              </div>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                Flexible monthly billing, cancel anytime
+              </p>
+              {selectedPlan === 'monthly' && (
+                <div style={{ position: 'absolute', top: '12px', right: '12px', color: '#d97706' }}>
+                  <CheckCircle size={18} />
+                </div>
+              )}
+            </div>
+
+            {/* YEARLY PLAN */}
+            <div 
+              onClick={() => setSelectedPlan('yearly')}
+              style={{
+                border: selectedPlan === 'yearly' ? '2px solid #d97706' : '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '16px',
+                backgroundColor: selectedPlan === 'yearly' ? '#fffbebfb' : '#fafafa',
+                cursor: 'pointer',
+                textAlign: 'left',
+                position: 'relative',
+                transition: 'all 0.2s'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Annual Plan
+                </span>
+                <span style={{ backgroundColor: '#fef3c7', color: '#d97706', fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '6px' }}>
+                  SAVE 16%
+                </span>
+              </div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-dark)', marginTop: '4px' }}>
+                ₹1,500 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ year</span>
+              </div>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                Just ₹125/mo — Best value for families
+              </p>
+              {selectedPlan === 'yearly' && (
+                <div style={{ position: 'absolute', top: '12px', right: '12px', color: '#d97706' }}>
+                  <CheckCircle size={18} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ border: '1px solid var(--border)', borderRadius: '16px', padding: '14px 18px', width: '100%', backgroundColor: '#ffffff', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+              <Check size={16} style={{ color: 'var(--secondary)' }} />
+              <span>Unlimited Groq Llama 3.3 AI Health Queries</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+              <Check size={16} style={{ color: 'var(--secondary)' }} />
+              <span>Instant AI Blood & Lab Report Explanations</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+              <Check size={16} style={{ color: 'var(--secondary)' }} />
+              <span>Zero Queue Priority Telemetry Server Access</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+            <Button
+              isLoading={isUpgrading}
+              onClick={handleUpgradeToPro}
+              style={{
+                backgroundColor: '#d97706',
+                color: 'white',
+                borderRadius: '14px',
+                height: '48px',
+                fontWeight: 900,
+                fontSize: '1rem',
+                boxShadow: '0 8px 20px rgba(217, 119, 6, 0.35)'
+              }}
+            >
+              <Crown size={20} /> Activate JIVEXA Pro ({selectedPlan === 'monthly' ? '₹149 / Month' : '₹1,500 / Year'})
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsPaywallOpen(false)}
+              style={{ borderRadius: '14px' }}
+            >
+              Cancel & Close
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       <style>{`
+        @keyframes chatBubbleFadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes dotBounce {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+          40% { transform: scale(1.1); opacity: 1; }
+        }
+        .dot-bounce { animation: dotBounce 1.2s infinite ease-in-out; }
+        .dot-1 { animation-delay: 0s; }
+        .dot-2 { animation-delay: 0.2s; }
+        .dot-3 { animation-delay: 0.4s; }
+
         .chat-history-item:hover .delete-chat-btn { opacity: 1 !important; }
         @media (max-width: 768px) {
           .chat-layout-mobile {
@@ -458,6 +754,7 @@ export const AIAssistantChat: React.FC = () => {
           }
         }
       `}</style>
+      </div>
     </div>
   );
 };

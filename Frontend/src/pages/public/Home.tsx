@@ -252,7 +252,7 @@ export const Home: React.FC = () => {
               <span style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>When It's Connected</span>.
             </h1>
 
-            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', lineHeight: '1.65', maxWidth: '540px' }}>
+            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', lineHeight: '1.65', maxWidth: '660px' }}>
               Jivexa Health brings patients, healthcare professionals, pharmacies, and intelligent technology together to create a simpler, more connected healthcare experience.
             </p>
 
@@ -334,7 +334,7 @@ export const Home: React.FC = () => {
 
       {/* ── 2. PATIENT JOURNEY ──────────────────────────────────────────────── */}
       <section style={{ padding: '100px 0', backgroundColor: '#ffffff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px', maxWidth: 'var(--max-content-width)', margin: '0 auto', padding: '0 var(--space-md)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>For Patients</span>
@@ -394,7 +394,7 @@ export const Home: React.FC = () => {
 
       {/* ── 3. DOCTOR SECTION ───────────────────────────────────────────────── */}
       <section style={{ padding: '100px 0', backgroundColor: 'var(--primary-light)', borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px', maxWidth: 'var(--max-content-width)', margin: '0 auto', padding: '0 var(--space-md)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>For Healthcare Professionals</span>
@@ -522,7 +522,7 @@ export const Home: React.FC = () => {
 
       {/* ── 5. PHARMACY SECTION ─────────────────────────────────────────────── */}
       <section style={{ padding: '100px 0', backgroundColor: '#f9fbfb', borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px', maxWidth: 'var(--max-content-width)', margin: '0 auto', padding: '0 var(--space-md)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>For Pharmacy Partners</span>
@@ -579,7 +579,7 @@ export const Home: React.FC = () => {
 
       {/* ── 6. JIVEXA AI ECOSYSTEM DIAGRAM ──────────────────────────────────── */}
       <section style={{ padding: '100px 0', backgroundColor: '#ffffff', borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '60px', maxWidth: 'var(--max-content-width)', margin: '0 auto', padding: '0 var(--space-md)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>The Connected Ecosystem</span>
@@ -669,7 +669,7 @@ export const Home: React.FC = () => {
 
       {/* ── 7. FEATURES GRID ────────────────────────────────────────────────── */}
       <section style={{ padding: '100px 0', backgroundColor: '#f9fbfb', borderTop: '1px solid var(--border)' }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '50px', maxWidth: 'var(--max-content-width)', margin: '0 auto', padding: '0 var(--space-md)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Platform Capabilities</span>
@@ -682,7 +682,7 @@ export const Home: React.FC = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px' }} className="grid-3-mobile">
             {[
-              { icon: <Sparkles size={22} />, color: 'primary', title: 'AI Health Assistant', desc: 'Interpret lab diagnostics, understand medications, and access health context powered by intelligent AI.' },
+              { icon: <Sparkles size={22} />, color: 'primary', title: 'JIVEXA Health AI Bot', desc: 'Interpret lab diagnostics, understand medications, and access health context powered by intelligent AI.' },
               { icon: <UserCheck size={22} />, color: 'primary', title: 'Patient Health Vault', desc: 'Securely store and manage your health documents, prescriptions, conditions, and medical history.' },
               { icon: <Stethoscope size={22} />, color: 'secondary', title: 'Doctor Tools', desc: 'Digital profiles, appointment management, patient context, and digital prescriptions in one place.' },
               { icon: <Pill size={22} />, color: 'warning', title: 'Pharmacy Management', desc: 'Structured prescription intake, order fulfillment tracking, and inventory management.' },

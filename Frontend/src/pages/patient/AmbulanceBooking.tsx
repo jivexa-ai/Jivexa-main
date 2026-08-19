@@ -4,23 +4,25 @@ import { useHealthData } from '../../context/HealthDataContext';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { Select } from '../../components/ui/Select';
 import { Toast } from '../../components/ui/Toast';
+import { Modal } from '../../components/ui/Modal';
 import { 
   Siren, MapPin, Navigation, Phone, ShieldCheck, HeartPulse, 
-  CheckCircle2, XCircle, Clock, AlertTriangle, Activity, PhoneCall
+  CheckCircle2, XCircle, Clock, AlertTriangle, Activity, PhoneCall, Radio, AlertOctagon
 } from 'lucide-react';
 
 export const PatientAmbulanceBooking: React.FC = () => {
   const { user } = useAuth();
   const { bookAmbulance, ambulanceBookings, updateAmbulanceBookingStatus, patientProfile } = useHealthData();
 
-  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [pickupAddress, setPickupAddress] = useState('100ft Road, Indiranagar, Bengaluru, KA 560038');
   const [destAddress, setDestAddress] = useState('Apollo Hospital, 100ft Rd, Indiranagar');
   const [selectedType, setSelectedType] = useState<'Basic' | 'Oxygen' | 'ICU' | 'ALS'>('ICU');
   const [isBooking, setIsBooking] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
+  const [isSosModalOpen, setIsSosModalOpen] = useState(false);
+
+  const fareMap = { Basic: 500, Oxygen: 800, ICU: 1200, ALS: 1800 };
 
   // Find active booking for patient
   const activeBooking = ambulanceBookings.find((b) => b.patientId === user?.id && ['Accepted', 'Arrived', 'In Transit'].includes(b.status));
@@ -40,7 +42,6 @@ export const PatientAmbulanceBooking: React.FC = () => {
 
   const handleConfirmBooking = async () => {
     setIsBooking(true);
-    const fareMap = { Basic: 500, Oxygen: 800, ICU: 1200, ALS: 1800 };
     const res = await bookAmbulance({
       ambulanceType: selectedType,
       pickupAddress,
@@ -54,7 +55,7 @@ export const PatientAmbulanceBooking: React.FC = () => {
     setIsBooking(false);
 
     if (res.success) {
-      setToastMsg('⚡ Emergency Ambulance Dispatched! Driver is en route.');
+      setToastMsg(`⚡ Emergency ${selectedType} Ambulance Dispatched! Driver is en route.`);
     }
   };
 
@@ -86,16 +87,13 @@ export const PatientAmbulanceBooking: React.FC = () => {
             </div>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 900 }}>24/7 Rapid Ambulance Booking</h2>
             <span style={{ fontSize: '0.84rem', opacity: 0.9 }}>
-              JHID: <strong>{patientProfile?.jivexaHealthId || 'JIV-2026-849201'}</strong> • GPS Dispatch Enabled
+              JHID: <strong>{patientProfile?.jivexaHealthId || 'JXV-STVAZREW'}</strong> • GPS Dispatch Enabled
             </span>
           </div>
         </div>
 
         <button
-          onClick={() => {
-            alert('🚨 EMERGENCY SOS ACTIVATED! Local emergency services (+91 108 / JIVEXA Dispatch) notified with your GPS coordinates.');
-            setToastMsg('SOS Signal sent to nearest emergency medical units.');
-          }}
+          onClick={() => setIsSosModalOpen(true)}
           style={{
             backgroundColor: 'white',
             color: '#dc2626',
@@ -250,7 +248,10 @@ export const PatientAmbulanceBooking: React.FC = () => {
                 ].map((preset) => (
                   <button
                     key={preset}
-                    onClick={() => setDestAddress(preset)}
+                    onClick={() => {
+                      setDestAddress(preset);
+                      setToastMsg(`Selected destination: ${preset.split(' (')[0]}`);
+                    }}
                     style={{
                       backgroundColor: destAddress === preset ? 'var(--primary-light)' : '#f8fafc',
                       color: destAddress === preset ? 'var(--primary)' : 'var(--text-dark)',
@@ -259,7 +260,8 @@ export const PatientAmbulanceBooking: React.FC = () => {
                       padding: '6px 14px',
                       fontSize: '0.8rem',
                       fontWeight: 700,
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'all 0.18s ease'
                     }}
                   >
                     🏥 {preset}
@@ -339,10 +341,10 @@ export const PatientAmbulanceBooking: React.FC = () => {
 
             {/* Confirm Dispatch Button */}
             <Button
+              variant="danger"
               isLoading={isBooking}
               onClick={handleConfirmBooking}
               style={{
-                backgroundColor: 'var(--error)',
                 height: '52px',
                 borderRadius: '16px',
                 fontSize: '1.05rem',
@@ -352,12 +354,63 @@ export const PatientAmbulanceBooking: React.FC = () => {
               }}
             >
               <Siren size={22} />
-              Confirm & Dispatch {selectedType} Ambulance Now
+              Confirm & Dispatch {selectedType} Ambulance Now (₹{fareMap[selectedType]})
             </Button>
 
           </div>
         </Card>
       )}
+
+      {/* INSTANT SOS 108 MODAL */}
+      <Modal isOpen={isSosModalOpen} onClose={() => setIsSosModalOpen(false)} title="🚨 INSTANT EMERGENCY SOS BROADCAST">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', alignItems: 'center', padding: '10px 0' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: '#fef2f2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse">
+            <AlertOctagon size={44} />
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#dc2626' }}>
+              Emergency SOS 108 Signal Active
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '6px', lineHeight: '1.5' }}>
+              Your GPS location coordinates (12.9716° N, 77.5946° E) and Health ID summary (<strong>{patientProfile?.jivexaHealthId || 'JXV-STVAZREW'}</strong>) have been broadcast to Apollo Trauma Emergency Center.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+            <a
+              href="tel:108"
+              style={{
+                backgroundColor: '#dc2626',
+                color: 'white',
+                borderRadius: '14px',
+                padding: '14px 20px',
+                fontWeight: 900,
+                fontSize: '1rem',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                boxShadow: '0 8px 20px rgba(220, 38, 38, 0.4)'
+              }}
+            >
+              <PhoneCall size={20} /> Speed Dial 108 Emergency
+            </a>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsSosModalOpen(false);
+                setToastMsg('SOS Alert cancelled.');
+              }}
+              style={{ borderRadius: '14px' }}
+            >
+              Cancel SOS Signal
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg('')} />}
 

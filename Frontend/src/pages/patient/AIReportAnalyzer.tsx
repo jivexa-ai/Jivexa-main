@@ -8,13 +8,14 @@ import { Toast } from '../../components/ui/Toast';
 import { processAndAnalyzeReport, SAMPLE_LAB_REPORTS } from '../../services/ai/reportAnalyzer';
 import { sendReportChatMessage, ReportChatMessage } from '../../services/ai/reportChatService';
 import { extractTextFromPDFOrImage } from '../../services/ai/pdfParser';
+import { checkPdfAnalyzerRateLimit, incrementPdfAnalyzerRateLimit } from '../../services/ai';
 import { AIReportAnalysisResult, MedicalReportRecord } from '../../types';
 import { 
   FileText, Upload, Sparkles, AlertTriangle, CheckCircle2, 
   HelpCircle, Lightbulb, Share2, History, ArrowRight, ShieldCheck, 
   RefreshCw, FileCheck, FileSpreadsheet, MessageSquare, Send, User as UserIcon,
   AlertCircle, FileCode, CheckCheck, Lock, Activity, Heart, Stethoscope, 
-  Apple, Mic, Paperclip, Check
+  Apple, Mic, Paperclip, Check, ThumbsUp, ThumbsDown, Crown, Zap
 } from 'lucide-react';
 
 export const AIReportAnalyzer: React.FC = () => {
@@ -45,9 +46,49 @@ export const AIReportAnalyzer: React.FC = () => {
   const [chatInput, setChatInput] = useState('');
   const [isChatTyping, setIsChatTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Toast
   const [toastMsg, setToastMsg] = useState('');
+
+  // Feedback & Accuracy Rating State
+  const [feedbackState, setFeedbackState] = useState<{ [msgId: string]: { rating?: 'like' | 'dislike'; issue?: string; comment?: string; submitted?: boolean } }>({});
+  const [activeFeedbackMsgId, setActiveFeedbackMsgId] = useState<string | null>(null);
+
+  // 5 Free Reports Paywall State
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [isProUser, setIsProUser] = useState(false);
+
+  const handleRatingClick = (msgId: string, rating: 'like' | 'dislike') => {
+    setFeedbackState(prev => ({
+      ...prev,
+      [msgId]: { ...prev[msgId], rating }
+    }));
+    setActiveFeedbackMsgId(msgId);
+  };
+
+  const setFeedbackChip = (msgId: string, issue: string) => {
+    setFeedbackState(prev => ({
+      ...prev,
+      [msgId]: { ...prev[msgId], issue }
+    }));
+  };
+
+  const setFeedbackComment = (msgId: string, comment: string) => {
+    setFeedbackState(prev => ({
+      ...prev,
+      [msgId]: { ...prev[msgId], comment }
+    }));
+  };
+
+  const submitFeedback = (msgId: string) => {
+    setFeedbackState(prev => ({
+      ...prev,
+      [msgId]: { ...prev[msgId], submitted: true }
+    }));
+    setToastMsg('Thank you! Your clinical feedback has been logged.');
+  };
 
   // Auto-scroll chat to bottom
   const scrollToBottom = () => {
@@ -82,8 +123,15 @@ export const AIReportAnalyzer: React.FC = () => {
     }
   }, [currentAnalysis, user?.name]);
 
-  // Execute PDF Extraction & AI Analysis
+  // Execute PDF Extraction & AI Analysis (24-Hour Daily Quota: Max 5 PDFs)
   const handleFileSelected = async (file: File) => {
+    const rateLimit = checkPdfAnalyzerRateLimit(user?.id);
+    if (!rateLimit.allowed) {
+      setToastMsg(`⏳ Daily PDF Limit Reached (5/5 PDFs). Your PDF Analyzer quota will reset after ${rateLimit.remainingHours} hours.`);
+      setUploadError(`Daily PDF Upload Limit Reached (5/5 PDFs). Your quota will reset after ${rateLimit.remainingHours} hours.`);
+      return;
+    }
+
     setUploadError('');
     setUploadedFile({
       name: file.name,
@@ -125,6 +173,7 @@ export const AIReportAnalyzer: React.FC = () => {
       analysis: result
     };
     saveAnalyzedReport(reportRecord);
+    incrementPdfAnalyzerRateLimit(user?.id);
     setToastMsg('Medical PDF report analyzed successfully.');
   };
 
@@ -244,7 +293,7 @@ export const AIReportAnalyzer: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1080px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%' }}>
       
       {/* Toast Notification */}
       {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg('')} />}
@@ -346,6 +395,7 @@ export const AIReportAnalyzer: React.FC = () => {
                     </p>
                   </div>
                   <input 
+                    ref={fileInputRef}
                     type="file" 
                     accept=".pdf,.png,.jpg,.jpeg" 
                     onChange={(e) => {
@@ -355,7 +405,16 @@ export const AIReportAnalyzer: React.FC = () => {
                     }} 
                     style={{ display: 'none' }}
                   />
-                  <Button type="button" style={{ marginTop: '8px', borderRadius: '12px', padding: '10px 24px', fontWeight: 700 }}>Select PDF / Image File</Button>
+                  <Button 
+                    type="button" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
+                    style={{ marginTop: '8px', borderRadius: '12px', padding: '10px 24px', fontWeight: 700 }}
+                  >
+                    Select PDF / Image File
+                  </Button>
                 </label>
 
                 {/* Sample Reports Quick Loader */}
@@ -488,6 +547,36 @@ export const AIReportAnalyzer: React.FC = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* Invalid Report Warning Banner */}
+              {(currentAnalysis.healthScore === 0 || currentAnalysis.summary.includes('⚠️')) && (
+                <div style={{
+                  backgroundColor: '#fef2f2',
+                  border: '2px solid #ef4444',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '16px',
+                  boxShadow: '0 8px 24px rgba(239, 68, 68, 0.15)'
+                }}>
+                  <AlertTriangle size={32} style={{ color: '#dc2626', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#991b1b' }}>Non-Clinical / Unreadable Report Warning</h3>
+                    <p style={{ fontSize: '0.9rem', color: '#7f1d1d', marginTop: '6px', lineHeight: '1.6', fontWeight: 600 }}>
+                      {currentAnalysis.summary}
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '14px' }}>
+                      <Button 
+                        onClick={() => setCurrentAnalysis(null)} 
+                        style={{ backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '0.85rem' }}
+                      >
+                        Re-Upload Genuine Medical Report
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Top Summary & Health Score Banner */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }} className="grid-2-mobile">
@@ -860,11 +949,102 @@ export const AIReportAnalyzer: React.FC = () => {
                           )}
 
                           {/* Fallback Text if sections not formatted */}
-                          {!msg.sections && (
-                            <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '16px', padding: '16px 20px' }}>
-                              <p style={{ fontSize: '0.9rem', lineHeight: '1.65', whiteSpace: 'pre-line' }}>{msg.text}</p>
+                          {/* INTERACTIVE ACCURACY FEEDBACK BOX */}
+                          <div style={{ marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>Was this clinical report analysis helpful & accurate?</span>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                  onClick={() => handleRatingClick(msg.id, 'like')}
+                                  style={{
+                                    border: 'none',
+                                    backgroundColor: feedbackState[msg.id]?.rating === 'like' ? '#dcfce7' : '#f1f5f9',
+                                    color: feedbackState[msg.id]?.rating === 'like' ? '#16a34a' : '#64748b',
+                                    borderRadius: '8px',
+                                    padding: '4px 10px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  <ThumbsUp size={13} />
+                                  <span>Accurate</span>
+                                </button>
+
+                                <button 
+                                  onClick={() => handleRatingClick(msg.id, 'dislike')}
+                                  style={{
+                                    border: 'none',
+                                    backgroundColor: feedbackState[msg.id]?.rating === 'dislike' ? '#fee2e2' : '#f1f5f9',
+                                    color: feedbackState[msg.id]?.rating === 'dislike' ? '#dc2626' : '#64748b',
+                                    borderRadius: '8px',
+                                    padding: '4px 10px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  <ThumbsDown size={13} />
+                                  <span>Issue</span>
+                                </button>
+                              </div>
                             </div>
-                          )}
+
+                            {activeFeedbackMsgId === msg.id && !feedbackState[msg.id]?.submitted && (
+                              <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dark)' }}>Help refine AI clinical accuracy:</span>
+                                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                  {['Wrong Value Extracted', 'Unclear Explanation', 'Needs Doctor Review'].map((chip) => (
+                                    <button
+                                      key={chip}
+                                      onClick={() => setFeedbackChip(msg.id, chip)}
+                                      style={{
+                                        border: '1px solid',
+                                        borderColor: feedbackState[msg.id]?.issue === chip ? 'var(--primary)' : '#cbd5e1',
+                                        backgroundColor: feedbackState[msg.id]?.issue === chip ? 'var(--primary-light)' : 'white',
+                                        color: feedbackState[msg.id]?.issue === chip ? 'var(--primary)' : '#475569',
+                                        borderRadius: '16px',
+                                        padding: '3px 10px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      {chip}
+                                    </button>
+                                  ))}
+                                </div>
+                                <input
+                                  type="text"
+                                  placeholder="Specific feedback or corrections (optional)..."
+                                  value={feedbackState[msg.id]?.comment || ''}
+                                  onChange={(e) => setFeedbackComment(msg.id, e.target.value)}
+                                  style={{ width: '100%', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                />
+                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                  <button
+                                    onClick={() => submitFeedback(msg.id)}
+                                    style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                                  >
+                                    Submit Feedback
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {feedbackState[msg.id]?.submitted && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem', color: '#16a34a', fontWeight: 700, marginTop: '2px' }}>
+                                <CheckCircle2 size={14} />
+                                <span>Thank you! Your feedback has been logged to refine AI accuracy.</span>
+                              </div>
+                            )}
+                          </div>
 
                           <span style={{ fontSize: '0.68rem', color: 'var(--text-light)', alignSelf: 'flex-end', marginTop: '2px' }}>
                             {msg.timestamp}
@@ -1082,6 +1262,94 @@ export const AIReportAnalyzer: React.FC = () => {
               Confirm & Share Report
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* --- 5-REPORT FREE LIMIT PAYWALL MODAL --- */}
+      <Modal isOpen={isPaywallOpen} onClose={() => setIsPaywallOpen(false)} title="JIVEXA Pro Report Analyzer">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', padding: '10px 0' }}>
+          
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', boxShadow: '0 8px 20px rgba(217, 119, 6, 0.3)' }}>
+            <Crown size={32} />
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-dark)' }}>5 Free Reports Limit Reached</h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '6px', lineHeight: '1.5' }}>
+              You have analyzed 5 lab reports on the free tier. Upgrade to <strong>JIVEXA Pro</strong> for unlimited PDF/image report analyses, priority OCR, and direct doctor sharing.
+            </p>
+          </div>
+
+          {/* Pricing Selector Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '6px' }}>
+            
+            {/* Monthly Plan */}
+            <div 
+              onClick={() => setSelectedPlan('monthly')}
+              style={{
+                border: '2px solid',
+                borderColor: selectedPlan === 'monthly' ? '#d97706' : 'var(--border)',
+                backgroundColor: selectedPlan === 'monthly' ? '#fffbebfb' : 'white',
+                borderRadius: '16px',
+                padding: '20px 16px',
+                cursor: 'pointer',
+                textAlign: 'center',
+                position: 'relative'
+              }}
+            >
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase' }}>Monthly Plan</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-dark)', margin: '8px 0' }}>₹150 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>/ mo</span></div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Billed monthly • Cancel anytime</span>
+            </div>
+
+            {/* Annual Plan */}
+            <div 
+              onClick={() => setSelectedPlan('annual')}
+              style={{
+                border: '2px solid',
+                borderColor: selectedPlan === 'annual' ? '#d97706' : 'var(--border)',
+                backgroundColor: selectedPlan === 'annual' ? '#fffbebfb' : 'white',
+                borderRadius: '16px',
+                padding: '20px 16px',
+                cursor: 'pointer',
+                textAlign: 'center',
+                position: 'relative'
+              }}
+            >
+              <span style={{ position: 'absolute', top: '-10px', right: '12px', backgroundColor: '#d97706', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '2px 8px', borderRadius: '10px' }}>SAVE 16%</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase' }}>Annual Plan</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-dark)', margin: '8px 0' }}>₹1,500 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>/ yr</span></div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Only ₹125/month • Best Value</span>
+            </div>
+
+          </div>
+
+          <Button 
+            onClick={() => {
+              setIsProUser(true);
+              setIsPaywallOpen(false);
+              setToastMsg('🎉 Congratulations! JIVEXA Pro unlocked — unlimited report analyses active.');
+            }}
+            style={{
+              backgroundColor: '#d97706',
+              color: 'white',
+              borderRadius: '14px',
+              padding: '14px 24px',
+              fontWeight: 800,
+              fontSize: '0.98rem',
+              boxShadow: '0 6px 18px rgba(217, 119, 6, 0.35)',
+              cursor: 'pointer',
+              border: 'none',
+              marginTop: '6px'
+            }}
+            fullWidth
+          >
+            Activate JIVEXA Pro (Unlimited Access)
+          </Button>
+
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
+            🔒 256-Bit Encrypted Healthcare Payments • Instant Activation
+          </span>
         </div>
       </Modal>
 

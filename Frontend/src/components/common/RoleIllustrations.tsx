@@ -1,234 +1,25 @@
 import React from 'react';
 import { 
-  User, Heart, Activity, Sparkles, ShieldCheck, Stethoscope, 
+  User, Heart, Activity, ShieldCheck, Stethoscope, 
   FileText, Pill, Siren, CheckCircle2, Navigation, Clock, Shield
 } from 'lucide-react';
 import { UserRole } from '../../context/AuthContext';
 
-// --- 1. PATIENT 3D VISUAL ILLUSTRATION ---
+// --- 1. PATIENT REAL HUMAN PHOTOGRAPHY ILLUSTRATION ---
 export const Patient3DIllustration: React.FC = () => {
   return (
-    <div style={{ position: 'relative', width: '100%', height: '310px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {/* Background Soft Glow */}
-      <div style={{
-        position: 'absolute',
-        width: '240px',
-        height: '240px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(2, 132, 199, 0.35) 0%, rgba(16, 185, 129, 0.15) 60%, transparent 80%)',
-        filter: 'blur(30px)'
-      }} />
-
-      {/* Main 3D Card Frame */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        borderRadius: '24px',
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
-        backdropFilter: 'blur(16px)',
-        border: '1.5px solid rgba(255, 255, 255, 0.25)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        overflow: 'hidden'
-      }}>
-        {/* Animated Patient Avatar & Heart Ring */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <div style={{
-            width: '96px',
-            height: '96px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0284c7 0%, #10b981 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 12px 30px rgba(2, 132, 199, 0.4)',
-            border: '4px solid rgba(255, 255, 255, 0.3)'
-          }}>
-            <User size={48} style={{ color: 'white' }} />
-          </div>
-          <div style={{
-            position: 'absolute',
-            bottom: '-4px',
-            right: '-4px',
-            backgroundColor: '#10b981',
-            color: 'white',
-            borderRadius: '50%',
-            width: '32px',
-            height: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(16, 185, 129, 0.4)',
-            border: '2px solid white'
-          }} className="animate-pulse">
-            <Heart size={18} />
-          </div>
-        </div>
-
-        {/* JHID Permanent Health Identifier Card */}
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.82)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '16px',
-          padding: '12px 20px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          textAlign: 'center',
-          width: '85%'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '2px' }}>
-            <ShieldCheck size={14} style={{ color: '#38bdf8' }} />
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93c5fd' }}>Permanent Health ID</span>
-          </div>
-          <span style={{ fontSize: '1.15rem', fontWeight: 900, letterSpacing: '0.06em', fontFamily: 'monospace', color: '#ffffff' }}>
-            JIV-2026-849201
-          </span>
-        </div>
-
-        {/* Floating AI Status Pill */}
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          backgroundColor: 'rgba(16, 185, 129, 0.25)',
-          border: '1px solid rgba(16, 185, 129, 0.4)',
-          borderRadius: '20px',
-          padding: '4px 12px',
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          color: '#6ee7b7',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <Sparkles size={12} /> AI Health Assistant Active
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- 2. DOCTOR 3D VISUAL ILLUSTRATION ---
-export const Doctor3DIllustration: React.FC = () => {
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '310px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {/* Background Soft Glow */}
-      <div style={{
-        position: 'absolute',
-        width: '240px',
-        height: '240px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(2, 132, 199, 0.15) 60%, transparent 80%)',
-        filter: 'blur(30px)'
-      }} />
-
-      {/* Main 3D Card Frame */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        borderRadius: '24px',
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
-        backdropFilter: 'blur(16px)',
-        border: '1.5px solid rgba(255, 255, 255, 0.25)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        overflow: 'hidden'
-      }}>
-        {/* Animated Stethoscope & Practitioner Badge */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <div style={{
-            width: '96px',
-            height: '96px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #059669 0%, #0284c7 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 12px 30px rgba(16, 185, 129, 0.4)',
-            border: '4px solid rgba(255, 255, 255, 0.3)'
-          }}>
-            <Stethoscope size={48} style={{ color: 'white' }} />
-          </div>
-          <div style={{
-            position: 'absolute',
-            bottom: '-4px',
-            right: '-4px',
-            backgroundColor: '#0284c7',
-            color: 'white',
-            borderRadius: '50%',
-            width: '32px',
-            height: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(2, 132, 199, 0.4)',
-            border: '2px solid white'
-          }}>
-            <FileText size={18} />
-          </div>
-        </div>
-
-        {/* Certified Doctor Digital Rx Badge */}
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.82)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '16px',
-          padding: '12px 20px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          textAlign: 'center',
-          width: '85%'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '2px' }}>
-            <CheckCircle2 size={14} style={{ color: '#34d399' }} />
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#a7f3d0' }}>Practitioner Workstation</span>
-          </div>
-          <span style={{ fontSize: '1.05rem', fontWeight: 900, letterSpacing: '0.02em', color: '#ffffff' }}>
-            Consent-Based Patient Access
-          </span>
-        </div>
-
-        {/* Floating Status Pill */}
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          backgroundColor: 'rgba(2, 132, 199, 0.25)',
-          border: '1px solid rgba(2, 132, 199, 0.4)',
-          borderRadius: '20px',
-          padding: '4px 12px',
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          color: '#93c5fd',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <Shield size={12} /> Medical License Verified
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- 3. AMBULANCE 3D VISUAL ILLUSTRATION ---
-export const Ambulance3DIllustration: React.FC = () => {
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '310px', borderRadius: '22px', overflow: 'hidden', border: '1.5px solid rgba(255, 255, 255, 0.25)', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.35)', backgroundColor: 'rgba(15, 23, 42, 0.6)' }}>
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '310px',
+      borderRadius: '20px',
+      overflow: 'hidden',
+      boxShadow: '0 16px 36px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#0284c7'
+    }}>
       <img
-        src="/assets/images/ambulance-illustration.jpg"
-        alt="Jivexa Health Emergency Ambulance"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = '/assets/images/jivexa-3d-reveal.jpg';
-        }}
+        src="/assets/images/patient-hero.jpg"
+        alt="Real Human Patient Wellness"
         style={{
           width: '100%',
           height: '100%',
@@ -236,137 +27,223 @@ export const Ambulance3DIllustration: React.FC = () => {
           display: 'block'
         }}
       />
-
-      {/* Overlay Live Emergency Telemetry Badge */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.15) 60%, transparent 100%)',
+        pointerEvents: 'none'
+      }} />
       <div style={{
         position: 'absolute',
         bottom: '16px',
         left: '16px',
         right: '16px',
-        backgroundColor: 'rgba(15, 23, 42, 0.88)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        borderRadius: '16px',
-        padding: '12px 18px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '14px',
+        padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px'
+        justifyContent: 'space-between',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
       }}>
-        <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#ef4444', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} className="animate-pulse">
-          <Siren size={20} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ShieldCheck size={22} style={{ color: '#0284c7' }} />
+          <div>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
+              Digital Health ID
+            </span>
+            <h4 style={{ fontSize: '0.98rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
+              JIV-2026-849201
+            </h4>
+          </div>
         </div>
-        <div>
-          <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: 'white', margin: 0 }}>24/7 Emergency Dispatch Fleet</h4>
-          <span style={{ fontSize: '0.76rem', color: '#94a3b8' }}>Real-time GPS Tracking & Hospital Pre-Notification</span>
-        </div>
+        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#059669', backgroundColor: '#d1fae5', padding: '4px 10px', borderRadius: '12px' }}>
+          ✓ Verified Record
+        </span>
       </div>
     </div>
   );
 };
 
-// --- 4. PHARMACY 3D VISUAL ILLUSTRATION ---
-export const Pharmacy3DIllustration: React.FC = () => {
+// --- 2. DOCTOR REAL HUMAN PHOTOGRAPHY ILLUSTRATION ---
+export const Doctor3DIllustration: React.FC = () => {
   return (
-    <div style={{ position: 'relative', width: '100%', height: '310px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {/* Background Soft Glow */}
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '310px',
+      borderRadius: '20px',
+      overflow: 'hidden',
+      boxShadow: '0 16px 36px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#059669'
+    }}>
+      <img
+        src="/assets/images/doctor-hero.jpg"
+        alt="Real Medical Doctor Practitioner"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block'
+        }}
+      />
       <div style={{
         position: 'absolute',
-        width: '240px',
-        height: '240px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(16, 185, 129, 0.15) 60%, transparent 80%)',
-        filter: 'blur(30px)'
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(6, 78, 59, 0.88) 0%, rgba(6, 78, 59, 0.15) 60%, transparent 100%)',
+        pointerEvents: 'none'
       }} />
-
-      {/* Main 3D Card Frame */}
       <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        borderRadius: '24px',
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
-        backdropFilter: 'blur(16px)',
-        border: '1.5px solid rgba(255, 255, 255, 0.25)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+        position: 'absolute',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '14px',
+        padding: '12px 16px',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        overflow: 'hidden'
+        justifyContent: 'space-between',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
       }}>
-        {/* Animated Pill Container */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <div style={{
-            width: '96px',
-            height: '96px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 12px 30px rgba(245, 158, 11, 0.4)',
-            border: '4px solid rgba(255, 255, 255, 0.3)'
-          }}>
-            <Pill size={48} style={{ color: 'white' }} />
-          </div>
-          <div style={{
-            position: 'absolute',
-            bottom: '-4px',
-            right: '-4px',
-            backgroundColor: '#10b981',
-            color: 'white',
-            borderRadius: '50%',
-            width: '32px',
-            height: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(16, 185, 129, 0.4)',
-            border: '2px solid white'
-          }}>
-            <CheckCircle2 size={18} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Stethoscope size={22} style={{ color: '#059669' }} />
+          <div>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
+              Practitioner Portal
+            </span>
+            <h4 style={{ fontSize: '0.94rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
+              Verified Practitioner License
+            </h4>
           </div>
         </div>
+        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0284c7', backgroundColor: '#e0f2fe', padding: '4px 10px', borderRadius: '12px' }}>
+          ✓ Verified License
+        </span>
+      </div>
+    </div>
+  );
+};
 
-        {/* Pharmacy Dispatch Order Queue Card */}
-        <div style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.82)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: '16px',
-          padding: '12px 20px',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          textAlign: 'center',
-          width: '85%'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '2px' }}>
-            <Clock size={14} style={{ color: '#fcd34d' }} />
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#fef08a' }}>Order Fulfillment Hub</span>
+// --- 3. AMBULANCE REAL HUMAN PHOTOGRAPHY ILLUSTRATION ---
+export const Ambulance3DIllustration: React.FC = () => {
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '310px',
+      borderRadius: '20px',
+      overflow: 'hidden',
+      boxShadow: '0 16px 36px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#dc2626'
+    }}>
+      <img
+        src="/assets/images/ambulance-hero.jpg"
+        alt="Real Emergency Ambulance Response Unit"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block'
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(69, 10, 10, 0.88) 0%, rgba(69, 10, 10, 0.15) 60%, transparent 100%)',
+        pointerEvents: 'none'
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '14px',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Siren size={22} style={{ color: '#dc2626' }} />
+          <div>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
+              Emergency Dispatch
+            </span>
+            <h4 style={{ fontSize: '0.94rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
+              24/7 Rapid Ambulance Network
+            </h4>
           </div>
-          <span style={{ fontSize: '1.05rem', fontWeight: 900, letterSpacing: '0.02em', color: '#ffffff' }}>
-            Verified Electronic Rx Engine
-          </span>
         </div>
+        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#dc2626', backgroundColor: '#fee2e2', padding: '4px 10px', borderRadius: '12px' }}>
+          Live Fleet
+        </span>
+      </div>
+    </div>
+  );
+};
 
-        {/* Floating Status Pill */}
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          backgroundColor: 'rgba(245, 158, 11, 0.25)',
-          border: '1px solid rgba(245, 158, 11, 0.4)',
-          borderRadius: '20px',
-          padding: '4px 12px',
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          color: '#fde68a',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <Activity size={12} /> Stock Sync Online
+// --- 4. PHARMACY REAL HUMAN PHOTOGRAPHY ILLUSTRATION ---
+export const Pharmacy3DIllustration: React.FC = () => {
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '310px',
+      borderRadius: '20px',
+      overflow: 'hidden',
+      boxShadow: '0 16px 36px rgba(0, 0, 0, 0.25)',
+      backgroundColor: '#d97706'
+    }}>
+      <img
+        src="/assets/images/pharmacy-hero.jpg"
+        alt="Real Pharmacist Dispensing Medicine"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block'
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(69, 26, 3, 0.88) 0%, rgba(69, 26, 3, 0.15) 60%, transparent 100%)',
+        pointerEvents: 'none'
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '14px',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Pill size={22} style={{ color: '#d97706' }} />
+          <div>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
+              Pharmacy Fulfillment
+            </span>
+            <h4 style={{ fontSize: '0.94rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
+              Verified Prescription Dispensing
+            </h4>
+          </div>
         </div>
+        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#d97706', backgroundColor: '#fef3c7', padding: '4px 10px', borderRadius: '12px' }}>
+          Stock Sync
+        </span>
       </div>
     </div>
   );

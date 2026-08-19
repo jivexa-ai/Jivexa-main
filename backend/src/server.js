@@ -9,22 +9,27 @@ dotenv.config();
 
 const app = express();
 
-// Configure CORS for Cookie & Authorization header transmission
+// Configure CORS for Cookie & Authorization header transmission across any deployed origin
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With']
   })
 );
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Auth API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+// Auth & AI API Routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+app.use('/user', authRoutes);
 app.use('/api/health-id', require('./routes/healthIdRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // System Health Check Endpoint
 app.get('/api/health', (req, res) => {
@@ -32,6 +37,14 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     service: 'JIVEXA Health OS Backend Service',
     database: 'MongoDB',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    service: 'JIVEXA Health OS Backend Service',
     timestamp: new Date().toISOString()
   });
 });

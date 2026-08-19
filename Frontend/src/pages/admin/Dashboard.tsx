@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
-import { Shield, Users, Calendar, Activity, Check, AlertOctagon, Heart, Terminal } from 'lucide-react';
+import { Shield, Users, Calendar, Activity, Check, AlertOctagon, Heart, Terminal, Stethoscope } from 'lucide-react';
 
 interface MockUserAdmin {
   id: string;
@@ -43,12 +43,33 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
-      <div>
-        <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Security Console</span>
-        <h1 style={{ fontWeight: 800, marginTop: '2px' }}>Administrative Dashboard</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
-          Platform metrics, registered user audits, and compliance logs.
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Security Console</span>
+          <h1 style={{ fontWeight: 800, marginTop: '2px' }}>Administrative Dashboard</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
+            Platform metrics, registered user audits, and compliance logs.
+          </p>
+        </div>
+        <a 
+          href="#/admin/doctors"
+          style={{
+            backgroundColor: 'var(--primary)',
+            color: 'white',
+            borderRadius: '12px',
+            padding: '12px 24px',
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 14px rgba(15, 118, 110, 0.3)'
+          }}
+        >
+          <Stethoscope size={18} />
+          Practo Doctor Verification Admin
+        </a>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }} className="grid-2-mobile">

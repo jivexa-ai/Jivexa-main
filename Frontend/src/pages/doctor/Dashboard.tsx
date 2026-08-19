@@ -126,17 +126,66 @@ export const DoctorDashboard: React.FC = () => {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Practitioner Portal</span>
-          <h1 style={{ fontWeight: 800, marginTop: '2px' }}>Welcome, {user?.name}.</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
-            Specialty: **{activeDoc?.specialty || 'General Practice'}** • Clinic Location: **{activeDoc?.location}**
-          </p>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+      
+      {/* BRAND HEADER BANNER */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #10b981 100%)',
+        borderRadius: '24px',
+        padding: '32px 36px',
+        color: 'white',
+        boxShadow: '0 12px 30px -8px rgba(15, 118, 110, 0.4)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{
+            width: '68px',
+            height: '68px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            border: '3px solid rgba(255, 255, 255, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.8rem',
+            fontWeight: 900,
+            color: 'white',
+            backdropFilter: 'blur(10px)'
+          }}>
+            {user?.name ? user.name.replace('Dr.', '').trim().charAt(0).toUpperCase() : 'D'}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'white' }}>Welcome, {user?.name || 'Doctor'}. 👋</h1>
+              <span style={{ backgroundColor: 'rgba(255, 255, 255, 0.25)', fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '12px', color: 'white' }}>Verified Practitioner</span>
+            </div>
+            <p style={{ opacity: 0.9, fontSize: '0.88rem', marginTop: '4px' }}>
+              Specialty: <strong>{activeDoc?.specialty || 'General Practice'}</strong> • Clinic Location: <strong>{activeDoc?.location || 'Indiranagar, Bengaluru'}</strong> • NMC Reg: <strong>{activeDoc?.registrationNumber || 'NMC-2026-88940'}</strong>
+            </p>
+          </div>
         </div>
-        <Button onClick={() => navigate('/doctor/settings')} variant="outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Settings size={16} />
+
+        <Button 
+          onClick={() => navigate('/doctor/settings')} 
+          style={{ 
+            backgroundColor: 'white',
+            color: '#0f766e',
+            border: 'none',
+            borderRadius: '14px',
+            padding: '12px 20px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
+          }}
+        >
+          <Settings size={18} />
           Configure Scheduler
         </Button>
       </div>
@@ -767,51 +816,83 @@ export const DoctorDashboard: React.FC = () => {
         <Modal 
           isOpen={!!selectedPatientId} 
           onClose={() => { setSelectedPatientId(null); setPatientDetails(null); }} 
-          title="Clinical Medical File"
+          title="Clinical Medical File & EHR Records"
         >
           {loadingPatient ? (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
               Loading patient clinical file records...
             </div>
           ) : patientDetails ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '550px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '68vh', overflowY: 'auto', paddingRight: '4px' }}>
               
-              <div style={{ display: 'flex', gap: '12px', backgroundColor: 'var(--primary-light)', padding: '14px', borderRadius: 'var(--radius-sm)', color: 'var(--primary)' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.25rem' }}>
+              {/* PATIENT HEADER BANNER */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '16px', 
+                background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 100%)', 
+                padding: '20px 24px', 
+                borderRadius: '20px', 
+                color: 'white',
+                boxShadow: '0 8px 20px -4px rgba(15, 118, 110, 0.3)'
+              }}>
+                <div style={{ 
+                  width: '56px', 
+                  height: '56px', 
+                  borderRadius: '50%', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                  border: '2px solid rgba(255, 255, 255, 0.4)', 
+                  color: 'white', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 900, 
+                  fontSize: '1.4rem',
+                  backdropFilter: 'blur(8px)',
+                  flexShrink: 0
+                }}>
                   {uniquePatients.find(p => p.id === selectedPatientId)?.name.charAt(0) || 'P'}
                 </div>
                 <div>
-                  <h4 style={{ fontWeight: 700 }}>{uniquePatients.find(p => p.id === selectedPatientId)?.name}</h4>
-                  <span style={{ fontSize: '0.78rem' }}>Blood Group: <strong>{patientDetails.bloodGroup}</strong> • Emergency: {patientDetails.emergencyContact}</span>
+                  <h3 style={{ fontWeight: 800, fontSize: '1.25rem', color: 'white' }}>
+                    {uniquePatients.find(p => p.id === selectedPatientId)?.name}
+                  </h3>
+                  <span style={{ fontSize: '0.82rem', opacity: 0.95, display: 'block', marginTop: '2px' }}>
+                    Blood Group: <strong>{patientDetails.bloodGroup}</strong> • Emergency: <strong>{patientDetails.emergencyContact}</strong>
+                  </span>
                 </div>
               </div>
 
+              {/* ALLERGIES & CHRONIC CONDITIONS GRID */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="grid-2-mobile">
-                <div style={{ border: '1px solid var(--border)', padding: '12px', borderRadius: '4px' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--error)' }}>⚠️ Allergies</span>
-                  <p style={{ fontSize: '0.85rem', fontWeight: 600, marginTop: '4px' }}>{patientDetails.allergies}</p>
+                <div style={{ border: '1px solid #fecaca', backgroundColor: '#fff1f2', padding: '16px', borderRadius: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#dc2626', letterSpacing: '0.04em' }}>⚠️ ALLERGIES LOG</span>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 800, color: '#991b1b', marginTop: '6px' }}>{patientDetails.allergies}</p>
                 </div>
-                <div style={{ border: '1px solid var(--border)', padding: '12px', borderRadius: '4px' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary)' }}>🩺 Chronic Conditions</span>
-                  <p style={{ fontSize: '0.85rem', fontWeight: 600, marginTop: '4px' }}>{patientDetails.conditions}</p>
+                <div style={{ border: '1px solid #99f6e4', backgroundColor: '#f0fdfa', padding: '16px', borderRadius: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#0d9488', letterSpacing: '0.04em' }}>🩺 CHRONIC CONDITIONS</span>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f766e', marginTop: '6px' }}>{patientDetails.conditions}</p>
                 </div>
               </div>
 
-              <div>
-                <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>Consultation History</h5>
+              {/* CONSULTATION HISTORY */}
+              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px' }}>
+                <h4 style={{ fontWeight: 800, fontSize: '0.98rem', marginBottom: '14px', color: 'var(--text-dark)' }}>Consultation History</h4>
                 {docAppts.filter(a => a.patientId === selectedPatientId).length === 0 ? (
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>No past history logged with this doctor.</span>
+                  <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>No past consultation history logged.</span>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {docAppts.filter(a => a.patientId === selectedPatientId).map((appt) => (
-                      <div key={appt.id} style={{ borderBottom: '1px dotted var(--border)', paddingBottom: '8px', fontSize: '0.82rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
-                          <span>📅 {appt.date} ({appt.time})</span>
-                          <span style={{ color: 'var(--primary)' }}>{appt.status}</span>
+                      <div key={appt.id} style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: '#f8fafc', fontSize: '0.85rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 800, color: 'var(--text-dark)' }}>📅 {appt.date} ({appt.time})</span>
+                          <span style={{ backgroundColor: '#dcfce7', color: '#15803d', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '10px' }}>
+                            {appt.status}
+                          </span>
                         </div>
                         {appt.consultationSummary && (
-                          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '3px' }}>
-                            Summary: "{appt.consultationSummary}"
+                          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '6px', lineHeight: '1.4' }}>
+                            "{appt.consultationSummary}"
                           </p>
                         )}
                       </div>
@@ -820,28 +901,31 @@ export const DoctorDashboard: React.FC = () => {
                 )}
               </div>
 
-              <div>
-                <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>Issued Prescriptions</h5>
+              {/* ISSUED PRESCRIPTIONS */}
+              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px' }}>
+                <h4 style={{ fontWeight: 800, fontSize: '0.98rem', marginBottom: '14px', color: 'var(--text-dark)' }}>Issued Prescriptions</h4>
                 {prescriptions.filter(pr => pr.patientId === selectedPatientId).length === 0 ? (
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>No active prescriptions issued yet.</span>
+                  <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>No active digital prescriptions issued yet.</span>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {prescriptions.filter(pr => pr.patientId === selectedPatientId).map((pr) => (
-                      <div key={pr.id} style={{ border: '1px solid var(--border)', padding: '10px', borderRadius: '4px', backgroundColor: 'var(--surface-raised)', fontSize: '0.82rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginBottom: '6px' }}>
-                          <span>Prescription #{pr.id.slice(0, 8)}</span>
-                          <span style={{ color: 'var(--secondary)' }}>{pr.status || 'Active'}</span>
+                      <div key={pr.id} style={{ border: '1px solid #e2e8f0', padding: '14px 18px', borderRadius: '14px', backgroundColor: '#f0fdfa', fontSize: '0.85rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, marginBottom: '8px' }}>
+                          <span style={{ color: '#0f766e' }}>Prescription #{pr.id.slice(0, 8)}</span>
+                          <span style={{ color: '#15803d', backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px', fontSize: '0.72rem' }}>
+                            {pr.status || 'Issued'}
+                          </span>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           {pr.medications.map((m, idx) => (
-                            <div key={idx} style={{ fontSize: '0.78rem' }}>
+                            <div key={idx} style={{ fontSize: '0.82rem', color: 'var(--text-dark)' }}>
                               💊 <strong>{m.name}</strong> • {m.dosage} ({m.frequency}) • {m.duration}
                             </div>
                           ))}
                         </div>
                         {pr.followUpDate && (
-                          <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600, marginTop: '8px' }}>
-                            📅 Follow-up: {pr.followUpDate}
+                          <div style={{ fontSize: '0.78rem', color: '#0f766e', fontWeight: 700, marginTop: '8px' }}>
+                            📅 Follow-up Date: {pr.followUpDate}
                           </div>
                         )}
                       </div>
@@ -850,19 +934,23 @@ export const DoctorDashboard: React.FC = () => {
                 )}
               </div>
 
-              <div>
-                <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>Shared Lab Reports / Documents</h5>
+              {/* SHARED LAB REPORTS & DOCUMENTS */}
+              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px' }}>
+                <h4 style={{ fontWeight: 800, fontSize: '0.98rem', marginBottom: '14px', color: 'var(--text-dark)' }}>Shared Lab Reports / Documents</h4>
                 {healthRecords.filter(r => r.patientId === selectedPatientId).length === 0 ? (
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>No documents uploaded by the patient.</span>
+                  <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>No shared diagnostic reports found.</span>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {healthRecords.filter(r => r.patientId === selectedPatientId).map((rec) => (
-                      <div key={rec.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--border)', padding: '8px 12px', borderRadius: '4px', fontSize: '0.8rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <FileText size={16} style={{ color: 'var(--primary)' }} />
-                          <span>{rec.name} ({rec.fileSize})</span>
+                      <div key={rec.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--border)', padding: '12px 16px', borderRadius: '12px', fontSize: '0.85rem', backgroundColor: '#f8fafc' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <FileText size={18} style={{ color: 'var(--primary)' }} />
+                          <div>
+                            <strong style={{ display: 'block', color: 'var(--text-dark)' }}>{rec.name}</strong>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{rec.date} • {rec.type}</span>
+                          </div>
                         </div>
-                        <a href={rec.fileUrl} style={{ textDecoration: 'none', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                        <a href={rec.fileUrl || '#'} download style={{ textDecoration: 'none', color: '#0f766e', backgroundColor: '#e0f2fe', padding: '6px 12px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800, fontSize: '0.78rem' }}>
                           <FileDown size={14} />
                           Download
                         </a>
@@ -874,10 +962,25 @@ export const DoctorDashboard: React.FC = () => {
 
             </div>
           ) : (
-            <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Could not load file.</div>
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Could not load file details.</div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '12px' }}>
-            <Button onClick={() => { setSelectedPatientId(null); setPatientDetails(null); }}>Close File</Button>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
+            <Button variant="outline" onClick={() => { setSelectedPatientId(null); setPatientDetails(null); }} style={{ borderRadius: '12px', fontWeight: 700 }}>
+              Close File
+            </Button>
+            <Button 
+              onClick={() => {
+                const targetAppt = docAppts.find(a => a.patientId === selectedPatientId);
+                const apptIdToUse = targetAppt ? targetAppt.id : 'appt_001';
+                setSelectedPatientId(null);
+                navigate(`/doctor/consultation/${apptIdToUse}`);
+              }} 
+              style={{ borderRadius: '12px', fontWeight: 800, backgroundColor: 'var(--primary)' }}
+            >
+              <Stethoscope size={16} />
+              Start Consultation
+            </Button>
           </div>
         </Modal>
       )}

@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
 
   age: {
@@ -13,12 +14,55 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true,
+    lowercase: true
   },
 
   password: {
     type: String,
     required: true
+  },
+
+  role: {
+    type: String,
+    enum: ['PATIENT', 'DOCTOR', 'PHARMACY', 'ADMIN', 'AMBULANCE_PARTNER'],
+    default: 'PATIENT'
+  },
+
+  verified: {
+    type: Boolean,
+    default: true
+  },
+
+  emailVerified: {
+    type: Boolean,
+    default: true
+  },
+
+  accountStatus: {
+    type: String,
+    default: 'ACTIVE'
+  },
+
+  nmcRegistrationNumber: {
+    type: String
+  },
+
+  stateMedicalCouncil: {
+    type: String
+  },
+
+  vehicleNumber: {
+    type: String
+  },
+
+  drugLicenseNumber: {
+    type: String
+  },
+
+  gstin: {
+    type: String
   },
 
   usage: {

@@ -81,6 +81,8 @@ export const Button: React.FC<ButtonProps> = ({
     gap: '8px',
     fontWeight: 700,
     letterSpacing: '-0.01em',
+    whiteSpace: 'nowrap',
+    lineHeight: 1,
     cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
     opacity: disabled || isLoading ? 0.65 : 1,
     transition: 'all 0.18s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -89,6 +91,7 @@ export const Button: React.FC<ButtonProps> = ({
     boxSizing: 'border-box',
     ...getVariantStyles(),
     ...getSizeStyles(),
+    ...(style?.backgroundColor && !style?.background ? { background: style.backgroundColor } : {}),
     ...style,
   };
 

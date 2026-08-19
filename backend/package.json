@@ -18,6 +18,7 @@
     "mongodb": "^7.5.0",
     "mongoose": "^8.24.2",
     "nodemailer": "^9.0.5",
+    "openai": "^7.5.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

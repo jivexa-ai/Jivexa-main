@@ -16,6 +16,10 @@ export interface Doctor {
   education: string;
   about: string;
   fee: number;
+  photoUrl?: string;
+  clinicName?: string;
+  registrationNumber?: string;
+  status?: 'pending' | 'approved' | 'rejected' | 'suspended';
 }
 
 export interface Pharmacy {

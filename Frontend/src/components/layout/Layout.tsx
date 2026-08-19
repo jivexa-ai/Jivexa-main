@@ -262,7 +262,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const sidebarLinks: Record<string, { label: string; path: string; icon: React.ReactNode }[]> = {
     PATIENT: [
       { label: 'Dashboard', path: '/patient/dashboard', icon: <Home size={18} /> },
-      { label: 'AI Health Assistant', path: '/patient/ai-assistant', icon: <MessageSquare size={18} /> },
+      { label: 'JIVEXA Health AI Bot', path: '/patient/ai-assistant', icon: <MessageSquare size={18} /> },
       { label: 'AI Medical Report Analyzer', path: '/patient/ai-report-analyzer', icon: <FileText size={18} /> },
       { label: 'My Health Profile', path: '/patient/profile', icon: <UserIcon size={18} /> },
       { label: 'Health Records', path: '/patient/health-records', icon: <Clipboard size={18} /> },

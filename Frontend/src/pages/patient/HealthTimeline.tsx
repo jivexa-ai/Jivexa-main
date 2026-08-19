@@ -122,15 +122,45 @@ export const PatientHealthTimeline: React.FC = () => {
   });
 
   return (
-    <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '28px' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Health Log</span>
-          <h1 style={{ fontWeight: 800, marginTop: '2px' }}>My Health Timeline</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
-            A comprehensive chronological summary of your historical medical activities.
-          </p>
+      {/* BRAND HEADER BANNER */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #10b981 100%)',
+        borderRadius: '24px',
+        padding: '32px 36px',
+        color: 'white',
+        boxShadow: '0 12px 30px -8px rgba(15, 118, 110, 0.4)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <Activity size={32} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'white' }}>My Medical Health Timeline</h1>
+              <span style={{ backgroundColor: 'rgba(255, 255, 255, 0.25)', fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '12px', color: 'white' }}>Chronological Vault</span>
+            </div>
+            <p style={{ opacity: 0.9, fontSize: '0.88rem', marginTop: '4px' }}>
+              A comprehensive chronological audit log of your consultations, report uploads, and prescription orders.
+            </p>
+          </div>
         </div>
 
         <button
@@ -140,16 +170,18 @@ export const PatientHealthTimeline: React.FC = () => {
             alignItems: 'center',
             gap: '8px',
             backgroundColor: 'white',
-            border: '1px solid var(--border)',
-            padding: '8px 14px',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            cursor: 'pointer'
+            color: '#0f766e',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '14px',
+            fontSize: '0.88rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
           }}
         >
-          {sortOrder === 'desc' ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
-          <span>{sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
+          {sortOrder === 'desc' ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
+          Sort: {sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}
         </button>
       </div>
 

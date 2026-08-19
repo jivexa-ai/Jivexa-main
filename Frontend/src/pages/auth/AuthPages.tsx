@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth, UserRole } from '../../context/AuthContext';
 import { Card } from '../../components/ui/Card';
@@ -6,10 +6,9 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { BrandLogo } from '../../components/common/BrandLogo';
 import { RoleIllustrationGraphic } from '../../components/common/RoleIllustrations';
-import { checkUserRoleRegistration } from '../../services/authRoleService';
 import { 
   Heart, Shield, Check, Lock, Mail, User, Stethoscope, 
-  Pill, Siren, CheckCircle2, ShieldCheck, ArrowRight, HelpCircle, Activity, Sparkles
+  Pill, Siren, CheckCircle2, ShieldCheck, ArrowRight, RefreshCw, FileText, ExternalLink, AlertTriangle, KeyRound
 } from 'lucide-react';
 
 // --- ROLE HIGHLIGHTS CONFIGURATION ---
@@ -21,39 +20,39 @@ const roleHighlights: Record<UserRole, {
   features: string[];
 }> = {
   PATIENT: {
-    badge: 'JIVEXA HEALTH ECOSYSTEM',
-    title: 'Your Complete Health Journey, AI-Connected.',
-    desc: 'Access your secure Health Vault, AI report analysis, digital prescriptions, and 24/7 emergency ambulance network in one place.',
-    gradient: 'linear-gradient(135deg, #0f172a 0%, #0284c7 60%, #10b981 100%)',
-    features: ['Instant AI Lab Report Analyzer', 'Consent-Based Health ID Access', '24/7 Emergency Ambulance Booking']
+    badge: 'HEALTH VAULT',
+    title: 'Your Complete Health Records & Digital Care.',
+    desc: 'Easily manage your health records, lab reports, doctor prescriptions, and emergency care in one secure place.',
+    gradient: 'linear-gradient(135deg, #0284c7 0%, #0f766e 100%)',
+    features: ['Instant Lab Report Analysis', 'Secure Health ID Access', '24/7 Emergency Ambulance Booking']
   },
   DOCTOR: {
-    badge: 'PRACTITIONER CLINICAL WORKSTATION',
-    title: 'Streamlined Consultations & Consent-Based Access.',
-    desc: 'Manage online & in-clinic consultations, access complete patient summaries with consent, and issue instant digital prescriptions.',
-    gradient: 'linear-gradient(135deg, #064e3b 0%, #059669 60%, #0284c7 100%)',
-    features: ['Digital Consent Request Workstation', 'E-Prescriptions with QR Verification', 'Integrated Patient Health Timeline']
+    badge: 'DOCTOR PORTAL',
+    title: 'Streamlined Patient Consultations & Digital Records.',
+    desc: 'Conduct online & in-clinic consultations, review patient medical history with consent, and issue instant digital prescriptions.',
+    gradient: 'linear-gradient(135deg, #059669 0%, #065f46 100%)',
+    features: ['NMC Verified Practitioner', 'E-Prescriptions & Verification', 'Integrated Patient Health History']
   },
   AMBULANCE_PARTNER: {
-    badge: '24/7 EMERGENCY AMBULANCE NETWORK',
-    title: 'Rapid Emergency Dispatch & Live GPS Telemetry.',
-    desc: 'Accept nearby patient emergency requests, provide real-time GPS tracking telemetry, and coordinate with hospital trauma centers.',
-    gradient: 'linear-gradient(135deg, #450a0a 0%, #dc2626 60%, #0f172a 100%)',
-    features: ['Live GPS Telemetry & Patient Navigation', 'Basic, Oxygen & ICU Fleet Categories', 'Hospital Emergency Pre-Notification']
+    badge: 'EMERGENCY 24/7',
+    title: 'Rapid Emergency Dispatch & Fleet Navigation.',
+    desc: 'Accept nearby emergency dispatch requests, navigate to patient locations, and coordinate with hospital emergency departments.',
+    gradient: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+    features: ['Commercial Vehicle Verification', 'Basic & ICU Fleet Options', 'Hospital Emergency Pre-Notification']
   },
   PHARMACY: {
-    badge: 'PHARMACY FULFILLMENT HUB',
+    badge: 'PHARMACY HUB',
     title: 'Verified Digital Rx Dispensing & Inventory.',
-    desc: 'Process verified doctor digital prescriptions, manage inventory stock, and track home delivery medicine orders in real-time.',
-    gradient: 'linear-gradient(135deg, #451a03 0%, #d97706 60%, #059669 100%)',
-    features: ['Instant QR Digital Rx Validation', 'Inventory & Stock Availability Sync', 'Patient Delivery Order Dispatch']
+    desc: 'Process verified doctor prescriptions, manage medicine inventory stock, and track home delivery orders for patients.',
+    gradient: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)',
+    features: ['State Drug License Verified', 'Medicine Inventory Sync', 'Order Delivery Dispatch']
   },
   ADMIN: {
-    badge: 'SYSTEM CONTROL',
-    title: 'Administrative Security & Audit Control.',
-    desc: 'Platform analytics, user verification, and HIPAA compliance logs.',
-    gradient: 'linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%)',
-    features: ['System Audit Logs', 'Practitioner Licensing Verification', 'Platform Telemetry']
+    badge: 'ADMIN PORTAL',
+    title: 'Administrative Security & System Control.',
+    desc: 'Platform analytics, practitioner verification, and security compliance.',
+    gradient: 'linear-gradient(135deg, #4338ca 0%, #312e81 100%)',
+    features: ['System Verification', 'Practitioner Licensing', 'Platform Controls']
   }
 };
 
@@ -66,41 +65,59 @@ const AuthHeroPanel: React.FC<{ activeRole: UserRole }> = ({ activeRole }) => {
       flex: '1.1',
       background: graphic.gradient,
       borderRadius: '28px',
-      padding: '40px',
+      padding: '36px 32px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
+      gap: '24px',
       color: 'white',
       position: 'relative',
       overflow: 'hidden',
       boxShadow: '0 24px 48px -12px rgba(2, 132, 199, 0.35)',
-      minHeight: '640px',
-      transition: 'background 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+      height: '100%',
+      transition: 'background 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      boxSizing: 'border-box'
     }} className="sr-mobile-hide">
       
       {/* Ambient Lighting Overlay */}
       <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '360px', height: '360px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%)', filter: 'blur(45px)', pointerEvents: 'none' }} />
 
       {/* Top Header Lockup */}
-      <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <BrandLogo size="lg" variant="light" />
+      <div style={{
+        position: 'relative',
+        zIndex: 10,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '12px',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ flexShrink: 0 }}>
+          <BrandLogo size="sm" variant="light" />
+        </div>
         <span style={{
-          fontSize: '0.74rem',
+          fontSize: '0.68rem',
           fontWeight: 800,
-          letterSpacing: '0.08em',
+          letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          backgroundColor: 'rgba(255, 255, 255, 0.16)',
+          backgroundColor: 'rgba(255, 255, 255, 0.18)',
+          color: '#ffffff',
           padding: '6px 14px',
-          borderRadius: '20px',
+          borderRadius: '16px',
           backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.22)'
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+          boxSizing: 'border-box'
         }}>
           {graphic.badge}
         </span>
       </div>
 
-      {/* DEDICATED 3D ILLUSTRATION CONTAINER (CHANGES IMMEDIATELY WITH ROLE) */}
-      <div style={{ position: 'relative', zIndex: 10, margin: '24px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+      {/* DEDICATED 3D ILLUSTRATION CONTAINER */}
+      <div style={{ position: 'relative', zIndex: 10, margin: '12px 0 8px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
         <RoleIllustrationGraphic role={activeRole} />
       </div>
 
@@ -235,7 +252,6 @@ export const Login: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Helper to parse role from URL search parameters e.g. /login?role=AMBULANCE_PARTNER
   const getInitialRole = (): UserRole => {
     const params = new URLSearchParams(location.search);
     const roleParam = params.get('role')?.toUpperCase();
@@ -248,8 +264,9 @@ export const Login: React.FC = () => {
   const [activeRole, setActiveRole] = useState<UserRole>(getInitialRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [error, setError] = useState('');
-  const [showAdminContact, setShowAdminContact] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -260,7 +277,8 @@ export const Login: React.FC = () => {
   const handleTabChange = (role: UserRole) => {
     setActiveRole(role);
     setError('');
-    setShowAdminContact(false);
+    setEmailError('');
+    setPasswordError('');
   };
 
   const getRoleLoginTitle = () => {
@@ -274,14 +292,39 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
 
+    let hasError = false;
+    setEmailError('');
+    setPasswordError('');
     setError('');
-    setShowAdminContact(false);
+
+    if (!trimmedEmail) {
+      setEmailError('Please enter your email address.');
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(trimmedEmail)) {
+        setEmailError('Please enter a valid email address (e.g. user@domain.com).');
+        hasError = true;
+      }
+    }
+
+    if (!trimmedPassword) {
+      setPasswordError('Please enter your password.');
+      hasError = true;
+    } else if (trimmedPassword.length < 3) {
+      setPasswordError('Password must be at least 3 characters long.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     setIsLoading(true);
 
     try {
-      const res = await login(email, password);
+      const res = await login(trimmedEmail, trimmedPassword, activeRole);
       if (res.success && res.role) {
         const dashboardRoutes: Record<UserRole, string> = {
           PATIENT: '/patient/dashboard',
@@ -291,11 +334,18 @@ export const Login: React.FC = () => {
           AMBULANCE_PARTNER: '/ambulance/dashboard'
         };
         navigate(dashboardRoutes[res.role]);
+      } else if (res.requireOtp) {
+        navigate(`/signup?step=verify-otp&email=${encodeURIComponent(res.email || trimmedEmail)}&role=${activeRole}`);
       } else {
-        setError(res.error || 'Login failed. Please check your credentials.');
+        const errMsg = res.error || 'Login failed. Please check your credentials.';
+        if (errMsg.toLowerCase().includes('password')) {
+          setPasswordError(errMsg);
+        } else {
+          setEmailError(errMsg);
+        }
       }
     } catch (err) {
-      setError('An unexpected error occurred during login.');
+      setEmailError('An unexpected error occurred during login.');
     } finally {
       setIsLoading(false);
     }
@@ -341,51 +391,33 @@ export const Login: React.FC = () => {
 
             {/* 2. AUTHENTICATION INPUT FIELDS */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              {error && (
-                <div style={{
-                  backgroundColor: 'var(--error-light)',
-                  border: '1px solid var(--error)',
-                  padding: '12px 14px',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--error)',
-                  fontSize: '0.84rem',
-                  fontWeight: 600,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px'
-                }}>
-                  <span>{error}</span>
-                  {showAdminContact && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => alert('Contacting JIVEXA Administration: Support hotline +91 1800 9900 11 or email admin@jivexa.in')}
-                      style={{ borderColor: 'var(--error)', color: 'var(--error)', marginTop: '4px' }}
-                    >
-                      Contact JIVEXA Administration
-                    </Button>
-                  )}
-                </div>
-              )}
-
               <Input 
-                label="Email Address" 
-                type="email" 
+                label="Email Address *" 
+                type="text" 
                 placeholder="name@domain.com" 
                 icon={<Mail size={16} />}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError('');
+                  if (error) setError('');
+                }}
+                error={emailError}
                 required
               />
 
               <Input 
-                label="Password" 
+                label="Password *" 
                 type="password" 
                 placeholder="••••••••" 
                 icon={<Lock size={16} />}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError('');
+                  if (error) setError('');
+                }}
+                error={passwordError}
                 required
               />
 
@@ -408,9 +440,9 @@ export const Login: React.FC = () => {
   );
 };
 
-// --- SIGNUP VIEW ---
+// --- SIGNUP VIEW WITH STEP 2 OTP & ROLE VERIFICATION ---
 export const Signup: React.FC = () => {
-  const { signup } = useAuth();
+  const { signup, verifyEmail, sendOTP, submitRoleVerification } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -423,34 +455,203 @@ export const Signup: React.FC = () => {
     return 'PATIENT';
   };
 
+  // Step Machine: 'FORM' | 'OTP' | 'ROLE_VERIFICATION'
+  const [step, setStep] = useState<'FORM' | 'OTP' | 'ROLE_VERIFICATION'>('FORM');
+  const [role, setRole] = useState<UserRole>(getInitialRole);
+
+  // Registration Form State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>(getInitialRole);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Field Level Error States
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmError, setConfirmError] = useState('');
+  
+  // Role Specific Credentials (Asked in Step 3 after OTP)
+  const [nmcRegistrationNumber, setNmcRegistrationNumber] = useState('');
+  const [stateMedicalCouncil, setStateMedicalCouncil] = useState('Karnataka Medical Council');
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [drugLicenseNumber, setDrugLicenseNumber] = useState('');
+  const [gstin, setGstin] = useState('');
+
+  // OTP State
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [resendTimer, setResendTimer] = useState(45);
+  const [canResend, setCanResend] = useState(false);
+
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const stepParam = params.get('step');
+    const emailParam = params.get('email');
     const roleFromUrl = getInitialRole();
+
     setRole(roleFromUrl);
+
+    if (stepParam === 'verify-otp' && emailParam) {
+      setEmail(emailParam);
+      setMaskedEmail(emailParam.replace(/(.{2})(.*)(?=@)/, '$1***'));
+      setStep('OTP');
+    }
   }, [location.search]);
 
-  const getRoleSignupTitle = () => {
-    switch (role) {
-      case 'DOCTOR': return 'Register as Doctor';
-      case 'AMBULANCE_PARTNER': return 'Register Ambulance Fleet';
-      case 'PHARMACY': return 'Register Pharmacy Hub';
-      default: return 'Register as Patient';
+  // Resend Timer Countdown
+  useEffect(() => {
+    let interval: any = null;
+    if (step === 'OTP' && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (resendTimer === 0) {
+      setCanResend(true);
+    }
+    return () => clearInterval(interval);
+  }, [step, resendTimer]);
+
+  const handleDigitChange = (index: number, val: string) => {
+    if (!/^\d*$/.test(val)) return;
+    const updated = [...otpDigits];
+    updated[index] = val.slice(-1);
+    setOtpDigits(updated);
+
+    if (val && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !email || !password) return;
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match. Please re-enter your password.');
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text').trim();
+    if (/^\d{6}$/.test(pasted)) {
+      setOtpDigits(pasted.split(''));
+      otpInputRefs.current[5]?.focus();
+    }
+  };
+
+  const getRoleSignupTitle = () => {
+    switch (role) {
+      case 'DOCTOR': return 'Register Doctor Practitioner';
+      case 'AMBULANCE_PARTNER': return 'Register Emergency Ambulance Fleet';
+      case 'PHARMACY': return 'Register Licensed Pharmacy Hub';
+      default: return 'Register Patient Account';
+    }
+  };
+
+  // STEP 1: INITIAL REGISTRATION SUBMIT (BASIC CREDENTIALS ONLY)
+  const handleInitialSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirm = confirmPassword.trim();
+
+    let hasError = false;
+    setNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setConfirmError('');
+    setError('');
+
+    if (!trimmedName) {
+      setNameError('Please enter your full name.');
+      hasError = true;
+    } else if (trimmedName.length < 3) {
+      setNameError('Full name must be at least 3 characters long.');
+      hasError = true;
+    }
+
+    if (!trimmedEmail) {
+      setEmailError('Please enter your email address.');
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(trimmedEmail)) {
+        setEmailError('Please enter a valid email address (e.g. user@domain.com).');
+        hasError = true;
+      }
+    }
+
+    if (!trimmedPassword) {
+      setPasswordError('Please choose a password.');
+      hasError = true;
+    } else if (trimmedPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters long.');
+      hasError = true;
+    } else if (!/[A-Z]/.test(trimmedPassword)) {
+      setPasswordError('Password must contain at least one uppercase letter (A-Z).');
+      hasError = true;
+    } else if (!/[a-z]/.test(trimmedPassword)) {
+      setPasswordError('Password must contain at least one lowercase letter (a-z).');
+      hasError = true;
+    } else if (!/[0-9]/.test(trimmedPassword)) {
+      setPasswordError('Password must contain at least one number (0-9).');
+      hasError = true;
+    } else if (!/[^A-Za-z0-9]/.test(trimmedPassword)) {
+      setPasswordError('Password must contain at least one special symbol (@!#$ etc.).');
+      hasError = true;
+    }
+
+    if (!trimmedConfirm) {
+      setConfirmError('Please confirm your password.');
+      hasError = true;
+    } else if (trimmedPassword !== trimmedConfirm) {
+      setConfirmError('Passwords do not match. Please re-enter your password.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    setIsLoading(true);
+
+    try {
+      const res = await signup(trimmedEmail, trimmedName, role, trimmedPassword);
+      if (res.success) {
+        if (role === 'PATIENT') {
+          setSuccessMsg('🎉 Account registered successfully! Opening dashboard...');
+          setTimeout(() => {
+            navigate('/patient/dashboard');
+          }, 800);
+        } else {
+          setStep('ROLE_VERIFICATION');
+        }
+      } else {
+        const errMsg = res.error || 'Registration failed.';
+        if (errMsg.toLowerCase().includes('password')) {
+          setPasswordError(errMsg);
+        } else if (errMsg.toLowerCase().includes('name')) {
+          setNameError(errMsg);
+        } else {
+          setEmailError(errMsg);
+        }
+      }
+    } catch (err) {
+      setEmailError('An unexpected error occurred during registration.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // STEP 2: VERIFY 6-DIGIT EMAIL OTP (FOR FUTURE OTP USE)
+  const handleVerifyOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = otpDigits.join('');
+    if (code.length < 6) {
+      setError('Please enter the full 6-digit verification code.');
       return;
     }
 
@@ -458,8 +659,61 @@ export const Signup: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const res = await signup(email, name, role, password);
+      const res = await verifyEmail(code, email);
       if (res.success) {
+        if (role === 'PATIENT') {
+          setSuccessMsg('🎉 Email verified successfully! Activating account...');
+          setTimeout(() => {
+            navigate('/patient/dashboard');
+          }, 1200);
+        } else {
+          setStep('ROLE_VERIFICATION');
+        }
+      } else {
+        setError(res.error || 'OTP verification failed. Please check the code.');
+      }
+    } catch (err) {
+      setError('Error verifying OTP code.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // STEP 3: SUBMIT PROFESSIONAL ROLE CREDENTIALS (AFTER INITIAL REGISTRATION)
+  const handleRoleVerificationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Role-specific credential validation
+    const payload: Record<string, any> = { email, role };
+    if (role === 'DOCTOR') {
+      if (!nmcRegistrationNumber.trim() || !stateMedicalCouncil.trim()) {
+        setError('Please enter your NMC Registration Number and State Medical Council.');
+        return;
+      }
+      payload.nmcRegistrationNumber = nmcRegistrationNumber;
+      payload.stateMedicalCouncil = stateMedicalCouncil;
+    } else if (role === 'AMBULANCE_PARTNER') {
+      if (!vehicleNumber.trim()) {
+        setError('Please enter your Commercial Vehicle Registration (RC) Number.');
+        return;
+      }
+      payload.vehicleNumber = vehicleNumber;
+    } else if (role === 'PHARMACY') {
+      if (!drugLicenseNumber.trim() || !gstin.trim()) {
+        setError('Please enter your State Drug License Number and GSTIN Registration.');
+        return;
+      }
+      payload.drugLicenseNumber = drugLicenseNumber;
+      payload.gstin = gstin;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await submitRoleVerification(payload);
+      setSuccessMsg('🎉 Professional verification details submitted! Workstation activated.');
+      setTimeout(() => {
         const dashboardRoutes: Record<UserRole, string> = {
           PATIENT: '/patient/dashboard',
           DOCTOR: '/doctor/dashboard',
@@ -468,13 +722,27 @@ export const Signup: React.FC = () => {
           AMBULANCE_PARTNER: '/ambulance/dashboard'
         };
         navigate(dashboardRoutes[role] || '/patient/dashboard');
-      } else {
-        setError(res.error || 'Signup failed.');
-      }
+      }, 1000);
     } catch (err) {
-      setError('An unexpected error occurred.');
+      setError('An error occurred submitting professional credentials.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    setError('');
+    setSuccessMsg('');
+
+    const res = await sendOTP(email);
+    if (res.success) {
+      setSuccessMsg(`New 6-digit verification code sent to ${res.maskedEmail || email}`);
+      setPreviewUrl(res.previewUrl || null);
+      setResendTimer(45);
+      setCanResend(false);
+    } else {
+      setError(res.error || 'Could not resend OTP email.');
     }
   };
 
@@ -497,7 +765,7 @@ export const Signup: React.FC = () => {
         {/* Left Side Dynamic 3D Illustration Panel */}
         <AuthHeroPanel activeRole={role} />
 
-        {/* Right Side Glassmorphism Signup Card */}
+        {/* Right Side Form Card */}
         <div style={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <Card title={
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
@@ -505,72 +773,258 @@ export const Signup: React.FC = () => {
                 <BrandLogo size="md" />
               </div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.02em', margin: 0 }}>
-                {getRoleSignupTitle()}
+                {step === 'OTP' ? 'Verify Email OTP' : step === 'ROLE_VERIFICATION' ? 'Professional Licensing & Verification' : getRoleSignupTitle()}
               </h2>
               <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-                Select your account category below and complete registration.
+                {step === 'OTP' 
+                  ? `Enter the 6-digit code sent to ${maskedEmail || email}.`
+                  : step === 'ROLE_VERIFICATION'
+                  ? 'Provide mandatory practitioner credentials to complete registration and activate your workstation.'
+                  : 'Select your account category below and complete basic registration.'}
               </span>
             </div>
           } style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-xl)', padding: '32px' }}>
 
-            {/* 1. SELECTABLE ROLE CARDS (MUST APPEAR BEFORE NAME FIELD) */}
-            <RoleSelectorCards activeRole={role} onSelectRole={(r) => setRole(r)} />
+            {/* STEP 1: INITIAL REGISTRATION FORM (BASIC CREDENTIALS ONLY - NO LICENSE CARDS) */}
+            {step === 'FORM' && (
+              <>
+                {/* 1. SELECTABLE ROLE CARDS (BEFORE NAME FIELD) */}
+                <RoleSelectorCards activeRole={role} onSelectRole={(r) => setRole(r)} />
 
-            {/* 2. REGISTRATION INPUT FIELDS (APPEAR AFTER ROLE CARDS) */}
-            <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {error && (
-                <div style={{ backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', padding: '10px 14px', borderRadius: 'var(--radius-md)', color: 'var(--error)', fontSize: '0.84rem', fontWeight: 600 }}>
-                  {error}
+                {/* 2. BASIC REGISTRATION INPUT FIELDS */}
+                <form onSubmit={handleInitialSignupSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <Input 
+                    label="Full Name *" 
+                    placeholder="User Name" 
+                    icon={<User size={16} />}
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (nameError) setNameError('');
+                      if (error) setError('');
+                    }}
+                    error={nameError}
+                    required
+                  />
+
+                  <Input 
+                    label="Email Address *" 
+                    type="text" 
+                    placeholder="abc@abc.in" 
+                    icon={<Mail size={16} />}
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError('');
+                      if (error) setError('');
+                    }}
+                    error={emailError}
+                    required
+                  />
+
+                  <Input 
+                    label="Choose Password *" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    icon={<Lock size={16} />}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (passwordError) setPasswordError('');
+                      if (error) setError('');
+                    }}
+                    error={passwordError}
+                    required
+                  />
+
+                  <Input 
+                    label="Confirm Password *" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    icon={<Lock size={16} />}
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (confirmError) setConfirmError('');
+                      if (error) setError('');
+                    }}
+                    error={confirmError}
+                    required
+                  />
+
+                  <Button type="submit" isLoading={isLoading} fullWidth style={{ height: '48px', fontSize: '1rem', fontWeight: 800, marginTop: '8px' }}>
+                    Register Account
+                  </Button>
+                  
+                  <div style={{ textAlign: 'center', fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                    Already have an account? <Link to={`/login?role=${role}`} style={{ fontWeight: 800, color: 'var(--primary)' }}>Sign In</Link>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {/* STEP 2: 6-DIGIT EMAIL OTP VERIFICATION SCREEN (OPTIONAL FUTURE OTP USE) */}
+            {step === 'OTP' && (
+              <form onSubmit={handleVerifyOtpSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {error && (
+                  <div style={{ backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', padding: '12px 14px', borderRadius: '14px', color: 'var(--error)', fontSize: '0.86rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <AlertTriangle size={18} />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {successMsg && (
+                  <div style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac', padding: '12px 14px', borderRadius: '14px', color: '#15803d', fontSize: '0.86rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle2 size={18} />
+                    <span>{successMsg}</span>
+                  </div>
+                )}
+
+                {/* OTP INPUT BOXES */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', padding: '12px 0 4px 0' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <KeyRound size={24} />
+                  </div>
+                  <label style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-dark)' }}>Enter 6-Digit Email Verification Code *</label>
+                  
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {otpDigits.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => { otpInputRefs.current[idx] = el; }}
+                        type="text"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleDigitChange(idx, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(idx, e)}
+                        onPaste={handlePaste}
+                        style={{
+                          width: '44px',
+                          height: '52px',
+                          borderRadius: '12px',
+                          border: digit ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                          fontSize: '1.3rem',
+                          fontWeight: 900,
+                          textAlign: 'center',
+                          backgroundColor: digit ? '#f0f9ff' : 'white',
+                          color: 'var(--primary)',
+                          outline: 'none'
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
-              )}
 
-              <Input 
-                label="Full Name" 
-                placeholder="User Name" 
-                icon={<User size={16} />}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+                <Button type="submit" isLoading={isLoading} fullWidth style={{ height: '48px', fontSize: '1rem', fontWeight: 900, borderRadius: '14px' }}>
+                  Verify Code & Continue
+                </Button>
 
-              <Input 
-                label="Email Address" 
-                type="email" 
-                placeholder="abc@abc.in" 
-                icon={<Mail size={16} />}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem', borderTop: '1px solid var(--border)', paddingTop: '14px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setStep('FORM')}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    ← Change Email
+                  </button>
 
-              <Input 
-                label="Choose Password" 
-                type="password" 
-                placeholder="••••••••" 
-                icon={<Lock size={16} />}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={!canResend}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: canResend ? 'var(--primary)' : 'var(--text-muted)',
+                      fontWeight: 800,
+                      cursor: canResend ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    {canResend ? 'Resend OTP Code' : `Resend code in ${resendTimer}s`}
+                  </button>
+                </div>
 
-              <Input 
-                label="Confirm Password" 
-                type="password" 
-                placeholder="••••••••" 
-                icon={<Lock size={16} />}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
+              </form>
+            )}
 
-              <Button type="submit" isLoading={isLoading} fullWidth style={{ height: '46px', fontSize: '0.98rem', fontWeight: 800, marginTop: '8px' }}>
-                Register as {role === 'PATIENT' ? 'Patient' : role === 'DOCTOR' ? 'Doctor' : role === 'PHARMACY' ? 'Pharmacy' : 'Ambulance Partner'}
-              </Button>
-              
-              <div style={{ textAlign: 'center', fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-                Already have an account? <Link to={`/login?role=${role}`} style={{ fontWeight: 800, color: 'var(--primary)' }}>Sign In</Link>
-              </div>
-            </form>
+            {/* STEP 3: PROFESSIONAL ROLE LICENSING CREDENTIALS FORM (TRIGGERS AFTER INITIAL REGISTRATION) */}
+            {step === 'ROLE_VERIFICATION' && (
+              <form onSubmit={handleRoleVerificationSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {error && (
+                  <div style={{ backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', padding: '12px 14px', borderRadius: '14px', color: 'var(--error)', fontSize: '0.86rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <AlertTriangle size={18} />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {successMsg && (
+                  <div style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac', padding: '12px 14px', borderRadius: '14px', color: '#15803d', fontSize: '0.86rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <CheckCircle2 size={18} />
+                    <span>{successMsg}</span>
+                  </div>
+                )}
+
+                {role === 'DOCTOR' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', backgroundColor: '#f0fdf4', padding: '20px', borderRadius: '18px', border: '1.5px solid #99f6e4' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f766e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>🩺 PRACTITIONER VERIFICATION DATA</span>
+                    <Input 
+                      label="NMC / State Medical Council Registration No. *" 
+                      placeholder="e.g. NMC-2026-88940" 
+                      value={nmcRegistrationNumber}
+                      onChange={(e) => setNmcRegistrationNumber(e.target.value)}
+                      required
+                    />
+                    <Input 
+                      label="State Medical Council *" 
+                      placeholder="Karnataka Medical Council" 
+                      value={stateMedicalCouncil}
+                      onChange={(e) => setStateMedicalCouncil(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                {role === 'AMBULANCE_PARTNER' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', backgroundColor: '#fef2f2', padding: '20px', borderRadius: '18px', border: '1.5px solid #fecaca' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>🚑 FLEET VEHICLE REGISTRATION DATA</span>
+                    <Input 
+                      label="Commercial Vehicle Registration (RC) Number *" 
+                      placeholder="e.g. KA-01-EQ-9112" 
+                      value={vehicleNumber}
+                      onChange={(e) => setVehicleNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                {role === 'PHARMACY' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', backgroundColor: '#fff7ed', padding: '20px', borderRadius: '18px', border: '1.5px solid #fed7aa' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#c2410c', textTransform: 'uppercase', letterSpacing: '0.04em' }}>💊 PHARMACY STORE LICENSE DATA</span>
+                    <Input 
+                      label="State Drug License Number (Form 20/21) *" 
+                      placeholder="e.g. DL-KA-2026-99201" 
+                      value={drugLicenseNumber}
+                      onChange={(e) => setDrugLicenseNumber(e.target.value)}
+                      required
+                    />
+                    <Input 
+                      label="GSTIN Registration *" 
+                      placeholder="e.g. 29AAACJ1234F1Z5" 
+                      value={gstin}
+                      onChange={(e) => setGstin(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <Button type="submit" isLoading={isLoading} fullWidth style={{ height: '48px', fontSize: '1rem', fontWeight: 900, borderRadius: '14px' }}>
+                  Submit Professional Credentials & Complete Activation
+                </Button>
+              </form>
+            )}
+
           </Card>
         </div>
       </div>
@@ -578,296 +1032,40 @@ export const Signup: React.FC = () => {
   );
 };
 
-// --- EMAIL OTP VERIFICATION VIEW ---
 export const Verify: React.FC = () => {
-  const { verifyEmail, sendOTP, user } = useAuth();
-  const [email, setEmail] = useState(user?.email || '');
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [emailWarning, setEmailWarning] = useState('');
-  const [infoMessage, setInfoMessage] = useState('');
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSendingOTP, setIsSendingOTP] = useState(false);
-  const [resendTimer, setResendTimer] = useState(60);
-  const [canResend, setCanResend] = useState(false);
-  const navigate = useNavigate();
-
-  // Validate 100% correct email format
-  const validateEmailFormat = (val: string): boolean => {
-    const trimmed = val.trim().toLowerCase();
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!trimmed) {
-      setEmailWarning('Email address is required for OTP dispatch.');
-      return false;
-    }
-    if (!emailRegex.test(trimmed)) {
-      setEmailWarning('⚠️ Warning: Please enter a 100% valid email address (e.g., founder@jivexa.com)');
-      return false;
-    }
-    setEmailWarning('');
-    return true;
-  };
-
-  // Initial OTP Dispatch on mount
-  useEffect(() => {
-    const target = user?.email || email;
-    if (target && validateEmailFormat(target)) {
-      handleDispatchOTP(target);
-    }
-  }, []);
-
-  // Countdown timer for Resend OTP
-  useEffect(() => {
-    let interval: any = null;
-    if (resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    } else {
-      setCanResend(true);
-    }
-    return () => clearInterval(interval);
-  }, [resendTimer]);
-
-  const handleDispatchOTP = async (targetEmail?: string) => {
-    const mailToUse = targetEmail || email;
-    if (!validateEmailFormat(mailToUse)) return;
-
-    setIsSendingOTP(true);
-    setError('');
-    setInfoMessage('');
-
-    try {
-      const res = await sendOTP(mailToUse);
-      if (res.success) {
-        setInfoMessage(res.message || `Verification code sent to ${mailToUse}`);
-        if (res.previewUrl) setPreviewUrl(res.previewUrl);
-        setResendTimer(60);
-        setCanResend(false);
-      } else {
-        setError(res.error || 'Failed to dispatch verification code to email.');
-      }
-    } catch (err) {
-      setError('Connection error while requesting OTP email.');
-    } finally {
-      setIsSendingOTP(false);
-    }
-  };
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!code || code.length !== 6) {
-      setError('Please enter a 6-digit numeric verification code.');
-      return;
-    }
-
-    setError('');
-    setIsLoading(true);
-
-    try {
-      const res = await verifyEmail(code);
-      if (res.success) {
-        const targetRole = user?.role || 'PATIENT';
-        const dashboardRoutes: Record<UserRole, string> = {
-          PATIENT: '/patient/dashboard',
-          DOCTOR: '/doctor/dashboard',
-          PHARMACY: '/pharmacy/dashboard',
-          ADMIN: '/admin/dashboard',
-          AMBULANCE_PARTNER: '/ambulance/dashboard'
-        };
-        navigate(dashboardRoutes[targetRole]);
-      } else {
-        setError(res.error || 'Invalid or expired 6-digit OTP code.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred during verification.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - var(--header-height) - 80px)', padding: 'var(--space-md)' }}>
-      <Card title={
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', width: '100%' }}>
-          <BrandLogo size="lg" />
-          <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
-            Real Email OTP Verification
-          </span>
-        </div>
-      } style={{ maxWidth: '440px', width: '100%', borderRadius: 'var(--radius-xl)', padding: '28px' }}>
-
-        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '18px', alignItems: 'center' }}>
-          <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'rgba(2, 132, 199, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Shield size={26} style={{ margin: 'auto' }} />
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>Check Your Email Inbox</h3>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '6px', lineHeight: '1.4' }}>
-              We have dispatched a 6-digit security code to your email. Enter the code below to complete account verification.
-            </p>
-          </div>
-
-          {/* Email Address & Format Validation Warning */}
-          <div style={{ width: '100%' }}>
-            <Input 
-              label="Recipient Email Address"
-              type="email"
-              placeholder="name@domain.com"
-              icon={<Mail size={16} />}
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                validateEmailFormat(e.target.value);
-              }}
-              required
-            />
-            {emailWarning && (
-              <div style={{ color: '#dc2626', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, marginTop: '6px' }}>
-                {emailWarning}
-              </div>
-            )}
-          </div>
-
-          {/* Messages & Errors */}
-          {error && (
-            <div style={{ width: '100%', backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', padding: '10px 14px', borderRadius: 'var(--radius-md)', color: 'var(--error)', fontSize: '0.84rem', fontWeight: 600 }}>
-              {error}
-            </div>
-          )}
-
-          {infoMessage && (
-            <div style={{ width: '100%', backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--secondary)', padding: '10px 14px', borderRadius: 'var(--radius-md)', color: 'var(--secondary)', fontSize: '0.84rem', fontWeight: 600, textAlign: 'center' }}>
-              {infoMessage}
-            </div>
-          )}
-
-          {/* Live Ethereal Email Preview Button (For Instant Test Inspection) */}
-          {previewUrl && (
-            <a 
-              href={previewUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#e0f2fe', color: '#0369a1', padding: '8px 14px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700, textDecoration: 'none' }}
-            >
-              ✉️ Open Sent Email in Browser Preview
-            </a>
-          )}
-
-          {/* 6-Digit OTP Code Input */}
-          <div style={{ width: '100%' }}>
-            <Input 
-              label="6-Digit Verification Code"
-              placeholder="• • • • • •"
-              style={{ textAlign: 'center', letterSpacing: '10px', fontSize: '1.3rem', fontWeight: 800 }}
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-              required
-            />
-          </div>
-
-          <Button type="submit" isLoading={isLoading} fullWidth style={{ height: '46px', fontWeight: 800, fontSize: '0.96rem' }}>
-            Verify OTP Code
-          </Button>
-
-          {/* Resend OTP with Countdown Timer */}
-          <div style={{ textAlign: 'center', marginTop: '4px' }}>
-            {canResend ? (
-              <button 
-                type="button" 
-                onClick={() => handleDispatchOTP()}
-                disabled={isSendingOTP}
-                style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 800, cursor: 'pointer', fontSize: '0.86rem', textDecoration: 'underline' }}
-              >
-                {isSendingOTP ? 'Dispatching Email...' : 'Resend Verification Code'}
-              </button>
-            ) : (
-              <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-                Resend OTP in <strong>{resendTimer}s</strong>
-              </span>
-            )}
-          </div>
-        </form>
-      </Card>
-    </div>
-  );
+  return <Signup />;
 };
 
-// --- FORGOT PASSWORD VIEW ---
 export const ForgotPassword: React.FC = () => {
   const { resetPassword } = useAuth();
   const [email, setEmail] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setError('');
-    setIsLoading(true);
-
-    try {
-      const res = await resetPassword(email);
-      if (res.success) {
-        setSuccess(true);
-      } else {
-        setError(res.error || 'Failed.');
-      }
-    } catch (e) {
-      setError('An error occurred.');
-    } finally {
-      setIsLoading(false);
+    setMsg('');
+    const res = await resetPassword(email);
+    setLoading(false);
+    if (res.success) {
+      setMsg('Password reset instructions have been sent to your email.');
+    } else {
+      setError(res.error || 'Password reset request failed.');
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - var(--header-height) - 80px)', padding: 'var(--space-md)' }}>
-      <Card title={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', width: '100%' }}><BrandLogo size="lg" /><span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>Reset Password</span></div>} style={{ maxWidth: '420px', width: '100%', borderRadius: 'var(--radius-xl)' }}>
-        {success ? (
-          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--secondary-light)', color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Check size={24} style={{ margin: 'auto' }} />
-            </div>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Link Dispatched</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-                Check your email. We have sent instructions to reset your password if your account exists.
-              </p>
-            </div>
-            <Link to="/login" style={{ fontSize: '0.9rem', fontWeight: 600, marginTop: '8px' }}>Back to Login</Link>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
-              Enter the email address associated with your JIVEXA account, and we will dispatch a recovery link.
-            </p>
-
-            {error && (
-              <div style={{ backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', padding: '10px 14px', borderRadius: 'var(--radius-sm)', color: 'var(--error)', fontSize: '0.82rem', fontWeight: 500 }}>
-                {error}
-              </div>
-            )}
-
-            <Input 
-              label="Email Address" 
-              type="email" 
-              placeholder="mayank@jivexa.in" 
-              icon={<Mail size={16} />}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <Button type="submit" isLoading={isLoading} fullWidth>Send Reset Link</Button>
-
-            <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-              <Link to="/login" style={{ fontWeight: 600 }}>Return to Login</Link>
-            </div>
-          </form>
-        )}
+    <div style={{ maxWidth: '420px', margin: '40px auto', padding: '0 20px' }}>
+      <Card title="Reset Account Password">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {msg && <div style={{ color: '#15803d', backgroundColor: '#dcfce7', padding: '10px 14px', borderRadius: '10px', fontSize: '0.86rem', fontWeight: 700 }}>{msg}</div>}
+          {error && <div style={{ color: 'var(--error)', backgroundColor: 'var(--error-light)', padding: '10px 14px', borderRadius: '10px', fontSize: '0.86rem', fontWeight: 600 }}>{error}</div>}
+          <Input label="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Button type="submit" isLoading={loading} style={{ borderRadius: '12px', fontWeight: 800 }}>Send Reset Link</Button>
+        </form>
       </Card>
     </div>
   );

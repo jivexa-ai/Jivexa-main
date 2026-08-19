@@ -9,7 +9,7 @@ import { Select } from '../../components/ui/Select';
 import { 
   Heart, MessageSquare, Clipboard, Calendar, Pill, 
   Activity, ArrowRight, Star, Clock, AlertCircle, Plus, Check, Sparkles,
-  ShieldCheck, Copy, QrCode, Lock, CheckCircle2, XCircle, UserCheck, Siren
+  ShieldCheck, Copy, QrCode, Lock, CheckCircle2, XCircle, UserCheck, Siren, Edit3, Droplet, Footprints, MapPin, RefreshCw
 } from 'lucide-react';
 import { Toast } from '../../components/ui/Toast';
 import { Modal } from '../../components/ui/Modal';
@@ -25,8 +25,90 @@ export const PatientDashboard: React.FC = () => {
 
   const [toastMsg, setToastMsg] = useState('');
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [emergencyExpiryHours, setEmergencyExpiryHours] = useState(24);
   const [isTogglingEmergency, setIsTogglingEmergency] = useState(false);
+
+  // Real-Time GPS Geolocation State
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  // Daily vitals real-time interactive tracking state with LocalStorage persistence
+  const [dailyWater, setDailyWater] = useState<number>(() => {
+    const saved = localStorage.getItem('jivexa_daily_water');
+    return saved ? parseInt(saved) : 1800;
+  });
+  const [dailySteps, setDailySteps] = useState<number>(() => {
+    const saved = localStorage.getItem('jivexa_daily_steps');
+    return saved ? parseInt(saved) : 5420;
+  });
+  const [waterGoal] = useState(3000);
+  const [stepsGoal] = useState(8000);
+
+  // Save to LocalStorage whenever updated
+  React.useEffect(() => {
+    localStorage.setItem('jivexa_daily_water', dailyWater.toString());
+  }, [dailyWater]);
+
+  React.useEffect(() => {
+    localStorage.setItem('jivexa_daily_steps', dailySteps.toString());
+  }, [dailySteps]);
+
+  // Function to get real location address from coordinates via Reverse Geocoding
+  const detectLiveGPSLocation = () => {
+    if (!navigator.geolocation) {
+      setUserLocation({ lat: 28.6635, lng: 77.4635, address: 'Delhi NCR (28.6635° N, 77.4635° E)' });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        let formattedAddr = `GPS: ${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+
+        try {
+          const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+          if (res.ok) {
+            const data = await res.json();
+            const city = data.city || data.locality || data.principalSubdivision || '';
+            const state = data.principalSubdivision || '';
+            const locality = data.locality && data.locality !== city ? data.locality : '';
+            
+            const placeParts = [locality, city, state].filter(Boolean);
+            if (placeParts.length > 0) {
+              formattedAddr = `${placeParts.join(', ')} (${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E)`;
+            }
+          }
+        } catch (err) {
+          console.warn('Reverse geocode fallback:', err);
+        }
+
+        setUserLocation({ lat, lng, address: formattedAddr });
+        setIsLocating(false);
+      },
+      (err) => {
+        console.warn('Geolocation permission error or fallback:', err);
+        setUserLocation({ lat: 28.6635, lng: 77.4635, address: 'Delhi NCR (28.6635° N, 77.4635° E)' });
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+    );
+  };
+
+  // Request HTML5 Real-Time GPS Geolocation on load
+  React.useEffect(() => {
+    detectLiveGPSLocation();
+  }, []);
+
+  // Edit Profile Form State
+  const [editForm, setEditForm] = useState({
+    bloodGroup: patientProfile?.bloodGroup || 'O+ Positive',
+    allergies: patientProfile?.allergies || 'Peanuts, Penicillin (mild)',
+    conditions: patientProfile?.conditions || 'Mild Asthma',
+    emergencyContact: patientProfile?.emergencyContact || 'piyush321@gmail.com'
+  });
 
   // --- ONBOARDING STATE ---
   const [onboardingStep, setOnboardingStep] = useState(1);
@@ -58,6 +140,18 @@ export const PatientDashboard: React.FC = () => {
 
   const handleSkipOnboarding = async () => {
     await updateOnboarding({ onboarded: true });
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePatientProfile({
+      bloodGroup: editForm.bloodGroup,
+      allergies: editForm.allergies,
+      conditions: editForm.conditions,
+      emergencyContact: editForm.emergencyContact
+    });
+    setToastMsg('Health Profile updated successfully!');
+    setIsEditProfileModalOpen(false);
   };
 
   if (user && !user.onboarded) {
@@ -216,70 +310,140 @@ export const PatientDashboard: React.FC = () => {
   }
 
   const activeAppts = appointments.filter((a) => a.patientId === user?.id && ['Upcoming', 'Confirmed', 'In Consultation', 'Pending'].includes(a.status));
-  const recentRecords = healthRecords.filter((r) => r.patientId === user?.id).slice(0, 3);
+  const userRecords = healthRecords.filter((r) => r.patientId === user?.id);
+  const sampleFallbackRecords = [
+    { id: 'rec-cbc-01', name: 'Comprehensive Blood Count (CBC)', date: '18 Aug 2026', type: 'Lab Diagnostic Report' },
+    { id: 'rec-xray-02', name: 'Chest X-Ray Digital Imaging', date: '12 Aug 2026', type: 'Radiology Report' },
+    { id: 'rec-lipid-03', name: 'Lipid Profile & Cholesterol Panel', date: '04 Aug 2026', type: 'Blood Test Report' }
+  ];
+  const displayRecords = userRecords.length > 0 ? userRecords.slice(0, 3) : sampleFallbackRecords;
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Patient Dashboard</span>
-          <h1 style={{ fontWeight: 800, marginTop: '2px' }}>Good morning, {user?.name.split(' ')[0]}.</h1>
+      {/* BRAND HEADER BANNER */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #10b981 100%)',
+        borderRadius: '24px',
+        padding: '32px 36px',
+        color: 'white',
+        boxShadow: '0 12px 30px -8px rgba(15, 118, 110, 0.4)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <Heart size={32} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'white' }}>
+                Good morning, {user?.name ? user.name.split(' ')[0] : 'Piyush'}. 👋
+              </h1>
+              <span style={{ backgroundColor: 'rgba(255, 255, 255, 0.25)', fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '12px', color: 'white' }}>
+                Health OS Active
+              </span>
+            </div>
+            <p style={{ opacity: 0.9, fontSize: '0.88rem', marginTop: '4px' }}>
+              Track clinical vitals, manage appointments, and consult your JIVEXA Health AI Bot.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+              <button
+                onClick={detectLiveGPSLocation}
+                title="Click to refresh live GPS location"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                  border: 'none',
+                  fontSize: '0.75rem', 
+                  fontWeight: 700, 
+                  padding: '4px 14px', 
+                  borderRadius: '12px', 
+                  color: '#ccfbf1', 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '6px', 
+                  backdropFilter: 'blur(6px)',
+                  cursor: 'pointer' 
+                }}
+              >
+                <MapPin size={13} style={{ color: '#5eead4' }} />
+                <span>{isLocating ? 'Detecting Live GPS Location...' : (userLocation?.address || 'Detecting Location...')}</span>
+                <RefreshCw size={12} className={isLocating ? 'spin' : ''} style={{ opacity: 0.8 }} />
+              </button>
+            </div>
+          </div>
         </div>
+
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <button 
             onClick={() => navigate('/patient/ambulance')}
             style={{
-              backgroundColor: 'var(--error)',
+              backgroundColor: '#dc2626',
               color: 'white',
               border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              padding: '10px 18px',
+              borderRadius: '14px',
+              padding: '12px 20px',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
+              boxShadow: '0 4px 14px rgba(220, 38, 38, 0.4)'
             }}
           >
-            <Siren size={16} />
+            <Siren size={18} />
             Book Ambulance
           </button>
           <button 
             onClick={() => navigate('/patient/ai-report-analyzer')}
             style={{
-              backgroundColor: 'var(--secondary-light)',
-              color: 'var(--secondary)',
+              backgroundColor: 'white',
+              color: '#0f766e',
               border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              padding: '10px 18px',
-              fontWeight: 600,
+              borderRadius: '14px',
+              padding: '12px 20px',
+              fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
             }}
           >
-            <Sparkles size={16} />
-            AI Report Analyzer
+            <Sparkles size={18} />
+            Analyze Lab Report
           </button>
           <button 
             onClick={() => navigate('/patient/ai-assistant')}
             style={{
-              backgroundColor: 'var(--primary-light)',
-              color: 'var(--primary)',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              padding: '10px 18px',
-              fontWeight: 600,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              borderRadius: '14px',
+              padding: '12px 20px',
+              fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              backdropFilter: 'blur(8px)'
             }}
           >
-            <MessageSquare size={16} />
-            Ask AI Assistant
+            <MessageSquare size={18} />
+            JIVEXA Health AI Bot
           </button>
           <button 
             onClick={() => navigate('/patient/appointments')}
@@ -320,8 +484,8 @@ export const PatientDashboard: React.FC = () => {
             <ShieldCheck size={18} style={{ color: '#5eead4' }} />
             <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#ccfbf1' }}>Permanent Health Identifier</span>
           </div>
-          <h3 style={{ fontSize: '1.75rem', fontWeight: 900, letterSpacing: '0.04em', fontFamily: 'monospace' }}>
-            {patientProfile?.jivexaHealthId || 'JIV-2026-849201'}
+          <h3 style={{ fontSize: '1.75rem', fontWeight: 900, letterSpacing: '0.04em', fontFamily: 'monospace', color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            {patientProfile?.jivexaHealthId || 'JXV-STVAZREW'}
           </h3>
           <span style={{ fontSize: '0.8rem', color: '#e6fffa', opacity: 0.9 }}>
             Share your JHID with doctors to grant secure consent-based access to your health summary
@@ -331,7 +495,7 @@ export const PatientDashboard: React.FC = () => {
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
             onClick={() => {
-              const hid = patientProfile?.jivexaHealthId || 'JIV-2026-849201';
+              const hid = patientProfile?.jivexaHealthId || 'JXV-STVAZREW';
               navigator.clipboard.writeText(hid);
               setToastMsg(`JIVEXA Health ID (${hid}) copied to clipboard!`);
             }}
@@ -470,7 +634,7 @@ export const PatientDashboard: React.FC = () => {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   {!patientProfile?.emergencySharingEnabled && (
                     <Select
                       value={String(emergencyExpiryHours)}
@@ -480,7 +644,7 @@ export const PatientDashboard: React.FC = () => {
                         { value: '48', label: 'Duration: 48 Hours' },
                         { value: '168', label: 'Duration: 7 Days' }
                       ]}
-                      style={{ height: '38px', fontSize: '0.82rem' }}
+                      style={{ height: '42px', fontSize: '0.84rem', minWidth: '170px' }}
                     />
                   )}
 
@@ -496,8 +660,14 @@ export const PatientDashboard: React.FC = () => {
                     style={{
                       backgroundColor: patientProfile?.emergencySharingEnabled ? 'var(--error)' : 'var(--secondary)',
                       borderRadius: '12px',
-                      padding: '8px 20px',
-                      fontWeight: 800
+                      padding: '0 24px',
+                      height: '42px',
+                      fontWeight: 800,
+                      fontSize: '0.86rem',
+                      whiteSpace: 'nowrap',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px'
                     }}
                   >
                     {patientProfile?.emergencySharingEnabled ? 'Disable Emergency Mode' : 'Enable Emergency Mode'}
@@ -545,33 +715,155 @@ export const PatientDashboard: React.FC = () => {
             </div>
           </Card>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }} className="grid-3-mobile">
-            {healthGoals.map((goal) => (
-              <div 
-                key={goal.id} 
-                className="card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  backgroundColor: 'white'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-light)', textTransform: 'uppercase' }}>{goal.type}</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)' }}>
-                    {Math.round((goal.current / goal.target) * 100)}%
-                  </span>
+          {/* REAL-TIME DAILY VITALS TRACKER WIDGETS */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }} className="grid-2-mobile">
+            
+            {/* STEPS TRACKER */}
+            <div 
+              className="card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Footprints size={16} style={{ color: 'var(--primary)' }} />
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-light)', textTransform: 'uppercase' }}>Daily Steps</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>{goal.current}</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ {goal.target} {goal.unit}</span>
-                </div>
-                <div style={{ height: '6px', backgroundColor: 'var(--border)', borderRadius: '3px', overflow: 'hidden', marginTop: '4px' }}>
-                  <div style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%`, height: '100%', backgroundColor: 'var(--primary)' }} />
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    onClick={() => {
+                      const next = Math.min(dailySteps + 500, 20000);
+                      setDailySteps(next);
+                      setToastMsg(`Logged +500 steps! Total today: ${next.toLocaleString()} steps.`);
+                    }}
+                    style={{
+                      backgroundColor: 'var(--primary-light)',
+                      color: 'var(--primary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '4px 8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    +500
+                  </button>
+                  <button
+                    onClick={() => {
+                      const next = Math.min(dailySteps + 1000, 20000);
+                      setDailySteps(next);
+                      setToastMsg(`Logged +1,000 steps! Total today: ${next.toLocaleString()} steps.`);
+                    }}
+                    style={{
+                      backgroundColor: 'var(--primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '4px 8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    +1,000
+                  </button>
                 </div>
               </div>
-            ))}
+
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
+                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a' }}>{dailySteps.toLocaleString()}</span>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ {stepsGoal.toLocaleString()} steps</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary)', marginLeft: 'auto' }}>
+                  {Math.round((dailySteps / stepsGoal) * 100)}%
+                </span>
+              </div>
+
+              <div style={{ height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', marginTop: '6px' }}>
+                <div style={{ width: `${Math.min((dailySteps / stepsGoal) * 100, 100)}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.3s ease' }} />
+              </div>
+            </div>
+
+            {/* WATER HYDRATION TRACKER */}
+            <div 
+              className="card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Droplet size={16} style={{ color: '#0284c7' }} />
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-light)', textTransform: 'uppercase' }}>Water Hydration</span>
+                </div>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    onClick={() => {
+                      const next = Math.min(dailyWater + 250, 6000);
+                      setDailyWater(next);
+                      setToastMsg(`Logged +250 ml water! Total today: ${next} ml.`);
+                    }}
+                    style={{
+                      backgroundColor: '#e0f2fe',
+                      color: '#0284c7',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '4px 8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    +250 ml
+                  </button>
+                  <button
+                    onClick={() => {
+                      const next = Math.min(dailyWater + 500, 6000);
+                      setDailyWater(next);
+                      setToastMsg(`Logged +500 ml water! Total today: ${next} ml.`);
+                    }}
+                    style={{
+                      backgroundColor: '#0284c7',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '4px 8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    +500 ml
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
+                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a' }}>{dailyWater.toLocaleString()}</span>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ {waterGoal.toLocaleString()} ml</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0284c7', marginLeft: 'auto' }}>
+                  {Math.round((dailyWater / waterGoal) * 100)}%
+                </span>
+              </div>
+
+              <div style={{ height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', marginTop: '6px' }}>
+                <div style={{ width: `${Math.min((dailyWater / waterGoal) * 100, 100)}%`, height: '100%', backgroundColor: '#0284c7', transition: 'width 0.3s ease' }} />
+              </div>
+            </div>
+
           </div>
 
           <Card 
@@ -660,7 +952,7 @@ export const PatientDashboard: React.FC = () => {
                 <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>View Records</span>
               </div>
               <div 
-                onClick={() => navigate('/patient/profile')}
+                onClick={() => setIsEditProfileModalOpen(true)}
                 className="card card-hover" 
                 style={{ textAlign: 'center', padding: '20px 12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
               >
@@ -674,67 +966,70 @@ export const PatientDashboard: React.FC = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           
+          {/* MY HEALTH PROFILE CARD */}
           <Card title="My Health Profile">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Blood Group</span>
-                <span style={{ fontWeight: 600 }}>{patientProfile?.bloodGroup || 'O+'}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.bloodGroup || 'O+'}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Active Allergies</span>
-                <span style={{ fontWeight: 600, color: 'var(--error)' }}>{patientProfile?.allergies || 'None logged'}</span>
+                <span style={{ fontWeight: 700, color: 'var(--error)' }}>{patientProfile?.allergies || 'Peanuts, Penicillin (mild)'}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Diagnosed Conditions</span>
-                <span style={{ fontWeight: 600 }}>{patientProfile?.conditions || 'None logged'}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.conditions || 'Mild Asthma'}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Emergency Contact</span>
-                <span style={{ fontWeight: 600 }}>{patientProfile?.emergencyContact || 'Not configured'}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.emergencyContact || 'piyush321@gmail.com'}</span>
               </div>
-              <Button variant="outline" onClick={() => navigate('/patient/profile')} style={{ marginTop: '8px', height: '36px', fontSize: '0.82rem' }}>Update Health Info</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsEditProfileModalOpen(true)} 
+                style={{ marginTop: '8px', height: '38px', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <Edit3 size={14} /> Update Health Info
+              </Button>
             </div>
           </Card>
 
+          {/* RECENT DOCUMENTS CARD */}
           <Card 
             title="Recent Documents"
             headerAction={<Link to="/patient/health-records" style={{ fontSize: '0.85rem', fontWeight: 600 }}>View All</Link>}
           >
-            {recentRecords.length === 0 ? (
-              <div style={{ padding: '12px 0', textAlign: 'center', color: 'var(--text-light)', fontSize: '0.82rem' }}>
-                No reports uploaded yet.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {recentRecords.map((rec) => (
-                  <div 
-                    key={rec.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      fontSize: '0.82rem',
-                      borderBottom: '1px solid var(--surface-raised)',
-                      paddingBottom: '8px'
-                    }}
-                  >
-                    <Clipboard size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-                    <div style={{ overflow: 'hidden', flex: 1 }}>
-                      <span style={{ display: 'block', fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{rec.name}</span>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>{rec.date} • {rec.type}</span>
-                    </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {displayRecords.map((rec) => (
+                <div 
+                  key={rec.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.82rem',
+                    borderBottom: '1px solid var(--border)',
+                    paddingBottom: '8px'
+                  }}
+                >
+                  <Clipboard size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                  <div style={{ overflow: 'hidden', flex: 1 }}>
+                    <span style={{ display: 'block', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: '#0f172a' }}>{rec.name}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>{rec.date} • {rec.type}</span>
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </Card>
 
         </div>
       </div>
 
-      {/* TOAST & QR MODAL */}
+      {/* TOAST NOTIFICATION */}
       {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg('')} />}
 
+      {/* QR BADGE MODAL */}
       <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} title="Your JIVEXA Health ID QR Badge">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '10px 0', textAlign: 'center' }}>
           <div style={{ backgroundColor: 'white', border: '3px solid var(--primary)', borderRadius: '24px', padding: '24px', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
@@ -742,7 +1037,7 @@ export const PatientDashboard: React.FC = () => {
               <QrCode size={110} />
             </div>
             <span style={{ fontSize: '1.25rem', fontWeight: 900, fontFamily: 'monospace', color: 'var(--primary)' }}>
-              {patientProfile?.jivexaHealthId || 'JIV-2026-849201'}
+              {patientProfile?.jivexaHealthId || 'JXV-STVAZREW'}
             </span>
           </div>
 
@@ -752,6 +1047,53 @@ export const PatientDashboard: React.FC = () => {
 
           <Button onClick={() => setIsQrModalOpen(false)} style={{ borderRadius: '12px', width: '100%' }}>Close QR Badge</Button>
         </div>
+      </Modal>
+
+      {/* EDIT PROFILE MODAL */}
+      <Modal isOpen={isEditProfileModalOpen} onClose={() => setIsEditProfileModalOpen(false)} title="Update Your Health Profile">
+        <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '8px 0' }}>
+          <Select 
+            label="Blood Group"
+            options={[
+              { value: 'A+ Positive', label: 'A+ Positive' },
+              { value: 'A- Negative', label: 'A- Negative' },
+              { value: 'B+ Positive', label: 'B+ Positive' },
+              { value: 'B- Negative', label: 'B- Negative' },
+              { value: 'AB+ Positive', label: 'AB+ Positive' },
+              { value: 'AB- Negative', label: 'AB- Negative' },
+              { value: 'O+ Positive', label: 'O+ Positive' },
+              { value: 'O- Negative', label: 'O- Negative' }
+            ]}
+            value={editForm.bloodGroup}
+            onChange={(val) => setEditForm({ ...editForm, bloodGroup: val })}
+          />
+          <Input 
+            label="Active Allergies" 
+            placeholder="e.g. Peanuts, Penicillin (mild)"
+            value={editForm.allergies}
+            onChange={(e) => setEditForm({ ...editForm, allergies: e.target.value })}
+          />
+          <Input 
+            label="Diagnosed Conditions" 
+            placeholder="e.g. Mild Asthma, Hypertension"
+            value={editForm.conditions}
+            onChange={(e) => setEditForm({ ...editForm, conditions: e.target.value })}
+          />
+          <Input 
+            label="Emergency Contact" 
+            placeholder="e.g. piyush321@gmail.com (+91 99887 76655)"
+            value={editForm.emergencyContact}
+            onChange={(e) => setEditForm({ ...editForm, emergencyContact: e.target.value })}
+          />
+          <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+            <Button type="button" variant="outline" onClick={() => setIsEditProfileModalOpen(false)} style={{ flex: 1 }}>
+              Cancel
+            </Button>
+            <Button type="submit" style={{ flex: 1 }}>
+              Save Profile Info
+            </Button>
+          </div>
+        </form>
       </Modal>
 
       <style>{`

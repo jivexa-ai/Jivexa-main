@@ -1,31 +1,50 @@
-
 import User from "../model/userSchema.js";
 import jwt from "jsonwebtoken";
 
 const authUserMiddlewares = async (req, res, next) => {
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({
-                message: "Please login first"
-            });
-        }
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
+  try {
+    let token = req.cookies?.token;
 
-        const existingUser = await User.findById(payload.id);
-
-        if (!existingUser) {
-            return res.status(404).json({
-                message: "User doesn't exist"
-            });
-        }
-         req.user = existingUser;
-        next();
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Internal server error"
-        })
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
     }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first. No authentication token provided."
+      });
+    }
+
+    const secret = process.env.JWT_SECRET || "jivexa_super_secret_jwt_key_2026_secure!";
+    let payload;
+    try {
+      payload = jwt.verify(token, secret);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token. Please login again."
+      });
+    }
+
+    const existingUser = await User.findById(payload.id);
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User account not found"
+      });
+    }
+
+    req.user = existingUser;
+    next();
+  } catch (error) {
+    console.error("[Auth Middleware Error]:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error during authentication"
+    });
+  }
 };
+
 export default authUserMiddlewares;
