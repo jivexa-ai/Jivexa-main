@@ -1,161 +1,107 @@
 # 🩺 JIVEXA Health OS
 
 > **Enterprise-Grade Digital Health Platform & Operating System**  
-> *Empowering Patients, Doctors, Pharmacists, Ambulance Partners, and Admins with seamless healthcare workflow & production authentication.*
+> *Empowering Patients, Doctors, Pharmacists, Ambulance Partners, and Admins with seamless healthcare workflow, live AI triage, and production authentication.*
 
 ---
 
-## 🌟 Features & Platform Highlights
+## 🌟 Key Features & Platform Highlights
 
-- **🔒 Production Authentication System**:
-  - Strict input validation powered by **Zod** (Password complexity & normalized email format checks).
-  - Password hashing with **Bcrypt (12 salt rounds)**.
-  - **Dual Token Strategy**: HTTP-Only secure cookies + `Authorization: Bearer <token>` REST headers.
-  - Optional **Nodemailer OTP Email Verification** service with Ethereal preview support.
-- **👥 Multi-Role Workspace Dashboards**:
-  - **PATIENT**: Digital Health ID lookup, appointments, medical records & AI triage.
-  - **DOCTOR**: Patient queue, consultations, and digital prescription issuance.
-  - **PHARMACY**: Prescription verification and order fulfillment.
-  - **AMBULANCE PARTNER**: Emergency dispatch radar and location mapping.
-  - **ADMIN**: Platform telemetry and user management.
-- **⚡ Modern Tech Stack**:
-  - **Frontend**: React 19 + TypeScript + Vite + Lucide Icons + React Router v7.
-  - **Backend**: Node.js + Express + MongoDB (Mongoose) + Zod + Cookie Parser + Nodemailer.
+### 🤖 JIVEXA Health AI Bot
+- **Strict Health & Clinical Domain Guardrail**: Specialized exclusively in human health, medical symptoms, diseases, pharmacology, prescription guidance, and JIVEXA platform navigation.
+- **Zero-Tolerance Domain Rejection**: Non-health questions (e.g. coding, math, general trivia, politics, sports, weather) return a direct, polite refusal message: *"Sorry, I am JIVEXA Health AI Bot. I can only assist you with health, medical, and medicine-related issues."*
+- **Multi-Model Groq Live AI Server Failover**: Seamlessly iterates across active production AI models (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `groq/compound-mini`) for instantaneous response times and 100% uptime.
+- **1,000 Free Token Quota (6-Hour Reset Window)**: Users get 1,000 free tokens every 6 hours with a live progress badge (`⚡ Tokens: 0 / 1,000`).
+- **100% Free & Unlimited JIVEXA Platform Guide**: Queries about JIVEXA website navigation, doctor booking (`/doctors`), pharmacy orders (`/medicines`), and emergency ambulance dispatch (`/ambulance`) consume **0 tokens** and remain 100% free forever with creative ASCII flowcharts.
+
+### 📄 AI PDF Report Analyzer
+- **Medical Lab Report Analysis**: Extract clinical values, blood counts, liver enzymes, and diagnostic findings from uploaded lab PDFs and images.
+- **24-Hour Quota (Max 5 PDFs / 24 Hours)**: Rate limited to 5 PDF report uploads per 24-hour window with clean reset notifications and zero paywall popups.
+
+### 🔒 Production Authentication & Validation
+- **Field-Level Zod Validation**: Strict credential checks on login and signup:
+  - **Full Name**: Minimum 3 characters.
+  - **Email Address**: Normalized, valid email format check (`user@domain.com`).
+  - **Password Complexity**: Minimum 8 characters including uppercase (A-Z), lowercase (a-z), number (0-9), and special symbol (@!#$).
+  - **Red Error Messages**: Direct field-level red error rendering under affected input fields for unregistered emails or invalid passwords.
+- **Cross-Device Network Error Handling (`isConnectionError`)**: Gracefully handles network connection states to ensure smooth registration across mobile phones, tablets, and remote laptops.
+
+### 👥 Multi-Role Workspace Dashboards
+- **PATIENT**: Digital Health ID lookup, appointments, medical records & live AI triage.
+- **DOCTOR**: Patient queue, consultations, clinical notes, and digital prescription issuance.
+- **PHARMACY**: Prescription verification, stock sync, and medicine order fulfillment.
+- **AMBULANCE PARTNER**: 24/7 Emergency dispatch radar and live GPS fleet mapping.
+- **ADMIN**: Platform telemetry, doctor verification onboarding, and user management.
 
 ---
 
-## 💻 How to Run JIVEXA Health OS on Your Local PC
+## ⚡ Tech Stack
 
-Follow these step-by-step instructions to get the platform running locally on any Windows, macOS, or Linux machine.
+- **Frontend**: React 19 + TypeScript + Vite + Lucide Icons + React Router v7 + Tailwind CSS / Custom CSS Modules.
+- **AI Engine**: Live Groq AI Server API with Multi-Model Failover (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`).
+- **Backend**: Node.js + Express + MongoDB (Mongoose) + Zod + Cookie Parser + Nodemailer OTP Service.
+- **Deployment**: Vercel Production CLI (`https://frontend-beryl-two-18.vercel.app`).
+
+---
+
+## 💻 How to Run JIVEXA Health OS Locally
 
 ### 📋 Prerequisites
-
-Before starting, ensure you have the following installed on your machine:
-- **Node.js** (v18.0.0 or higher): [Download Node.js](https://nodejs.org/)
-- **npm** (v9.0.0 or higher) - comes with Node.js
+- **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
+- **npm**: v9.0.0 or higher
 - **Git**: [Download Git](https://git-scm.com/)
 
 ---
 
 ### Step 1: Clone the Repository
 
-Open your terminal or command prompt and clone the repository:
-
 ```bash
-git clone https://github.com/PiyushTiwari2051/Jivexa-Health.git
-cd Jivexa-Health
+git clone https://github.com/jivexa-ai/Jivexa-main.git
+cd Jivexa-main
 ```
 
 ---
 
-### Step 2: Configure & Start the Backend Server
+### Step 2: Start the Backend Server
 
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env` file inside the `backend` folder (or copy from `.env.example`):
-   ```env
-   PORT=4000
-   MONGO_URI=mongodb+srv://your_mongo_user:your_password@cluster0.mongodb.net/jivexa_health_db?retryWrites=true&w=majority
-   JWT_SECRET=jivexa_health_jwt_secret_key_2026_super_secure_auth_token_string
-   NODE_ENV=development
-   ```
-   > *Note: If MongoDB is not connected, the server automatically operates in high-performance memory fallback mode for local development.*
-
-4. Start the backend development server:
-   ```bash
-   npm run dev
-   ```
-   *The backend will start on **`http://localhost:4000`**.*
+```bash
+cd backend
+npm install
+npm run dev
+```
+*The backend server starts on **`http://localhost:4000`**.*
 
 ---
 
-### Step 3: Configure & Start the Frontend Web Application
+### Step 3: Start the Frontend Application
 
-1. Open a **new terminal tab/window** and navigate to the `Frontend` directory:
-   ```bash
-   cd Frontend
-   ```
+Open a new terminal window:
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   *The frontend application will start on **`http://localhost:5173`**.*
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+*The frontend application starts on **`http://localhost:5173`**.*
 
 ---
 
 ### Step 4: Open in Your Browser
 
-Launch your web browser and navigate to:
-```text
-http://localhost:5173
-```
+Navigate to **`http://localhost:5173`** in your browser.
 
 ---
 
-## 🛠️ API Routes Overview
+## 🌐 Live Production Deployment
 
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/signup` | Register a new user with Zod validation | ❌ Public |
-| `POST` | `/api/auth/login` | Authenticate user & issue JWT/Cookie | ❌ Public |
-| `POST` | `/api/auth/logout` | Clear HTTP-only session cookie | ❌ Public |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile & usage | ✅ Private |
-| `PUT` | `/api/auth/profile` | Update profile information | ✅ Private |
-| `POST` | `/api/auth/send-otp` | Dispatch 6-digit OTP via Nodemailer | ❌ Public |
-| `POST` | `/api/auth/verify-otp` | Validate 6-digit email OTP code | ❌ Public |
-| `GET` | `/api/health` | System health check endpoint | ❌ Public |
-
----
-
-## 📂 Project Directory Structure
-
-```text
-Jivexa-Health/
-├── backend/                  # Node.js + Express Backend API
-│   ├── src/
-│   │   ├── config/          # Database configuration
-│   │   ├── controllers/     # Authentication & Health logic
-│   │   ├── middleware/      # Auth & Role guards
-│   │   ├── models/          # Mongoose User & Health schemas
-│   │   ├── routes/          # Express API routing
-│   │   ├── services/        # Nodemailer email service
-│   │   ├── validators/      # Zod validation schemas
-│   │   └── server.js        # Main Express server entry point
-│   └── package.json
-│
-├── Frontend/                 # React 19 + TypeScript + Vite Frontend
-│   ├── src/
-│   │   ├── components/      # UI components & Layouts
-│   │   ├── context/         # AuthContext & State management
-│   │   ├── pages/           # Auth & Role-based Dashboards
-│   │   ├── services/        # API client integration
-│   │   ├── App.tsx          # Main React Application
-│   │   └── main.tsx         # React entry point
-│   └── package.json
-│
-├── .gitignore
-└── README.md
-```
+- 🌐 **Live Vercel Site**: **[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)**
+- 🐙 **GitHub Repository**: **[https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)**
 
 ---
 
 ## 📝 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` for details.
 
 ---
 
