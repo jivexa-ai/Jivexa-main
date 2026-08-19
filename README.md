@@ -1,5 +1,8 @@
 # 🩺 JIVEXA Health OS
 
+[![LIVE](https://img.shields.io/badge/🌐_LIVE-Launch_JIVEXA_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
+[![GitHub](https://img.shields.io/badge/🐙_GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jivexa-ai/Jivexa-main)
+
 > **Enterprise-Grade Digital Health Platform & Operating System**  
 > *Empowering Patients, Doctors, Pharmacists, Ambulance Partners, and Admins with seamless healthcare workflow, live AI triage, and production authentication.*
 
@@ -93,6 +96,8 @@ Navigate to **`http://localhost:5173`** in your browser.
 ---
 
 ## 🌐 Live Production Deployment
+
+[![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
 
 - 🌐 **Live Vercel Site**: **[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)**
 - 🐙 **GitHub Repository**: **[https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)**
