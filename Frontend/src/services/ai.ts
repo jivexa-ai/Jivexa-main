@@ -310,43 +310,21 @@ export const isHealthOrMedicalQuery = (query: string): boolean => {
   // 1. JIVEXA website queries -> Always true
   if (isJivexaWebsiteQuery(q)) return true;
 
-  // 2. Health & Medical Keywords
-  const healthKeywords = [
-    'health', 'doctor', 'medicine', 'pain', 'fever', 'cough', 'cold', 'flu', 'symptom',
-    'disease', 'infection', 'blood', 'heart', 'brain', 'lung', 'stomach', 'liver', 'kidney',
-    'cancer', 'diabetes', 'bp', 'pressure', 'cholesterol', 'thyroid', 'hospital', 'clinic',
-    'rx', 'prescription', 'dosage', 'side effect', 'tablet', 'capsule', 'syrup', 'injection',
-    'vaccine', 'surgery', 'treatment', 'therapy', 'diet', 'nutrition', 'vitamin', 'fitness',
-    'headache', 'vomiting', 'nausea', 'diarrhea', 'allergy', 'asthma', 'skin', 'rash',
-    'mental', 'anxiety', 'depression', 'stress', 'sleep', 'weight', 'body', 'muscle', 'joint',
-    'pregnancy', 'baby', 'child', 'elderly', 'first aid', 'emergency', 'wound', 'burn',
-    'paracetamol', 'ibuprofen', 'aspirin', 'antibiotic', 'antacid', 'antihistamine',
-    'nsaid', 'lab', 'report', 'test', 'cbc', 'scan', 'mri', 'xray', 'ultrasound', 'ecg',
-    'sick', 'ill', 'hurt', 'dizzy', 'fatigue', 'swelling', 'cramp', 'ache', 'triage'
-  ];
-
-  const hasHealthKeyword = healthKeywords.some(k => q.includes(k));
-  if (hasHealthKeyword) return true;
-
-  // 3. Reject non-health keywords
+  // 2. Reject obvious non-health / non-medical queries on client side
   const nonHealthKeywords = [
     'python', 'javascript', 'java', 'c++', 'html', 'css', 'code', 'programming', 'software',
     'game', 'movie', 'song', 'music', 'car', 'bike', 'cricket', 'football', 'match', 'score',
     'politics', 'election', 'president', 'prime minister', 'weather', 'joke', 'riddle',
     'recipe', 'cooking', 'restaurant', 'shopping', 'stock', 'crypto', 'bitcoin', 'math',
     'algebra', 'calculus', 'physics', 'chemistry formula', 'what is c', 'c language',
-    'who is', 'capital of', 'currency of', 'history of', 'who won', 'how to build'
+    'capital of', 'currency of', 'history of', 'who won', 'how to build'
   ];
 
   const hasNonHealthKeyword = nonHealthKeywords.some(k => q.includes(k));
   if (hasNonHealthKeyword) return false;
 
-  // If query is short (e.g. "my head hurts", "feeling weak", "coughing"), allow it
-  const naturalHealthPhrases = ['hurt', 'pain', 'sick', 'weak', 'feel', 'tired', 'ache', 'sore', 'fever', 'cough'];
-  if (naturalHealthPhrases.some(p => q.includes(p))) return true;
-
-  // Default: strict rejection for random non-health text
-  return false;
+  // 3. Allow all health, medical, biochemical, symptom, and diagnostic questions (e.g. "what is lactic acid", "hemoglobin", "CBC", "fever", "paracetamol")
+  return true;
 };
 
 /**
