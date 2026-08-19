@@ -91,10 +91,6 @@ npm run dev
 Navigate to **`http://localhost:5173`** in your browser.
 
 ---
-
-## 🌐 Live Production Deployment
-
-- 🌐 **Live Vercel Site**: **[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)**
 - 🐙 **GitHub Repository**: **[https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)**
 
 ---
