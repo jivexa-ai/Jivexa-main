@@ -321,7 +321,8 @@ export const isHealthOrMedicalQuery = (query: string): boolean => {
     'mental', 'anxiety', 'depression', 'stress', 'sleep', 'weight', 'body', 'muscle', 'joint',
     'pregnancy', 'baby', 'child', 'elderly', 'first aid', 'emergency', 'wound', 'burn',
     'paracetamol', 'ibuprofen', 'aspirin', 'antibiotic', 'antacid', 'antihistamine',
-    'nsaid', 'lab', 'report', 'test', 'cbc', 'scan', 'mri', 'xray', 'ultrasound', 'ecg'
+    'nsaid', 'lab', 'report', 'test', 'cbc', 'scan', 'mri', 'xray', 'ultrasound', 'ecg',
+    'sick', 'ill', 'hurt', 'dizzy', 'fatigue', 'swelling', 'cramp', 'ache', 'triage'
   ];
 
   const hasHealthKeyword = healthKeywords.some(k => q.includes(k));
@@ -333,13 +334,19 @@ export const isHealthOrMedicalQuery = (query: string): boolean => {
     'game', 'movie', 'song', 'music', 'car', 'bike', 'cricket', 'football', 'match', 'score',
     'politics', 'election', 'president', 'prime minister', 'weather', 'joke', 'riddle',
     'recipe', 'cooking', 'restaurant', 'shopping', 'stock', 'crypto', 'bitcoin', 'math',
-    'algebra', 'calculus', 'physics', 'chemistry formula'
+    'algebra', 'calculus', 'physics', 'chemistry formula', 'what is c', 'c language',
+    'who is', 'capital of', 'currency of', 'history of', 'who won', 'how to build'
   ];
 
   const hasNonHealthKeyword = nonHealthKeywords.some(k => q.includes(k));
   if (hasNonHealthKeyword) return false;
 
-  return true;
+  // If query is short (e.g. "my head hurts", "feeling weak", "coughing"), allow it
+  const naturalHealthPhrases = ['hurt', 'pain', 'sick', 'weak', 'feel', 'tired', 'ache', 'sore', 'fever', 'cough'];
+  if (naturalHealthPhrases.some(p => q.includes(p))) return true;
+
+  // Default: strict rejection for random non-health text
+  return false;
 };
 
 /**
@@ -542,17 +549,12 @@ export const streamAIHealthAssistant = async (
             messages: [
               {
                 role: 'system',
-                content: `You are JIVEXA Health AI Bot, a specialized medical, healthcare, and clinical AI bot.
-STRICT RULES:
-1. You ONLY answer queries related to human health, medicine, diseases, medical symptoms, pharmacology, wellness, nutrition, or the JIVEXA Health OS platform.
-2. IF the user asks ANY question outside of health/medicine/JIVEXA (e.g. coding, general trivia, politics, sports, entertainment), politely reply: "Sorry, I am JIVEXA Health AI Bot. I can only assist you with health, medical, and medicine-related issues."
-3. Keep responses concise, clear, and direct (between 80 to 140 words).
-4. Format responses cleanly with markdown bullet points and real-life ASCII flowcharts where helpful.`
+                content: `CRITICAL MANDATE: You are JIVEXA Health AI Bot, a specialized medical and clinical AI bot. You are STRICTLY RESTRICTED to answering ONLY human health, medical, medicine, or JIVEXA Health platform questions. For ANY non-health question (e.g. coding, C language, math, general trivia, politics, sports, entertainment), you MUST ONLY reply with exact text: "Sorry, I am JIVEXA Health AI Bot. I can only assist you with health, medical, and medicine-related issues."`
               },
               ...history.map((h) => ({ role: h.sender === 'user' ? 'user' : 'assistant', content: h.text })),
               { role: 'user', content: query }
             ],
-            temperature: 0.3,
+            temperature: 0.0,
             max_tokens: 350
           })
         });
