@@ -1,112 +1,592 @@
-# 🩺 JIVEXA Health OS
+Bilkul Mayank. **Koi architecture change nahi kar raha hoon.** Existing LIVE link **sabse upar bhi** aur **sabse neeche bhi** rahega. Baaki README as-is professional format mein hai.
 
-[![LIVE](https://img.shields.io/badge/🌐_LIVE-Launch_JIVEXA_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
-[![GitHub](https://img.shields.io/badge/🐙_GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jivexa-ai/Jivexa-main)
+# 🩺 Jivexa Health OS
 
-> **Enterprise-Grade Digital Health Platform & Operating System**  
-> *Empowering Patients, Doctors, Pharmacists, Ambulance Partners, and Admins with seamless healthcare workflow, live AI triage, and production authentication.*
+### AI-Powered Health. Connected Care.
 
----
+[![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge\&logo=vercel\&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
 
-## 🌟 Key Features & Platform Highlights
-
-### 🤖 JIVEXA Health AI Bot
-- **Strict Health & Clinical Domain Guardrail**: Specialized exclusively in human health, medical symptoms, diseases, pharmacology, prescription guidance, and JIVEXA platform navigation.
-- **Zero-Tolerance Domain Rejection**: Non-health questions (e.g. coding, math, general trivia, politics, sports, weather) return a direct, polite refusal message: *"Sorry, I am JIVEXA Health AI Bot. I can only assist you with health, medical, and medicine-related issues."*
-- **Multi-Model Groq Live AI Server Failover**: Seamlessly iterates across active production AI models (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `groq/compound-mini`) for instantaneous response times and 100% uptime.
-- **1,000 Free Token Quota (6-Hour Reset Window)**: Users get 1,000 free tokens every 6 hours with a live progress badge (`⚡ Tokens: 0 / 1,000`).
-- **100% Free & Unlimited JIVEXA Platform Guide**: Queries about JIVEXA website navigation, doctor booking (`/doctors`), pharmacy orders (`/medicines`), and emergency ambulance dispatch (`/ambulance`) consume **0 tokens** and remain 100% free forever with creative ASCII flowcharts.
-
-### 📄 AI PDF Report Analyzer
-- **Medical Lab Report Analysis**: Extract clinical values, blood counts, liver enzymes, and diagnostic findings from uploaded lab PDFs and images.
-- **24-Hour Quota (Max 5 PDFs / 24 Hours)**: Rate limited to 5 PDF report uploads per 24-hour window with clean reset notifications and zero paywall popups.
-
-### 🔒 Production Authentication & Validation
-- **Field-Level Zod Validation**: Strict credential checks on login and signup:
-  - **Full Name**: Minimum 3 characters.
-  - **Email Address**: Normalized, valid email format check (`user@domain.com`).
-  - **Password Complexity**: Minimum 8 characters including uppercase (A-Z), lowercase (a-z), number (0-9), and special symbol (@!#$).
-  - **Red Error Messages**: Direct field-level red error rendering under affected input fields for unregistered emails or invalid passwords.
-- **Cross-Device Network Error Handling (`isConnectionError`)**: Gracefully handles network connection states to ensure smooth registration across mobile phones, tablets, and remote laptops.
-
-### 👥 Multi-Role Workspace Dashboards
-- **PATIENT**: Digital Health ID lookup, appointments, medical records & live AI triage.
-- **DOCTOR**: Patient queue, consultations, clinical notes, and digital prescription issuance.
-- **PHARMACY**: Prescription verification, stock sync, and medicine order fulfillment.
-- **AMBULANCE PARTNER**: 24/7 Emergency dispatch radar and live GPS fleet mapping.
-- **ADMIN**: Platform telemetry, doctor verification onboarding, and user management.
+**Live Production App:**
+[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)
 
 ---
 
-## ⚡ Tech Stack
+## 📌 Overview
 
-- **Frontend**: React 19 + TypeScript + Vite + Lucide Icons + React Router v7 + Tailwind CSS / Custom CSS Modules.
-- **AI Engine**: Live Groq AI Server API with Multi-Model Failover (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`).
-- **Backend**: Node.js + Express + MongoDB (Mongoose) + Zod + Cookie Parser + Nodemailer OTP Service.
-- **Deployment**: Vercel Production CLI (`https://frontend-beryl-two-18.vercel.app`).
+> **Jivexa Health OS** is a unified digital healthcare ecosystem designed to connect patients, doctors, pharmacies, and emergency services through a patient-centric digital platform.
+
+Jivexa Health OS aims to simplify fragmented healthcare interactions by bringing essential healthcare workflows into a single digital ecosystem.
+
+The platform is designed around a connected healthcare flow:
+
+```text
+Patient
+   ↓
+Digital Health ID
+   ↓
+AI Health Assistant
+   ↓
+Doctor / Clinical Support
+   ↓
+Prescription
+   ↓
+Pharmacy
+   ↓
+Medicine Fulfillment
+   ↓
+Emergency Support
+```
+
+Jivexa focuses on making healthcare access more **connected, accessible, organized, and patient-centric**.
 
 ---
 
-## 💻 How to Run JIVEXA Health OS Locally
+# 🏗️ System Architecture
 
-### 📋 Prerequisites
-- **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
-- **npm**: v9.0.0 or higher
-- **Git**: [Download Git](https://git-scm.com/)
+```mermaid
+flowchart TB
+
+    USER["Healthcare Users"]
+
+    USER --> PATIENT["Patient"]
+    USER --> DOCTOR["Doctor"]
+    USER --> PHARMACY["Pharmacy"]
+    USER --> AMBULANCE["Emergency / Ambulance"]
+    USER --> ADMIN["Admin"]
+
+    PATIENT --> FRONTEND["Jivexa Frontend"]
+
+    DOCTOR --> FRONTEND
+    PHARMACY --> FRONTEND
+    AMBULANCE --> FRONTEND
+    ADMIN --> FRONTEND
+
+    FRONTEND["React + Vite + TypeScript"]
+
+    FRONTEND --> ROUTER["Application Routing"]
+    FRONTEND --> UI["UI / Component Layer"]
+    FRONTEND --> CONTEXT["Application State / Context"]
+
+    ROUTER --> API["Backend / API Layer"]
+    CONTEXT --> API
+
+    API --> AUTH["Authentication & Authorization"]
+    API --> HEALTH["Health Services"]
+    API --> APPOINTMENT["Appointments"]
+    API --> PRESCRIPTION["Prescription Services"]
+    API --> PHARMACY_SERVICE["Pharmacy & Fulfillment"]
+    API --> EMERGENCY["Emergency Services"]
+    API --> AI["AI Health Services"]
+
+    AUTH --> DB["Supabase / Data Layer"]
+    HEALTH --> DB
+    APPOINTMENT --> DB
+    PRESCRIPTION --> DB
+    PHARMACY_SERVICE --> DB
+    EMERGENCY --> DB
+
+    AI --> AIENGINE["AI Assistant / Intelligence Layer"]
+
+    DB --> STORAGE["Health Data / Application Storage"]
+```
 
 ---
 
-### Step 1: Clone the Repository
+# 🧩 Architecture Layers
+
+## 1. Presentation Layer
+
+The frontend provides the user-facing healthcare experience.
+
+### Technology
+
+* React
+* Vite
+* TypeScript
+* Vanilla CSS
+* Lucide React
+* React Router
+
+### Major Interfaces
+
+```text
+Patient Portal
+Doctor Portal
+Pharmacy Portal
+Ambulance Portal
+Admin Portal
+```
+
+---
+
+# 👤 Patient Architecture
+
+```mermaid
+flowchart LR
+
+    P["Patient"] --> LOGIN["Authentication"]
+
+    LOGIN --> DASH["Patient Dashboard"]
+
+    DASH --> HID["Digital Health ID"]
+    DASH --> HEALTH["Health Dashboard"]
+    DASH --> AI["AI Health Assistant"]
+    DASH --> APPT["Appointments"]
+    DASH --> MED["Medicines"]
+    DASH --> RX["Prescriptions"]
+    DASH --> EMG["Emergency Support"]
+
+    HID --> RECORDS["Health Records"]
+    RX --> PHARM["Pharmacy"]
+    MED --> PHARM
+    EMG --> AMB["Ambulance Service"]
+```
+
+### Patient Features
+
+* Patient profile
+* Digital Health ID
+* Health dashboard
+* Health records
+* AI health assistant
+* Appointment management
+* Prescription management
+* Medicine management
+* Pharmacy fulfillment
+* Emergency support
+* Ambulance workflow
+
+---
+
+# 🪪 Digital Health ID
+
+The Digital Health ID is designed as a central identity layer for the patient's healthcare interactions.
+
+```text
+Patient
+   │
+   ▼
+Digital Health ID
+   │
+   ├── Patient Profile
+   ├── Health Information
+   ├── Medical Records
+   ├── Prescriptions
+   └── Healthcare Interactions
+```
+
+The system can provide a dedicated Health ID interface with a QR-based identity experience.
+
+---
+
+# 🤖 AI Health Assistant
+
+Jivexa includes an AI-assisted healthcare interaction layer.
+
+```mermaid
+flowchart TB
+
+    USER["Patient Query"]
+
+    USER --> AI["Jivexa AI Health Assistant"]
+
+    AI --> UNDERSTAND["Query Understanding"]
+
+    UNDERSTAND --> GUIDANCE["Health Information / Guidance"]
+
+    GUIDANCE --> NEXT["Recommended Next Step"]
+
+    NEXT --> DOCTOR["Doctor / Professional Care"]
+    NEXT --> EMERGENCY["Emergency Support"]
+    NEXT --> SELF["General Health Information"]
+```
+
+### AI Layer Responsibilities
+
+* Health information assistance
+* Symptom-oriented guidance
+* Care navigation
+* Patient support
+* Healthcare workflow assistance
+
+> **Important:** Jivexa AI is intended as an assistive technology layer and should not replace qualified medical professionals or emergency medical services.
+
+---
+
+# 👨‍⚕️ Doctor Architecture
+
+```mermaid
+flowchart LR
+
+    D["Doctor"] --> AUTH["Authentication"]
+
+    AUTH --> DASH["Doctor Dashboard"]
+
+    DASH --> PATIENTS["Patient Management"]
+    DASH --> APPOINTMENTS["Appointments"]
+    DASH --> RECORDS["Patient Records"]
+    DASH --> RX["Prescription"]
+    DASH --> CONSULT["Clinical Interaction"]
+```
+
+### Doctor Features
+
+* Doctor dashboard
+* Patient management
+* Appointment workflow
+* Patient information
+* Prescription creation
+* Clinical interaction workflow
+
+---
+
+# 💊 Pharmacy Architecture
+
+```mermaid
+flowchart LR
+
+    RX["Prescription"] --> VALIDATE["Prescription Validation"]
+
+    VALIDATE --> CART["Medicine Cart"]
+
+    CART --> CHECKOUT["Checkout"]
+
+    CHECKOUT --> FULFILL["Pharmacy Fulfillment"]
+
+    FULFILL --> TRACK["Fulfillment Tracking"]
+
+    TRACK --> PATIENT["Patient"]
+```
+
+### Pharmacy Features
+
+* Prescription validation
+* Medicine catalog
+* Cart
+* Checkout
+* Pharmacy fulfillment
+* Order tracking
+* Patient medicine workflow
+
+---
+
+# 🚑 Emergency / Ambulance Architecture
+
+```mermaid
+flowchart TB
+
+    PATIENT["Patient"] --> EMERGENCY["Emergency Request"]
+
+    EMERGENCY --> BOOK["Ambulance Booking"]
+
+    BOOK --> DISPATCH["Dispatch Workflow"]
+
+    DISPATCH --> AMB["Ambulance Dashboard"]
+
+    AMB --> STATUS["Status Updates"]
+
+    STATUS --> PATIENT
+```
+
+### Emergency Module
+
+* Emergency support interface
+* Ambulance request
+* Dispatch workflow
+* Ambulance dashboard
+* Emergency status tracking
+
+---
+
+# 🔐 Authentication & Authorization
+
+Jivexa follows a role-based application architecture.
+
+```text
+                    Authentication
+                          │
+                          ▼
+                  Role Identification
+                          │
+        ┌─────────────────┼─────────────────┐
+        │        │        │        │         │
+        ▼        ▼        ▼        ▼         ▼
+     Patient   Doctor  Pharmacy  Ambulance  Admin
+        │        │        │        │         │
+        ▼        ▼        ▼        ▼         ▼
+   Dashboard Dashboard Dashboard Dashboard Dashboard
+```
+
+Role-based access helps ensure that different users access the workflows relevant to their role.
+
+---
+
+# 🗄️ Data Architecture
+
+```mermaid
+flowchart TB
+
+    APP["Jivexa Application"]
+
+    APP --> AUTH["Authentication"]
+    APP --> DATA["Application Data"]
+
+    AUTH --> SUPA["Supabase"]
+
+    DATA --> SUPA
+
+    SUPA --> USERS["Users / Profiles"]
+    SUPA --> HEALTH["Health Information"]
+    SUPA --> APPT["Appointments"]
+    SUPA --> RX["Prescriptions"]
+    SUPA --> MEDS["Medicines"]
+    SUPA --> ORDERS["Orders / Fulfillment"]
+    SUPA --> EMERGENCY["Emergency Data"]
+```
+
+### Data Layer
+
+Jivexa can operate with a Supabase-backed data layer when the required environment configuration is available.
+
+A local/mock mode can also be used for development and frontend testing.
+
+---
+
+# 🔄 End-to-End Healthcare Flow
+
+```mermaid
+flowchart LR
+
+    PATIENT["Patient"] --> ID["Health ID"]
+
+    ID --> AI["AI Assistant"]
+
+    AI --> DOCTOR["Doctor"]
+
+    DOCTOR --> RX["Prescription"]
+
+    RX --> PHARMACY["Pharmacy"]
+
+    PHARMACY --> MEDICINE["Medicine Fulfillment"]
+
+    PATIENT --> EMERGENCY["Emergency"]
+
+    EMERGENCY --> AMB["Ambulance"]
+```
+
+---
+
+# 🧱 Frontend Architecture
+
+```text
+src/
+│
+├── components/
+│   ├── ui/
+│   ├── dashboards/
+│   ├── patient/
+│   ├── doctor/
+│   ├── pharmacy/
+│   └── ambulance/
+│
+├── pages/
+│   ├── patient/
+│   ├── doctor/
+│   ├── pharmacy/
+│   ├── ambulance/
+│   └── admin/
+│
+├── contexts/
+│
+├── services/
+│
+├── lib/
+│
+├── hooks/
+│
+├── assets/
+│
+├── App.tsx
+└── main.tsx
+```
+
+> The exact folder structure may evolve as the product architecture expands.
+
+---
+
+# ⚙️ Technology Stack
+
+| Layer           | Technology                       |
+| --------------- | -------------------------------- |
+| Frontend        | React                            |
+| Build Tool      | Vite                             |
+| Language        | TypeScript                       |
+| Styling         | Vanilla CSS                      |
+| Icons           | Lucide React                     |
+| Routing         | React Router                     |
+| Backend/Data    | Supabase / API Layer             |
+| Authentication  | Supabase Auth / Application Auth |
+| AI              | AI Service Layer                 |
+| Deployment      | Vercel                           |
+| Version Control | Git + GitHub                     |
+
+---
+
+# 🚀 Local Development
+
+## Prerequisites
+
+Make sure you have:
+
+* Node.js
+* npm
+* Git
+
+## Installation
 
 ```bash
 git clone https://github.com/jivexa-ai/Jivexa-main.git
+
 cd Jivexa-main
+
+npm install
 ```
 
----
-
-### Step 2: Start the Backend Server
+## Start Development Server
 
 ```bash
-cd backend
-npm install
 npm run dev
 ```
-*The backend server starts on **`http://localhost:4000`**.*
 
----
+Navigate to:
 
-### Step 3: Start the Frontend Application
-
-Open a new terminal window:
-
-```bash
-cd Frontend
-npm install
-npm run dev
+```text
+http://localhost:5173
 ```
-*The frontend application starts on **`http://localhost:5173`**.*
 
 ---
 
-### Step 4: Open in Your Browser
+# 🔑 Environment Configuration
 
-Navigate to **`http://localhost:5173`** in your browser.
+Create a `.env` file for local development when using Supabase-backed functionality.
 
----
-## 🌐 Live Production Deployment
+Example:
 
-[![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-- 🌐 **Live Vercel Site**: **[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)**
-- 🐙 **GitHub Repository**: **[https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)**
-
----
-
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for details.
+> Never commit private API keys, service-role keys, passwords, or other secrets to GitHub.
 
 ---
+
+# 🌐 Live Production Deployment
+
+Jivexa's production frontend is deployed on Vercel.
+
+[![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge\&logo=vercel\&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
+
+**Production URL:**
+[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)
+
+---
+
+# 🔒 Security & Privacy
+
+Jivexa is designed with healthcare data sensitivity in mind.
+
+Key principles include:
+
+* Role-based access
+* Authentication
+* Controlled data access
+* Environment-based secrets
+* Separation of frontend and backend responsibilities
+* Secure API communication
+* Avoiding sensitive credentials in source code
+
+### Healthcare Disclaimer
+
+Jivexa is a technology platform and does not itself constitute a medical diagnosis or treatment service.
+
+AI-generated information should not be considered a substitute for qualified medical advice, diagnosis, or emergency care.
+
+---
+
+# 📈 Product Architecture Roadmap
+
+## Phase 1 — MVP
+
+* Patient platform
+* Digital Health ID
+* AI Health Assistant
+* Doctor workflow
+* Appointment system
+* Prescription workflow
+* Pharmacy workflow
+* Emergency interface
+
+## Phase 2 — Connected Healthcare
+
+* Healthcare provider integrations
+* Real-time emergency coordination
+* Expanded pharmacy network
+* Advanced patient records
+* Improved AI assistance
+* Notification infrastructure
+
+## Phase 3 — Health Intelligence
+
+* Advanced healthcare analytics
+* Interoperability
+* Intelligent care navigation
+* Population-level insights
+* Scalable healthcare infrastructure
+
+---
+
+# 🎯 Vision
+
+> **Build a connected healthcare infrastructure where patients can access, manage, and navigate essential healthcare services through one intelligent platform.**
+
+Jivexa aims to reduce fragmentation between patients and healthcare service providers by creating a connected digital healthcare ecosystem.
+
+---
+
+# 👨‍💻 Founder
+
+**Mayank Gangwar**
+Founder & CEO — Jivexa
+
+### Jivexa Health OS
+
+**AI-Powered Health. Connected Care.**
+
+---
+
+# 📜 Disclaimer
+
+Jivexa is currently a technology/MVP platform intended for experimentation, product validation, and healthcare workflow development.
+
+It should not be used as a substitute for professional medical diagnosis, treatment, or emergency medical services.
+
+---
+
+# 🌐 Jivexa — Live Production App
+
+[![LIVE](https://img.shields.io/badge/🌐_LIVE-Open_Production_App-0070f3?style=for-the-badge\&logo=vercel\&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
+
+**Open Jivexa:**
+[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)
+
+---
+
+## ⭐ Jivexa Health OS
+
+**AI-Powered Health. Connected Care.**
+
+Built with the vision of making healthcare more connected, accessible, organized, and patient-centric.
+
 
 **Built with ❤️ for JIVEXA Health OS.**
