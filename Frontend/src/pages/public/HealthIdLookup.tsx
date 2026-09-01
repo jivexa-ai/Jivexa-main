@@ -7,8 +7,10 @@ import {
   Clock, PhoneCall, HeartPulse, UserCheck, ShieldAlert, Siren, FileText, Activity, Zap, ExternalLink, Sparkles, MapPin, Hospital
 } from 'lucide-react';
 import { searchHealthIdApi } from '../../services/healthIdService';
+import { useAuth } from '../../context/AuthContext';
 
 export const HealthIdLookup: React.FC = () => {
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
@@ -27,10 +29,10 @@ export const HealthIdLookup: React.FC = () => {
 
     if (res.success && res.patient) {
       const p = res.patient;
-      const rawName = p.name || 'Piyush Tiwari';
+      const rawName = p.name || user?.name || 'Patient User';
       const nameParts = rawName.split(' ');
       const maskedName = nameParts.map(part => part.charAt(0) + '*'.repeat(Math.max(1, part.length - 1))).join(' ');
-      const rawPhone = p.phoneNumber || p.email || '+91 98765 43210';
+      const rawPhone = p.phoneNumber || p.email || user?.email || '+91 98765 43210';
       const maskedPhone = rawPhone.length > 6 ? rawPhone.substring(0, 4) + '*****' + rawPhone.slice(-2) : rawPhone;
 
       setProfile({

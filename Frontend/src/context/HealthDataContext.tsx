@@ -1623,7 +1623,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       success: true,
       patientInfo: {
         userId: `usr_patient_${cleanId.replace(/[^A-Z0-9]/g, '')}`,
-        name: 'Piyush Tiwari',
+        name: user?.name || 'Patient User',
         healthId: cleanId,
         bloodGroup: 'O+ Positive',
         allergies: 'Penicillin (mild)',
