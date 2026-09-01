@@ -430,10 +430,22 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const rawName = user?.name || 'Patient';
       const rawEmail = user?.email || '';
 
+      // Helper to sanitize legacy cached strings
+      const sanitizeObj = (obj: any): any => {
+        if (!obj) return obj;
+        let str = JSON.stringify(obj);
+        str = str.replace(/piyush321@gmail\.com/g, rawEmail || 'contact@jivexa.health');
+        str = str.replace(/Mayank Gangwar/g, rawName);
+        str = str.replace(/Piyush Tiwari/g, rawName);
+        return JSON.parse(str);
+      };
+
       // Load or initialize Patient profile
       const savedProfile = localStorage.getItem(`jivexa_profile_${userId}`);
       if (savedProfile) {
-        setPatientProfile(JSON.parse(savedProfile));
+        const cleanProf = sanitizeObj(JSON.parse(savedProfile));
+        setPatientProfile(cleanProf);
+        localStorage.setItem(`jivexa_profile_${userId}`, JSON.stringify(cleanProf));
       } else {
         const defaultProfile: PatientProfile = {
           userId,
@@ -471,7 +483,9 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Load or initialize Appointments
       const savedAppts = localStorage.getItem('jivexa_db_appointments');
       if (savedAppts) {
-        setAppointments(JSON.parse(savedAppts));
+        const cleanAppts = sanitizeObj(JSON.parse(savedAppts));
+        setAppointments(cleanAppts);
+        localStorage.setItem('jivexa_db_appointments', JSON.stringify(cleanAppts));
       } else {
         const defaultAppts: Appointment[] = [
           {
@@ -507,7 +521,9 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Load or initialize Records
       const savedRecords = localStorage.getItem('jivexa_db_records');
       if (savedRecords) {
-        setHealthRecords(JSON.parse(savedRecords));
+        const cleanRecs = sanitizeObj(JSON.parse(savedRecords));
+        setHealthRecords(cleanRecs);
+        localStorage.setItem('jivexa_db_records', JSON.stringify(cleanRecs));
       } else {
         const defaultRecords: HealthRecord[] = [
           {
@@ -516,7 +532,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             name: `${rawName} Lipid Profile Test Log`,
             type: 'Lab Report',
             date: '2026-06-15',
-            fileName: 'lipid_profile_june26.pdf',
+            fileName: `${rawName.replace(/\s+/g, '_')}_lipid_profile.pdf`,
             fileSize: '1.2 MB',
             fileUrl: '#',
             uploadedBy: rawName
@@ -540,7 +556,9 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Load or initialize Prescriptions
       const savedPrescriptions = localStorage.getItem('jivexa_db_prescriptions');
       if (savedPrescriptions) {
-        setPrescriptions(JSON.parse(savedPrescriptions));
+        const cleanPres = sanitizeObj(JSON.parse(savedPrescriptions));
+        setPrescriptions(cleanPres);
+        localStorage.setItem('jivexa_db_prescriptions', JSON.stringify(cleanPres));
       } else {
         const defaultPrescriptions: Prescription[] = [
           {
@@ -578,7 +596,9 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Load or initialize Orders
       const savedOrders = localStorage.getItem('jivexa_db_orders');
       if (savedOrders) {
-        setOrders(JSON.parse(savedOrders));
+        const cleanOrd = sanitizeObj(JSON.parse(savedOrders));
+        setOrders(cleanOrd);
+        localStorage.setItem('jivexa_db_orders', JSON.stringify(cleanOrd));
       } else {
         const defaultOrders: Order[] = [
           {
