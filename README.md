@@ -1,160 +1,194 @@
-# 🩺 JIVEXA Health OS
+# Jivexa Health OS
 
-[![LIVE](https://img.shields.io/badge/🌐_LIVE_DEMO-Launch_Production_App-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
-[![Status](https://img.shields.io/badge/⚡_Status-Active_Production-0f9d58?style=for-the-badge&logo=git&logoColor=white)](https://github.com/jivexa-ai/Jivexa-main)
-[![Tech Stack](https://img.shields.io/badge/Tech-React_19_%7C_Node.js_22_%7C_TypeScript-61dafb?style=for-the-badge&logo=react&logoColor=black)](#-tech-stack)
-[![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](#-license)
+[![Live Demo](https://img.shields.io/badge/Live_App-frontend--beryl--two--18.vercel.app-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://frontend-beryl-two-18.vercel.app)
+[![GitHub](https://img.shields.io/badge/GitHub-jivexa--ai/Jivexa--main-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jivexa-ai/Jivexa-main)
 
-> **The Autonomous Health Operating System & Pre-Hospital Triage Engine**  
-> *Connecting Patients, Doctors, Pharmacies, Emergency Fleets, and ABHA Health Vaults into one zero-latency digital ecosystem.*
+A connected health platform built to bring patients, doctors, pharmacies, emergency ambulance dispatches, and ABHA health records into one simple place.
 
----
-
-## 🌟 Executive Summary
-
-**JIVEXA Health OS** is an enterprise-grade digital healthcare platform engineered to eliminate fragmented care, paper record loss, and pre-hospital emergency delays. Built with **React 19, TypeScript, Node.js 22, and Groq Multi-Model AI**, JIVEXA unifies the entire care lifecycle under a single interoperable operating system.
-
-### 🌐 Live Production Application
-* 🌐 **Live Vercel Site**: **[https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)**
-* 🐙 **GitHub Repository**: **[https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)**
+👉 **Try the Live App:** [https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)
 
 ---
 
-## 🚀 Core Ecosystem Capabilities
+## What is Jivexa?
 
+Healthcare is often fragmented. Paper prescriptions get lost, emergency ambulances operate without sending patient data ahead to hospitals, and patients struggle to understand complex lab test reports.
+
+**Jivexa Health OS** fixes this by connecting all 5 key healthcare roles under one roof:
+- **Patients** get 24/7 AI health guidance, lab report PDF summaries, and digital record vaults.
+- **Doctors** get a clean dashboard for patient queues, consultation notes, and digital prescriptions.
+- **Pharmacies** get real-time medicine stock checks and digital order fulfillment.
+- **Ambulance Partners** get live GPS emergency dispatches with pre-hospital patient vitals streaming.
+- **Admins** get onboarding verification and system health checks.
+
+---
+
+## 🎨 System Flowcharts & Diagrams
+
+### 1. Main Patient Healthcare Journey
+
+```text
++-----------------------------------------------------------------------------------+
+|  PATIENT HEALTH JOURNEY                                                           |
++-----------------------------------------------------------------------------------+
+|                                                                                   |
+|  [ Patient Symptoms / Lab PDF ]                                                   |
+|                │                                                                  |
+|                ▼                                                                  |
+|  [ 24/7 AI Health Bot & Triage ] ────► Extracts Lab Values & Scores Risk          |
+|                │                                                                  |
+|                ▼                                                                  |
+|  [ Book Doctor Consultation ]   ────► Doctor Reviews AI Notes & Issues Prescription|
+|                │                                                                  |
+|                ▼                                                                  |
+|  [ Pharmacy Stock Check ]       ────► 1-Tap Order Fulfillment                     |
+|                │                                                                  |
+|                ▼                                                                  |
+|  [ ABHA 14-Digit Health Vault ] ────► Encrypted Lifetime History Storage          |
+|                                                                                   |
++-----------------------------------------------------------------------------------+
 ```
-+-----------------------------------------------------------------------------------+
-|  JIVEXA HEALTH OS ECOSYSTEM FLOW                                                  |
-+-----------------------------------------------------------------------------------+
-|  [PATIENT] ──► 24/7 AI Health Bot & PDF Report Analyzer                           |
-|       │                                                                           |
-|       ├──► [EMERGENCY AMBULANCE] ──► Pre-Hospital ICU Telemetry & Live GPS Radar  |
-|       ├──► [VERIFIED DOCTOR]    ──► Tele-Consultation & Digital Prescriptions     |
-|       ├──► [PHARMACY HUB]       ──► Real-Time Stock Sync & Order Fulfillment      |
-|       └──► [ABHA VAULT]         ──► 14-Digit Encrypted National Health History    |
-+-----------------------------------------------------------------------------------+
-```
-
-### 🤖 1. JIVEXA Health AI Bot & Triage Core
-- **Multi-Model AI Failover**: Iterates across live production models (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `groq/compound-mini`) for sub-second responses and 100% availability.
-- **Deterministic Health Guardrail (`temperature: 0.0`)**: Specialized exclusively in medical symptoms, pharmacology, and clinical guidance. Rejects non-health queries cleanly to ensure safety.
-- **Rate Limiting & Free Site Guide**: Provides 1,000 free tokens every 6 hours (`⚡ Tokens: 0 / 1,000`), while keeping platform website navigation guides 100% free with visual ASCII flowcharts.
-
-### 📄 2. AI PDF Lab Report Analyzer
-- **Automated Clinical Extraction**: Parses CBC blood counts, lipid panels, liver enzymes, and metabolic markers from uploaded lab PDFs and images.
-- **24-Hour Quota Management**: Rate-limited to 5 report uploads per 24 hours with clean reset notifications and zero paywall popups.
-
-### 🚑 3. Emergency Ambulance Radar & ICU Telemetry
-- **Live GPS Fleet Tracking**: Real-time dispatch and routing of emergency vehicle fleets.
-- **Pre-Hospital ICU Sync**: Streams patient vitals and clinical risk vectors to receiving hospital emergency rooms before the ambulance arrives.
-
-### 🆔 4. ABHA 14-Digit Health Vault Integration
-- **Interoperable Record Vault**: Aligned with India's Ayushman Bharat Digital Mission (ABDM) for lifetime longitudinal health record continuity.
-- **Per-User Encrypted Storage**: Securely stores health profiles, emergency contact records, and prescription histories tied to unique user IDs.
-
-### 👥 5. Multi-Role Workspace Engine
-- 👤 **PATIENT**: Health ID lookup, appointment booking, lab reports, and live AI triage.
-- 🩺 **DOCTOR**: Patient queues, tele-consultations, clinical summaries, and digital prescription issuance.
-- 💊 **PHARMACY**: Prescription verification, real-time stock sync, and 1-tap fulfillment.
-- 🚑 **AMBULANCE PARTNER**: 24/7 emergency dispatch radar and live GPS navigation.
-- 🛡️ **ADMIN**: Doctor license onboarding verification and platform telemetry audit.
 
 ---
 
-## 🏗️ System Architecture
+### 2. Emergency Ambulance Dispatch & Pre-Hospital ICU Sync
+
+```text
++-----------------------------------------------------------------------------------+
+|  EMERGENCY RADAR FLOW                                                             |
++-----------------------------------------------------------------------------------+
+|                                                                                   |
+|  [ 1. Patient Triggers 108 Emergency ]                                            |
+|                  │                                                                |
+|                  ▼                                                                |
+|  [ 2. Nearest GPS Ambulance Dispatched ] ──► Real-time route tracking on map      |
+|                  │                                                                |
+|                  ▼                                                                |
+|  [ 3. Pre-Hospital Vitals Streaming ]    ──► Live data sent directly to ICU       |
+|                  │                                                                |
+|                  ▼                                                                |
+|  [ 4. Hospital ICU Prepared Before Arrival ]                                      |
+|                                                                                   |
++-----------------------------------------------------------------------------------+
+```
+
+---
+
+### 3. AI PDF Lab Report Analyzer Workflow
+
+```text
++-----------------------------------------------------------------------------------+
+|  AI LAB REPORT PARSER FLOW                                                        |
++-----------------------------------------------------------------------------------+
+|                                                                                   |
+|  [ Upload PDF / Image Report ] ──► (CBC, Lipid, Metabolic, Diabetes Panels)       |
+|                 │                                                                 |
+|                 ▼                                                                 |
+|  [ Multi-Model Groq AI Engine ] ──► Sub-second clinical parameter extraction      |
+|                 │                                                                 |
+|                 ▼                                                                 |
+|  [ Plain English / Hindi Summary ] ──► High/Low flags & actionable recommendations |
+|                 │                                                                 |
+|                 ▼                                                                 |
+|  [ 1-Click Share with Doctor ]  ──► Attached to next consultation note            |
+|                                                                                   |
++-----------------------------------------------------------------------------------+
+```
+
+---
+
+### 4. 5-Role Interconnected Ecosystem
 
 ```mermaid
 flowchart TD
-    subgraph PRESENTATION ["1. PRESENTATION LAYER (React 19 + Vite)"]
-        A[Patient Dashboard] & B[Doctor Workspace] & C[Pharmacy Portal] & D[Ambulance Radar] & E[Admin Hub]
+    subgraph ROLES ["Jivexa 5-Role Platform"]
+        P[Patient]
+        D[Doctor]
+        PH[Pharmacy]
+        AMB[Ambulance Dispatch]
+        ADM[Admin Platform]
     end
 
-    subgraph API_GATEWAY ["2. API & SECURITY GATEWAY (Node.js 22 + Express)"]
-        F[Zod Runtime Validation] --> G[Bcrypt Hashing & JWT Auth]
-        G --> H[Cross-Device Fault Tolerance: isConnectionError]
+    subgraph ENGINE ["Jivexa Core Engine"]
+        AI[24/7 Groq AI Health Bot]
+        PARSER[PDF Report Parser]
+        VAULT[ABHA 14-Digit Vault]
+        RADAR[Emergency GPS Radar]
     end
 
-    subgraph AI_ENGINE ["3. AI NEURAL CORE (Groq Live Server)"]
-        I[Multi-Model Failover: Groq Compound / GPT-OSS-20B / Qwen]
-        J[Deterministic Guardrail: temp=0.0]
-        K[AI PDF Lab Parser & Risk Engine]
-    end
-
-    subgraph DATA_PERSISTENCE ["4. DATA & HEALTH VAULT (MongoDB + ABHA)"]
-        L[(MongoDB Longitudinal DB)] & M[(ABHA 14-Digit Encrypted Vault)]
-    end
-
-    PRESENTATION --> API_GATEWAY
-    API_GATEWAY --> AI_ENGINE
-    API_GATEWAY --> DATA_PERSISTENCE
+    P --> AI & PARSER & VAULT & RADAR
+    D --> P & VAULT
+    PH --> P & D
+    AMB --> P & RADAR
+    ADM --> D & PH
 ```
 
 ---
 
-## 🔒 Security & Quality Standards
+## ⚡ Main Features
 
-- **Field-Level Zod Validation**: Strict checks on full names, valid email formatting, and password complexity (uppercase, lowercase, numbers, special characters).
-- **Network Connection Fault Tolerance (`isConnectionError`)**: Seamlessly handles offline/weak network states on mobile devices with local persistent session fallback.
-- **GitHub Push Protection Compliance**: Dynamically constructed API keys (`getLiveGroqKey`) to satisfy security scanning while maintaining 100% live API uptime.
+1. **24/7 AI Health Assistant**  
+   Runs on a live Groq multi-model failover server (`groq/compound`, `gpt-oss-20b`, `qwen3.6-27b`). Gives instant health advice with strict safety guardrails. Users get 1,000 free tokens every 6 hours, and website guide queries are always 100% free.
+
+2. **AI Lab Report Parser**  
+   Upload any blood test PDF or lab image. It parses key values like Hemoglobin, Cholesterol, and HbA1c, explaining what they mean in plain text. (Limited to 5 PDFs per 24 hours).
+
+3. **Emergency Ambulance Radar**  
+   Live GPS ambulance dispatch that streams patient vitals to the destination hospital ICU before the patient arrives.
+
+4. **ABHA Health Vault Integration**  
+   Connects with 14-digit national ABHA health IDs so patients can securely store and share their lifetime medical history.
+
+5. **Field-Level Form Validation**  
+   Strict Zod checks on signup (name length, valid email format, strong passwords with uppercase, lowercase, numbers, and special symbols).
 
 ---
 
 ## 💻 Tech Stack
 
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, React Router v7
-- **AI Core**: Groq Live Multi-Model Server (`groq/compound`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`)
-- **Backend API**: Node.js 22, Express, Zod, Bcrypt, JWT, Cookie Parser, Nodemailer
-- **Database & Vault**: MongoDB, Mongoose, ABHA 14-Digit Health Vault Integration
-- **Hosting & Deployment**: Vercel Edge Production (`https://frontend-beryl-two-18.vercel.app`)
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons
+- **Backend API:** Node.js, Express, Zod, JWT, Cookie Parser
+- **AI Models:** Groq Live Server API (`groq/compound`, `gpt-oss-20b`, `qwen`)
+- **Database & Vault:** MongoDB, Mongoose, ABHA 14-Digit Vault Sync
+- **Deployment:** Vercel Edge Production (`frontend-beryl-two-18.vercel.app`)
 
 ---
 
-## 🛠️ Local Development Setup
+## 🚀 How to Run Locally
 
-### 📋 Prerequisites
-- **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
-- **npm**: v9.0.0 or higher
-- **Git**: [Download Git](https://git-scm.com/)
+### Prerequisites
+- Node.js (v18 or higher)
+- npm
 
----
-
-### Step 1: Clone the Repository
-
+### 1. Clone repo
 ```bash
 git clone https://github.com/jivexa-ai/Jivexa-main.git
 cd Jivexa-main
 ```
 
----
-
-### Step 2: Start Backend Server
-
+### 2. Run Backend
 ```bash
 cd backend
 npm install
 npm run dev
 ```
-*The backend API starts on **`http://localhost:4000`**.*
 
----
-
-### Step 3: Start Frontend Application
-
-Open a second terminal window:
-
+### 3. Run Frontend
+Open a new terminal window:
 ```bash
 cd Frontend
 npm install
 npm run dev
 ```
-*The frontend application starts on **`http://localhost:5173`**.*
+
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## 📄 License
+## 🔗 Links
 
-Distributed under the MIT License. See `LICENSE` for details.
+- **Live Production App:** [https://frontend-beryl-two-18.vercel.app](https://frontend-beryl-two-18.vercel.app)
+- **GitHub Code Repository:** [https://github.com/jivexa-ai/Jivexa-main](https://github.com/jivexa-ai/Jivexa-main)
 
 ---
 
-**Built with ❤️ for JIVEXA Health OS.**
+**Built for Jivexa Health OS.**
