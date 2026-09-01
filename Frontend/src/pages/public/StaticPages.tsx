@@ -827,7 +827,7 @@ export const Contact: React.FC = () => {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <Input 
                 label="Full Name" 
-                placeholder="Mayank Gangwar" 
+                placeholder="John Doe" 
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required

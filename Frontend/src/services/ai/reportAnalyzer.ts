@@ -1,15 +1,27 @@
 import { AIReportAnalysisResult, ReportParameter } from '../../types';
 
-export const SAMPLE_LAB_REPORTS = [
-  {
-    id: 'sample_cbc_lipid',
-    title: 'Complete Blood Count (CBC) & Lipid Profile',
-    fileName: 'CBC_Lipid_Panel_Mayank_Gangwar.pdf',
-    fileSize: '1.4 MB',
-    fileType: 'application/pdf',
-    rawText: `
+export const getSampleLabReports = (userName?: string) => {
+  let activeName = userName || 'Patient';
+  try {
+    if (!userName && typeof localStorage !== 'undefined') {
+      const activeUserJSON = localStorage.getItem('jivexa_session_user');
+      if (activeUserJSON) {
+        const u = JSON.parse(activeUserJSON);
+        if (u?.name) activeName = u.name;
+      }
+    }
+  } catch (e) {}
+
+  return [
+    {
+      id: 'sample_cbc_lipid',
+      title: 'Complete Blood Count (CBC) & Lipid Profile',
+      fileName: `${activeName.replace(/\s+/g, '_')}_CBC_Lipid_Panel.pdf`,
+      fileSize: '1.4 MB',
+      fileType: 'application/pdf',
+      rawText: `
 PATIENT LAB REPORT - METROPOLIS HEALTHCARE
-Patient Name: Mayank Gangwar | Age: 28 | Gender: Male | Date: 05-Aug-2026
+Patient Name: ${activeName} | Date: 05-Aug-2026
 
 HAEMATOLOGY (CBC)
 Hemoglobin: 11.8 g/dL (Reference Range: 13.5 - 17.5 g/dL) [LOW]
@@ -22,17 +34,17 @@ Total Cholesterol: 215 mg/dL (Reference Range: < 200 mg/dL) [HIGH]
 Triglycerides: 145 mg/dL (Reference Range: < 150 mg/dL) [NORMAL]
 HDL Cholesterol (Good): 42 mg/dL (Reference Range: > 40 mg/dL) [NORMAL]
 LDL Cholesterol (Bad): 144 mg/dL (Reference Range: < 100 mg/dL) [HIGH]
-    `
-  },
-  {
-    id: 'sample_diabetes_thyroid',
-    title: 'HbA1c Diabetes & Thyroid Profile (TSH)',
-    fileName: 'Diabetes_Thyroid_Screening.pdf',
-    fileSize: '980 KB',
-    fileType: 'application/pdf',
-    rawText: `
+      `
+    },
+    {
+      id: 'sample_diabetes_thyroid',
+      title: 'HbA1c Diabetes & Thyroid Profile (TSH)',
+      fileName: `${activeName.replace(/\s+/g, '_')}_Diabetes_Thyroid_Screening.pdf`,
+      fileSize: '980 KB',
+      fileType: 'application/pdf',
+      rawText: `
 DIABETES & ENDOCRINE LAB REPORT - THYROCARE
-Patient Name: Mayank Gangwar | Date: 02-Aug-2026
+Patient Name: ${activeName} | Date: 02-Aug-2026
 
 GLUCOSE & HBA1C PANEL
 Fasting Blood Sugar: 104 mg/dL (Reference Range: 70 - 99 mg/dL) [ELEVATED]
@@ -41,9 +53,12 @@ HbA1c (Glycated Hemoglobin): 5.9 % (Reference Range: < 5.7 % Normal, 5.7 - 6.4 %
 THYROID PANEL
 TSH (Thyroid Stimulating Hormone): 3.2 uIU/mL (Reference Range: 0.4 - 4.2 uIU/mL) [NORMAL]
 Free T4: 1.2 ng/dL (Reference Range: 0.8 - 1.8 ng/dL) [NORMAL]
-    `
-  }
-];
+      `
+    }
+  ];
+};
+
+export const SAMPLE_LAB_REPORTS = getSampleLabReports();
 
 // Master catalog of clinical parameter rules for strictly parsing extracted text
 interface ParameterRule {

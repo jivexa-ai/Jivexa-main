@@ -35,7 +35,7 @@ export const HealthRecordsExplorer: React.FC = () => {
       patientId: user?.id || 'anonymous_user',
       name: 'Complete Blood Count (CBC) & Lipid Profile',
       type: 'Lab Report',
-      fileName: 'CBC_Lipid_Panel_Mayank_Gangwar.pdf',
+      fileName: `${(user?.name || 'Patient').replace(/\s+/g, '_')}_CBC_Lipid_Panel.pdf`,
       fileSize: '1.4 MB',
       date: '2026-08-05',
       uploadedBy: 'Patient',

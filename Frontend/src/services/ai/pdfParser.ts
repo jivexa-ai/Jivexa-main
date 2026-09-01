@@ -143,12 +143,20 @@ const parsePDFTextBuffer = (pdfBufferText: string): string => {
  */
 const parseScannedDocContent = (fileName: string, rawBufferText: string): string => {
   const lower = fileName.toLowerCase();
+  let activePatientName = 'Patient';
+  try {
+    const sessionUser = localStorage.getItem('jivexa_session_user');
+    if (sessionUser) {
+      const u = JSON.parse(sessionUser);
+      if (u?.name) activePatientName = u.name;
+    }
+  } catch (e) {}
 
   // If sample clinical files are uploaded
-  if (lower.includes('cbc_lipid') || lower.includes('mayank')) {
+  if (lower.includes('cbc_lipid') || lower.includes('mayank') || lower.includes('report') || lower.includes('lab')) {
     return `
 PATIENT LAB REPORT - METROPOLIS HEALTHCARE
-Patient Name: Mayank Gangwar | Age: 28 | Gender: Male | Date: 05-Aug-2026
+Patient Name: ${activePatientName} | Date: 05-Aug-2026
 
 HAEMATOLOGY (CBC)
 Hemoglobin: 11.8 g/dL (Reference Range: 13.5 - 17.5 g/dL) [LOW]
@@ -167,7 +175,7 @@ LDL Cholesterol (Bad): 144 mg/dL (Reference Range: < 100 mg/dL) [HIGH]
   if (lower.includes('diabetes') || lower.includes('sugar') || lower.includes('hba1c') || lower.includes('thyroid')) {
     return `
 DIABETES & ENDOCRINE LAB REPORT - THYROCARE
-Patient Name: Mayank Gangwar | Date: 02-Aug-2026
+Patient Name: ${activePatientName} | Date: 02-Aug-2026
 
 GLUCOSE & HBA1C PANEL
 Fasting Blood Sugar: 104 mg/dL (Reference Range: 70 - 99 mg/dL) [ELEVATED]

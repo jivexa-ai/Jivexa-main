@@ -105,9 +105,9 @@ export const PatientDashboard: React.FC = () => {
   // Edit Profile Form State
   const [editForm, setEditForm] = useState({
     bloodGroup: patientProfile?.bloodGroup || 'O+ Positive',
-    allergies: patientProfile?.allergies || 'Peanuts, Penicillin (mild)',
-    conditions: patientProfile?.conditions || 'Mild Asthma',
-    emergencyContact: patientProfile?.emergencyContact || 'piyush321@gmail.com'
+    allergies: patientProfile?.allergies || 'None reported',
+    conditions: patientProfile?.conditions || 'None reported',
+    emergencyContact: patientProfile?.emergencyContact || (user?.email ? `${user.name} (${user.email})` : 'Emergency Contact Not Set')
   });
 
   // --- ONBOARDING STATE ---
@@ -983,7 +983,7 @@ export const PatientDashboard: React.FC = () => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Emergency Contact</span>
-                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.emergencyContact || 'piyush321@gmail.com'}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.emergencyContact || (user?.email ? `${user.name} (${user.email})` : 'Emergency Contact Not Set')}</span>
               </div>
               <Button 
                 variant="outline" 
@@ -1081,7 +1081,7 @@ export const PatientDashboard: React.FC = () => {
           />
           <Input 
             label="Emergency Contact" 
-            placeholder="e.g. piyush321@gmail.com (+91 99887 76655)"
+            placeholder="e.g. contact@example.com (+91 99887 76655)"
             value={editForm.emergencyContact}
             onChange={(e) => setEditForm({ ...editForm, emergencyContact: e.target.value })}
           />

@@ -138,18 +138,29 @@ export const searchHealthIdApi = async (healthIdQuery: string): Promise<HealthId
   } catch (err: any) {
     console.warn('[Health ID Service] Search API network fallback:', err.message);
     const cleanId = (healthIdQuery || '').trim().toUpperCase() || 'JIV-2026-255930';
+    let dynamicName = 'Patient Profile';
+    let dynamicEmail = 'user@jivexa.health';
+    try {
+      const activeUserJSON = localStorage.getItem('jivexa_session_user');
+      if (activeUserJSON) {
+        const parsedUser = JSON.parse(activeUserJSON);
+        if (parsedUser?.name) dynamicName = parsedUser.name;
+        if (parsedUser?.email) dynamicEmail = parsedUser.email;
+      }
+    } catch (e) {}
+
     return {
       success: true,
       healthId: cleanId,
       patient: {
-        name: 'Piyush Tiwari',
+        name: dynamicName,
         dateOfBirth: '1998-05-14',
         gender: 'Male',
         bloodGroup: 'O+',
-        email: 'piyush@jivexa.health',
+        email: dynamicEmail,
         phoneNumber: '+91 98765 43210',
-        emergencyContact: { name: 'Emergency Contact', relation: 'Family', phone: '+91 98765 00000' },
-        address: 'Mumbai, Maharashtra, India',
+        emergencyContact: { name: `${dynamicName} Emergency Contact`, relation: 'Family', phone: '+91 98765 00000' },
+        address: 'India',
         healthProfile: { allergies: ['None'], chronicConditions: ['None'], bloodPressure: '120/80' }
       }
     };

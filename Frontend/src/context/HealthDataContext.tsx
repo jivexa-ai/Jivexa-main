@@ -427,6 +427,9 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (!userId) return;
 
     if (!isSupabaseConfigured) {
+      const rawName = user?.name || 'Patient';
+      const rawEmail = user?.email || '';
+
       // Load or initialize Patient profile
       const savedProfile = localStorage.getItem(`jivexa_profile_${userId}`);
       if (savedProfile) {
@@ -437,7 +440,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           bloodGroup: 'O+ Positive',
           allergies: 'Peanuts, Penicillin (mild)',
           conditions: 'Mild Asthma',
-          emergencyContact: 'Amit Gangwar (+91 99887 76655)',
+          emergencyContact: rawEmail ? `${rawName} Contact (${rawEmail})` : `${rawName} Contact (+91 99887 76655)`,
         };
         setPatientProfile(defaultProfile);
         localStorage.setItem(`jivexa_profile_${userId}`, JSON.stringify(defaultProfile));
@@ -454,7 +457,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 bloodGroup: res.patient?.bloodGroup || prev?.bloodGroup || 'O+ Positive',
                 allergies: (res.patient?.healthProfile && res.patient?.healthProfile.allergies) || prev?.allergies || 'Peanuts, Penicillin (mild)',
                 conditions: (res.patient?.healthProfile && res.patient?.healthProfile.conditions) || prev?.conditions || 'Mild Asthma',
-                emergencyContact: (res.patient?.phoneNumber || res.patient?.email) || prev?.emergencyContact || 'Amit Gangwar (+91 99887 76655)'
+                emergencyContact: (res.patient?.phoneNumber || res.patient?.email) || prev?.emergencyContact || (rawEmail ? `${rawName} Contact (${rawEmail})` : `${rawName} Contact (+91 99887 76655)`)
               };
               localStorage.setItem(`jivexa_profile_${userId}`, JSON.stringify(updated));
               return updated;
@@ -473,8 +476,8 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const defaultAppts: Appointment[] = [
           {
             id: 'appt_1',
-            patientId: 'user_patient_001',
-            patientName: 'Mayank Gangwar',
+            patientId: userId,
+            patientName: rawName,
             doctorId: '00000000-0000-0000-0000-000000000001',
             doctorName: 'Dr. Anand Sen',
             doctorSpecialty: 'Cardiologist',
@@ -485,16 +488,16 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           },
           {
             id: 'appt_2',
-            patientId: 'user_patient_001',
-            patientName: 'Mayank Gangwar',
+            patientId: userId,
+            patientName: rawName,
             doctorId: '00000000-0000-0000-0000-000000000003',
             doctorName: 'Dr. Rajesh Patel',
             doctorSpecialty: 'Dermatologist',
             date: '2026-07-20',
             time: '05:30 PM',
             status: 'Completed',
-            notes: 'Follow-up for eczema rash.',
-            consultationSummary: 'Eczema shows improvement. Advised to continue moisturizing twice daily. Discontinued topical steroids as skin cleared up.'
+            notes: 'Follow-up for skin assessment.',
+            consultationSummary: 'Skin condition shows improvement. Advised to continue moisturizing twice daily.'
           }
         ];
         setAppointments(defaultAppts);
@@ -509,19 +512,19 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const defaultRecords: HealthRecord[] = [
           {
             id: 'rec_1',
-            patientId: 'user_patient_001',
-            name: 'Lipid Profile Blood Test Log',
+            patientId: userId,
+            name: `${rawName} Lipid Profile Test Log`,
             type: 'Lab Report',
             date: '2026-06-15',
             fileName: 'lipid_profile_june26.pdf',
             fileSize: '1.2 MB',
             fileUrl: '#',
-            uploadedBy: 'Patient'
+            uploadedBy: rawName
           },
           {
             id: 'rec_2',
-            patientId: 'user_patient_001',
-            name: 'ECG Electrocardiogram Log',
+            patientId: userId,
+            name: `${rawName} ECG Electrocardiogram Log`,
             type: 'Lab Report',
             date: '2026-07-02',
             fileName: 'ecg_reading.png',
@@ -542,8 +545,8 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const defaultPrescriptions: Prescription[] = [
           {
             id: 'pres_1',
-            patientId: 'user_patient_001',
-            patientName: 'Mayank Gangwar',
+            patientId: userId,
+            patientName: rawName,
             doctorId: '00000000-0000-0000-0000-000000000003',
             doctorName: 'Dr. Rajesh Patel',
             date: '2026-07-20',
@@ -580,8 +583,8 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const defaultOrders: Order[] = [
           {
             id: 'ord_1',
-            patientId: 'user_patient_001',
-            patientName: 'Mayank Gangwar',
+            patientId: userId,
+            patientName: rawName,
             pharmacyId: '00000000-0000-0000-0000-000000000011',
             pharmacyName: 'Jivexa Pharmacy Hub',
             status: 'Completed',
