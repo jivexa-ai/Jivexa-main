@@ -40,19 +40,6 @@ export interface AuthActionResult {
   accountStatus?: string;
 }
 
-const isConnectionError = (err?: string): boolean => {
-  if (!err) return false;
-  const e = err.toLowerCase();
-  return (
-    e.includes('could not connect') ||
-    e.includes('failed to fetch') ||
-    e.includes('network connection') ||
-    e.includes('networkerror') ||
-    e.includes('endpoint returned non-json') ||
-    e.includes('econndatarefused')
-  );
-};
-
 interface AuthContextType {
   user: User | null;
   role: UserRole | null;
@@ -139,21 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let phone: string | undefined;
     let dob: string | undefined;
 
-    // 1. Check Local Registered Users Cache
-    const registeredUsersJSON = localStorage.getItem('jivexa_registered_users');
-    if (registeredUsersJSON) {
-      try {
-        const usersList: User[] = JSON.parse(registeredUsersJSON);
-        const match = usersList.find((u) => u.id === id || u.email.toLowerCase() === email.toLowerCase());
-        if (match) {
-          onboardingCompleted = Boolean(match.onboarded);
-          role = match.role;
-          if (match.name) name = match.name;
-        }
-      } catch (e) {}
-    }
-
-    // 2. Query Supabase Database if configured
+    // Query Supabase Database if configured
     if (isSupabaseConfigured && supabase) {
       try {
         const { data: userData } = await supabase
@@ -243,20 +216,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('[Auth Context] Node session lookup skipped');
       }
 
-      // 2. Check Saved Session User in Local Storage
-      const savedUserJSON = localStorage.getItem('jivexa_session_user');
-      if (savedUserJSON) {
-        try {
-          const parsedUser = JSON.parse(savedUserJSON);
-          if (parsedUser && parsedUser.id && parsedUser.email) {
-            setUser(parsedUser);
-            setIsLoading(false);
-            return;
-          }
-        } catch (e) {
-          localStorage.removeItem('jivexa_session_user');
-        }
-      }
+      // If backend session lookup fails/is unauthenticated, clear local session storage
+      setUser(null);
+      localStorage.removeItem('jivexa_session_user');
 
       // 3. Fallback: Check Supabase Auth Session
       if (!isSupabaseConfigured || !supabase) {
@@ -314,48 +276,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // HELPER TO SAVE REGISTERED USERS PERSISTENTLY WITH PASSWORD HASH / PLAIN
-  const saveToRegisteredUsersRegistry = (userToSave: User, rawPassword?: string) => {
-    try {
-      const existing = localStorage.getItem('jivexa_registered_users');
-      let list: Array<User & { storedPassword?: string }> = [];
-      if (existing) {
-        list = JSON.parse(existing);
-      }
-      const emailKey = userToSave.email.toLowerCase().trim();
-      const existingUser = list.find((u) => u.email.toLowerCase().trim() === emailKey);
-      const filtered = list.filter((u) => u.email.toLowerCase().trim() !== emailKey);
-      
-      const storedPassword = rawPassword || existingUser?.storedPassword || 'Piyush@123';
-      filtered.push({ ...userToSave, storedPassword });
-      localStorage.setItem('jivexa_registered_users', JSON.stringify(filtered));
-    } catch (e) {}
-  };
-
-  const getRegisteredUserByEmail = (emailTarget: string): (User & { storedPassword?: string }) | null => {
-    try {
-      const existing = localStorage.getItem('jivexa_registered_users');
-      let list: Array<User & { storedPassword?: string }> = [];
-      if (existing) {
-        list = JSON.parse(existing);
-      } else {
-        // Pre-seed demo accounts into local registry
-        list = [
-          { id: 'usr_demo_patient', email: 'patient@jivexa.com', name: 'Demo Patient', role: 'PATIENT', verified: true, emailVerified: true, accountStatus: 'ACTIVE', onboarded: true, storedPassword: 'Piyush@123' },
-          { id: 'usr_demo_doctor', email: 'doctor@jivexa.com', name: 'Dr. Piyush Sharma', role: 'DOCTOR', verified: true, emailVerified: true, accountStatus: 'ACTIVE', onboarded: true, storedPassword: 'Piyush@123' },
-          { id: 'usr_demo_pharmacy', email: 'pharmacy@jivexa.com', name: 'Jivexa Health Pharmacy', role: 'PHARMACY', verified: true, emailVerified: true, accountStatus: 'ACTIVE', onboarded: true, storedPassword: 'Piyush@123' },
-          { id: 'usr_demo_ambulance', email: 'ambulance@jivexa.com', name: 'Emergency Ambulance Fleet', role: 'AMBULANCE_PARTNER', verified: true, emailVerified: true, accountStatus: 'ACTIVE', onboarded: true, storedPassword: 'Piyush@123' }
-        ];
-        localStorage.setItem('jivexa_registered_users', JSON.stringify(list));
-      }
-      const emailKey = emailTarget.toLowerCase().trim();
-      return list.find((u) => u.email.toLowerCase().trim() === emailKey) || null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // LOGIN IMPLEMENTATION (STRICT CREDENTIAL VERIFICATION)
+  // LOGIN IMPLEMENTATION (BACKEND ONLY)
   const login = async (email: string, password: string, role?: UserRole): Promise<AuthActionResult> => {
     setIsLoading(true);
     const sanitizedEmail = email.toLowerCase().trim();
@@ -377,7 +298,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Please enter your password.' };
     }
 
-    // 1. Attempt Node.js + Express + MongoDB Backend API
     try {
       const nodeRes = await nodeAuthLogin(sanitizedEmail, sanitizedPassword, role);
       if (nodeRes.success && nodeRes.user) {
@@ -396,63 +316,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         setUser(userProfile);
         localStorage.setItem('jivexa_session_user', JSON.stringify(userProfile));
-        saveToRegisteredUsersRegistry(userProfile, sanitizedPassword);
         setIsLoading(false);
         return { success: true, role: userProfile.role };
-      } else if (nodeRes.error && !isConnectionError(nodeRes.error)) {
+      } else {
         setIsLoading(false);
         return { 
           success: false, 
-          error: nodeRes.error,
+          error: nodeRes.error || 'Invalid credentials or login failed.',
           requireOtp: nodeRes.requireOtp,
           email: nodeRes.email || sanitizedEmail
         };
       }
     } catch (e: any) {
-      // Continue to local persistent registry check
-    }
-
-    // 2. Client-side Registered Users Registry Credential Check
-    const registeredUser = getRegisteredUserByEmail(sanitizedEmail);
-
-    if (!registeredUser) {
       setIsLoading(false);
-      return { 
-        success: false, 
-        error: `No account found for "${sanitizedEmail}". Please register an account first.` 
+      return {
+        success: false,
+        error: e.message || 'Authentication service is unavailable.'
       };
     }
-
-    if (registeredUser.storedPassword && registeredUser.storedPassword !== sanitizedPassword) {
-      setIsLoading(false);
-      return { 
-        success: false, 
-        error: 'Incorrect password. Please verify your password and try again.' 
-      };
-    }
-
-    // Login successful
-    const activeUser: User = {
-      id: registeredUser.id,
-      email: registeredUser.email,
-      name: registeredUser.name,
-      role: (role || registeredUser.role) as UserRole,
-      verified: registeredUser.verified,
-      emailVerified: registeredUser.emailVerified,
-      accountStatus: registeredUser.accountStatus,
-      onboarded: registeredUser.onboarded,
-      professionalDetails: registeredUser.professionalDetails,
-      vehicleDetails: registeredUser.vehicleDetails,
-      licenseDetails: registeredUser.licenseDetails
-    };
-
-    setUser(activeUser);
-    localStorage.setItem('jivexa_session_user', JSON.stringify(activeUser));
-    setIsLoading(false);
-    return { success: true, role: activeUser.role };
   };
 
-  // SIGNUP IMPLEMENTATION (STRICT ZOD RULES FROM Authenticaton-code-main)
+  // SIGNUP IMPLEMENTATION (BACKEND ONLY)
   const signup = async (
     email: string, 
     name: string, 
@@ -465,7 +349,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const sanitizedName = name.trim();
     const sanitizedPassword = (password || '').trim();
 
-    // 1. Zod Name Validation (min 3, max 80)
     if (!sanitizedName) {
       setIsLoading(false);
       return { success: false, error: 'Full name is required.' };
@@ -475,7 +358,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Name must be at least 3 characters long.' };
     }
 
-    // 2. Zod Email Validation
     if (!sanitizedEmail) {
       setIsLoading(false);
       return { success: false, error: 'Please enter an email address.' };
@@ -489,7 +371,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sanitizedEmail = `${sanitizedEmail}@jivexa.com`;
     }
 
-    // 3. Zod Password Validation (min 8, uppercase, lowercase, number, special char)
     if (!sanitizedPassword) {
       setIsLoading(false);
       return { success: false, error: 'Please choose a password.' };
@@ -515,7 +396,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Password must contain at least one special symbol (@!#$ etc.).' };
     }
 
-    // Attempt Node.js Backend API signup
     try {
       const nodeRes = await nodeAuthSignup(sanitizedName, sanitizedEmail, sanitizedPassword, role, extraFields);
       if (nodeRes.success && nodeRes.user) {
@@ -535,7 +415,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setUser(userProfile);
         localStorage.setItem('jivexa_session_user', JSON.stringify(userProfile));
-        saveToRegisteredUsersRegistry(userProfile, sanitizedPassword);
         setIsLoading(false);
         return { 
           success: true, 
@@ -545,37 +424,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           previewUrl: nodeRes.previewUrl,
           message: nodeRes.message
         };
-      } else if (nodeRes.error && !isConnectionError(nodeRes.error)) {
+      } else {
         setIsLoading(false);
         return { 
           success: false, 
-          error: nodeRes.error 
+          error: nodeRes.error || 'Registration failed.' 
         };
       }
     } catch (e: any) {
-      // Continue to deployment session fallback
+      setIsLoading(false);
+      return {
+        success: false,
+        error: e.message || 'Authentication service is unavailable.'
+      };
     }
-
-    // Deployment Fallback (Only executed when backend connection is unavailable and all Zod checks passed)
-    const userProfile: User = {
-      id: `usr_${Date.now()}`,
-      email: sanitizedEmail,
-      name: sanitizedName,
-      role,
-      verified: true,
-      emailVerified: true,
-      accountStatus: 'ACTIVE',
-      onboarded: true,
-      professionalDetails: extraFields?.nmcRegistrationNumber ? { nmcRegistrationNumber: extraFields.nmcRegistrationNumber, stateMedicalCouncil: extraFields.stateMedicalCouncil } : undefined,
-      vehicleDetails: extraFields?.vehicleNumber ? { vehicleNumber: extraFields.vehicleNumber } : undefined,
-      licenseDetails: extraFields?.drugLicenseNumber ? { drugLicenseNumber: extraFields.drugLicenseNumber, gstin: extraFields.gstin } : undefined
-    };
-
-    setUser(userProfile);
-    localStorage.setItem('jivexa_session_user', JSON.stringify(userProfile));
-    saveToRegisteredUsersRegistry(userProfile, sanitizedPassword);
-    setIsLoading(false);
-    return { success: true, role: userProfile.role };
   };
 
   const verifyEmail = async (code: string, emailTarget?: string): Promise<AuthActionResult> => {
@@ -633,33 +495,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const submitRoleVerification = async (payload: Record<string, any>): Promise<AuthActionResult> => {
     try {
       const nodeRes = await nodeAuthSubmitVerification(payload);
+      if (!nodeRes.success) {
+        return { success: false, error: nodeRes.error || 'Verification submission failed.' };
+      }
       if (user) {
         const updated: User = {
           ...user,
-          accountStatus: nodeRes.accountStatus || 'VERIFIED',
+          accountStatus: nodeRes.accountStatus || 'PENDING_REVIEW',
           professionalDetails: payload.nmcRegistrationNumber ? { nmcRegistrationNumber: payload.nmcRegistrationNumber, stateMedicalCouncil: payload.stateMedicalCouncil } : user.professionalDetails,
           vehicleDetails: payload.vehicleNumber ? { vehicleNumber: payload.vehicleNumber } : user.vehicleDetails,
           licenseDetails: payload.drugLicenseNumber ? { drugLicenseNumber: payload.drugLicenseNumber, gstin: payload.gstin } : user.licenseDetails
         };
         setUser(updated);
         localStorage.setItem('jivexa_session_user', JSON.stringify(updated));
-        saveToRegisteredUsersRegistry(updated);
       }
-      return { success: true, message: nodeRes.message || 'Verification submitted.', accountStatus: nodeRes.accountStatus || 'VERIFIED' };
+      return { success: true, message: nodeRes.message || 'Verification submitted.', accountStatus: nodeRes.accountStatus || 'PENDING_REVIEW' };
     } catch (e: any) {
-      if (user) {
-        const updated: User = {
-          ...user,
-          accountStatus: 'VERIFIED',
-          professionalDetails: payload.nmcRegistrationNumber ? { nmcRegistrationNumber: payload.nmcRegistrationNumber, stateMedicalCouncil: payload.stateMedicalCouncil } : user.professionalDetails,
-          vehicleDetails: payload.vehicleNumber ? { vehicleNumber: payload.vehicleNumber } : user.vehicleDetails,
-          licenseDetails: payload.drugLicenseNumber ? { drugLicenseNumber: payload.drugLicenseNumber, gstin: payload.gstin } : user.licenseDetails
-        };
-        setUser(updated);
-        localStorage.setItem('jivexa_session_user', JSON.stringify(updated));
-        saveToRegisteredUsersRegistry(updated);
-      }
-      return { success: true, message: 'Verification details updated.', accountStatus: 'VERIFIED' };
+      return { success: false, error: e.message || 'Failed to submit verification details.' };
     }
   };
 
