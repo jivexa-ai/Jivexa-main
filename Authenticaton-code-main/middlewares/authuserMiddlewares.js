@@ -16,7 +16,15 @@ const authUserMiddlewares = async (req, res, next) => {
       });
     }
 
-    const secret = process.env.JWT_SECRET || "jivexa_super_secret_jwt_key_2026_secure!";
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error("[Auth Middleware Error]: JWT_SECRET environment variable is missing");
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error: JWT_SECRET is not configured."
+      });
+    }
+
     let payload;
     try {
       payload = jwt.verify(token, secret);
