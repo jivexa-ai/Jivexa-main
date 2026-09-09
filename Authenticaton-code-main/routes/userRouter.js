@@ -19,6 +19,6 @@ userRouter.get("/profile", authUserMiddlewares, profile);
 userRouter.get("/me", authUserMiddlewares, profile);
 userRouter.post("/send-otp", sendOTP);
 userRouter.post("/verify-otp", verifyOTP);
-userRouter.post("/submit-verification", submitVerification);
+userRouter.post("/submit-verification", authUserMiddlewares, submitVerification);
 
 export default userRouter;

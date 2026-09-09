@@ -9,11 +9,18 @@ dotenv.config();
 
 const app = express();
 
-// Enable CORS for all environments (local & deployed domains with credentials)
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+  : [];
+
+// Enable CORS with explicit ALLOWED_ORIGINS allowlist
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow any origin for easy cross-deployment compatibility
-    callback(null, true);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy error: Origin ${origin} is not allowed`));
+    }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -49,12 +56,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    if (!process.env.JWT_SECRET) {
+      console.error("[Jivexa Auth Server Startup Error]: JWT_SECRET environment variable is not set.");
+      process.exit(1);
+    }
     await connectDB();
     app.listen(PORT, () => {
       console.log(`[Jivexa Auth Server] running on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("[Jivexa Auth Server Startup Error]:", error);
+    process.exit(1);
   }
 };
 
