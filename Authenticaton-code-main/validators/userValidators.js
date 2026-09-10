@@ -24,7 +24,7 @@ export const signupSchema = z.object({
     .regex(/[0-9]/, { message: "Password must contain at least one number (0-9)" })
     .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (@!#$% etc.)" }),
   role: z
-    .enum(['PATIENT', 'DOCTOR', 'PHARMACY', 'ADMIN', 'AMBULANCE_PARTNER'])
+    .enum(['PATIENT', 'DOCTOR', 'PHARMACY', 'AMBULANCE_PARTNER'])
     .optional()
     .default('PATIENT'),
   nmcRegistrationNumber: z.string().optional(),
