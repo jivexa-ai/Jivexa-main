@@ -201,7 +201,7 @@ const RoleSelectorCards: React.FC<{ activeRole: UserRole; onSelectRole: (role: U
               onClick={() => onSelectRole(r.id)}
               style={{
                 border: isSelected ? `2px solid ${r.color}` : '1.5px solid var(--border)',
-                backgroundColor: isSelected ? '#f0f9ff' : '#ffffff',
+                backgroundColor: isSelected ? 'var(--surface-raised)' : 'var(--surface)',
                 borderRadius: 'var(--radius-md)',
                 padding: '12px 14px',
                 cursor: 'pointer',
@@ -217,7 +217,7 @@ const RoleSelectorCards: React.FC<{ activeRole: UserRole; onSelectRole: (role: U
                 width: '36px',
                 height: '36px',
                 borderRadius: '8px',
-                backgroundColor: isSelected ? '#ffffff' : 'var(--surface-raised)',
+                backgroundColor: isSelected ? 'var(--surface)' : 'var(--surface-raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -248,7 +248,7 @@ const RoleSelectorCards: React.FC<{ activeRole: UserRole; onSelectRole: (role: U
 
 // --- LOGIN VIEW ---
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { isAuthenticated, role, login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -268,6 +268,19 @@ export const Login: React.FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && role) {
+      const dashboardRoutes: Record<UserRole, string> = {
+        PATIENT: '/patient/dashboard',
+        DOCTOR: '/doctor/dashboard',
+        PHARMACY: '/pharmacy/dashboard',
+        ADMIN: '/admin/dashboard',
+        AMBULANCE_PARTNER: '/ambulance/dashboard'
+      };
+      navigate(dashboardRoutes[role], { replace: true });
+    }
+  }, [isAuthenticated, role, navigate]);
 
   useEffect(() => {
     const roleFromUrl = getInitialRole();

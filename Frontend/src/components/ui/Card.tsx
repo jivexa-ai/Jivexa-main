@@ -29,7 +29,7 @@ export const Card: React.FC<CardProps> = ({
       style={{
         backgroundColor: 'var(--surface)',
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid rgba(226, 232, 240, 0.9)',
+        border: '1px solid var(--border)',
         padding: '24px',
         boxShadow: 'var(--shadow-md)',
         transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1)',

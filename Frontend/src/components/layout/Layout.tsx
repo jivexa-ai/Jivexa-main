@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useHealthData } from '../../context/HealthDataContext';
 import { BrandLogo } from '../common/BrandLogo';
+import { ThemeToggle } from '../common/ThemeToggle';
 import {
   Menu, X, Bell, LogOut, User as UserIcon, Shield, Heart,
   Activity, MessageSquare, Clipboard, Calendar, FileText,
@@ -42,7 +43,7 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        backgroundColor: 'var(--surface-glass)',
         backdropFilter: 'blur(10px)',
         borderBottom: '1px solid var(--border)',
         height: 'var(--header-height)',
@@ -65,69 +66,75 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
             <Link to="/contact" style={{ color: 'var(--text-main)', fontWeight: 500 }}>Contact</Link>
           </nav>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="sr-mobile-hide">
-            {isAuthenticated ? (
-              <>
-                <button 
-                  onClick={handleCTA}
-                  style={{
-                    backgroundColor: 'var(--primary)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '8px 16px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background var(--transition-fast)'
-                  }}
-                >
-                  Dashboard
-                </button>
-                <button 
-                  onClick={logout}
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: 'var(--text-muted)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '8px 16px',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" style={{ color: 'var(--text-main)', fontWeight: 600 }}>Login</Link>
-                <Link 
-                  to="/signup" 
-                  style={{
-                    backgroundColor: 'var(--primary)',
-                    color: 'white',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '8px 18px',
-                    fontWeight: 600,
-                    transition: 'background var(--transition-fast)'
-                  }}
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="sr-mobile-hide">
+              {isAuthenticated ? (
+                <>
+                  <button 
+                    onClick={handleCTA}
+                    style={{
+                      backgroundColor: 'var(--primary)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '8px 16px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'background var(--transition-fast)'
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  <button 
+                    onClick={logout}
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: 'var(--text-muted)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '8px 16px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" style={{ color: 'var(--text-main)', fontWeight: 600 }}>Login</Link>
+                  <Link 
+                    to="/signup" 
+                    style={{
+                      backgroundColor: 'var(--primary)',
+                      color: 'white',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '8px 18px',
+                      fontWeight: 600,
+                      transition: 'background var(--transition-fast)'
+                    }}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
+            </div>
 
-          {/* Mobile Menu Icon */}
-          <button 
-            style={{ display: 'none', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-main)' }} 
-            className="sr-mobile-show"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {/* Global Theme Toggle in Top Right */}
+            <ThemeToggle />
+
+            {/* Mobile Menu Icon */}
+            <button 
+              style={{ display: 'none', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-main)' }} 
+              className="sr-mobile-show"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </header>
+
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
@@ -137,7 +144,7 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'white',
+          backgroundColor: 'var(--surface)',
           zIndex: 49,
           padding: '24px',
           display: 'flex',
@@ -175,7 +182,7 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
       </main>
 
       {/* Footer */}
-      <footer style={{ backgroundColor: 'var(--text-main)', color: 'rgba(255,255,255,0.7)', padding: '64px 0 32px 0', borderTop: '1px solid var(--border)' }}>
+      <footer style={{ backgroundColor: 'var(--footer-bg)', color: 'rgba(255,255,255,0.7)', padding: '64px 0 32px 0', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '48px', marginBottom: '48px' }} className="footer-grid-mobile">
             <div>
@@ -313,7 +320,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       {/* Desktop Sidebar */}
       <aside style={{
         width: 'var(--sidebar-width)',
-        backgroundColor: 'white',
+        backgroundColor: 'var(--surface)',
         borderRight: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
@@ -392,7 +399,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <header style={{
           height: 'var(--header-height)',
-          backgroundColor: 'white',
+          backgroundColor: 'var(--surface)',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           alignItems: 'center',
@@ -414,8 +421,12 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
             Secure Health Ecosystem
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Global Theme Toggle in Top Right */}
+            <ThemeToggle />
+
             <div style={{ position: 'relative' }}>
+
               <button 
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
                 style={{
@@ -462,7 +473,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                   right: 0,
                   marginTop: '12px',
                   width: '320px',
-                  backgroundColor: 'white',
+                  backgroundColor: 'var(--surface)',
                   borderRadius: 'var(--radius-md)',
                   boxShadow: 'var(--shadow-lg)',
                   border: '1px solid var(--border)',
@@ -525,7 +536,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           <nav style={{
             display: 'none',
             height: '60px',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--surface)',
             borderTop: '1px solid var(--border)',
             justifyContent: 'space-around',
             alignItems: 'center',
@@ -570,7 +581,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           <div 
             style={{
               width: '280px',
-              backgroundColor: 'white',
+              backgroundColor: 'var(--surface)',
               height: '100%',
               display: 'flex',
               flexDirection: 'column',

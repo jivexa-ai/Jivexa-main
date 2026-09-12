@@ -112,57 +112,49 @@ export const getMyHealthIdApi = async (): Promise<HealthIdResponse> => {
 };
 
 // 3. Search and verify any Health ID against MongoDB
-export const searchHealthIdApi = async (healthIdQuery: string): Promise<HealthIdResponse> => {
+export const searchHealthIdApi = async (
+  healthIdQuery: string
+): Promise<HealthIdResponse> => {
   try {
-    const cleanQuery = encodeURIComponent((healthIdQuery || '').trim());
-    const response = await fetchWithFallback(`/api/health-id/search?healthId=${cleanQuery}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+    const cleanQuery = encodeURIComponent((healthIdQuery || "").trim());
+
+    const response = await fetchWithFallback(
+      `/api/health-id/search?healthId=${cleanQuery}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     const result = await response.json();
+
     if (!response.ok) {
       return {
         success: false,
-        message: result.message || (response.status === 404 ? 'Health ID not found' : 'Health ID verification failed')
+        message:
+          result.message ||
+          (response.status === 404
+            ? "Health ID not found"
+            : "Health ID verification failed"),
       };
     }
 
     return {
       success: true,
       healthId: result.healthId,
-      patient: result.patient
+      patient: result.patient,
     };
   } catch (err: any) {
-    console.warn('[Health ID Service] Search API network fallback:', err.message);
-    const cleanId = (healthIdQuery || '').trim().toUpperCase() || 'JIV-2026-255930';
-    let dynamicName = 'Patient Profile';
-    let dynamicEmail = 'user@jivexa.health';
-    try {
-      const activeUserJSON = localStorage.getItem('jivexa_session_user');
-      if (activeUserJSON) {
-        const parsedUser = JSON.parse(activeUserJSON);
-        if (parsedUser?.name) dynamicName = parsedUser.name;
-        if (parsedUser?.email) dynamicEmail = parsedUser.email;
-      }
-    } catch (e) {}
+    console.warn(
+      "[Health ID Service] Search API error:",
+      err.message
+    );
 
     return {
-      success: true,
-      healthId: cleanId,
-      patient: {
-        name: dynamicName,
-        dateOfBirth: '1998-05-14',
-        gender: 'Male',
-        bloodGroup: 'O+',
-        email: dynamicEmail,
-        phoneNumber: '+91 98765 43210',
-        emergencyContact: { name: `${dynamicName} Emergency Contact`, relation: 'Family', phone: '+91 98765 00000' },
-        address: 'India',
-        healthProfile: { allergies: ['None'], chronicConditions: ['None'], bloodPressure: '120/80' }
-      }
+      success: false,
+      message: "Backend server connection error",
     };
   }
 };

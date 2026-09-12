@@ -415,7 +415,7 @@ export const PatientMedicines: React.FC = () => {
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   style={{
-                    backgroundColor: selectedCategory === cat ? '#0f766e' : '#ffffff',
+                    backgroundColor: selectedCategory === cat ? '#0f766e' : 'var(--surface)',
                     color: selectedCategory === cat ? '#ffffff' : 'var(--text-muted)',
                     border: selectedCategory === cat ? 'none' : '1px solid var(--border)',
                     borderRadius: '12px',

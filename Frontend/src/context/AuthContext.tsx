@@ -216,9 +216,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('[Auth Context] Node session lookup skipped');
       }
 
-      // If backend session lookup fails/is unauthenticated, clear local session storage
+      // If backend session lookup fails/is unauthenticated, clear local session storage and tokens
       setUser(null);
       localStorage.removeItem('jivexa_session_user');
+      localStorage.removeItem('jivexa_node_jwt_token');
 
       // 3. Fallback: Check Supabase Auth Session
       if (!isSupabaseConfigured || !supabase) {
@@ -553,6 +554,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     setUser(null);
     localStorage.removeItem('jivexa_session_user');
+    localStorage.removeItem('jivexa_node_jwt_token');
   };
 
   return (

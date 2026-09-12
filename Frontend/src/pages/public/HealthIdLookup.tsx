@@ -61,7 +61,7 @@ export const HealthIdLookup: React.FC = () => {
   return (
     <div style={{ maxWidth: '1080px', margin: '32px auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px', boxSizing: 'border-box' }}>
       
-      {/* SIGNATURE EMERGENY HEADER BANNER */}
+      {/* SIGNATURE EMERGENCY HEADER BANNER */}
       <div style={{
         width: '100%',
         background: 'linear-gradient(135deg, #0284c7 0%, #0f766e 50%, #059669 100%)',
@@ -117,7 +117,7 @@ export const HealthIdLookup: React.FC = () => {
       </div>
 
       {/* SEARCH INPUT CARD WITH SEARCH TABS */}
-      <Card style={{ padding: '32px', borderRadius: '24px', boxShadow: 'var(--shadow-xl)' }}>
+      <Card style={{ padding: '32px', borderRadius: '24px', boxShadow: 'var(--shadow-xl)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
@@ -172,7 +172,7 @@ export const HealthIdLookup: React.FC = () => {
 
           {activeSearchMode === 'id' ? (
             <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <label style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-dark)' }}>
+              <label style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 Enter Jivexa Health ID (JHID):
               </label>
               
@@ -191,8 +191,8 @@ export const HealthIdLookup: React.FC = () => {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '16px', marginTop: '6px', flexWrap: 'wrap', gap: '10px' }}>
                 <span>Try Sample Demo Health IDs: 
-                  <code style={{ color: '#0f766e', cursor: 'pointer', fontWeight: 800, marginLeft: '6px', padding: '2px 8px', backgroundColor: '#e0f2fe', borderRadius: '6px' }} onClick={(e) => { setQuery('JXV-STVAZREW'); handleSearch(e, 'JXV-STVAZREW'); }}>JXV-STVAZREW</code>
-                  <code style={{ color: '#0f766e', cursor: 'pointer', fontWeight: 800, marginLeft: '6px', padding: '2px 8px', backgroundColor: '#e0f2fe', borderRadius: '6px' }} onClick={(e) => { setQuery('PAT-202608-F4A1B'); handleSearch(e, 'PAT-202608-F4A1B'); }}>PAT-202608-F4A1B</code>
+                  <code style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 800, marginLeft: '6px', padding: '2px 8px', backgroundColor: 'var(--primary-light)', borderRadius: '6px' }} onClick={(e) => { setQuery('JXV-STVAZREW'); handleSearch(e, 'JXV-STVAZREW'); }}>JXV-STVAZREW</code>
+                  <code style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 800, marginLeft: '6px', padding: '2px 8px', backgroundColor: 'var(--primary-light)', borderRadius: '6px' }} onClick={(e) => { setQuery('PAT-202608-F4A1B'); handleSearch(e, 'PAT-202608-F4A1B'); }}>PAT-202608-F4A1B</code>
                 </span>
 
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10b981', fontWeight: 800 }}>
@@ -201,9 +201,9 @@ export const HealthIdLookup: React.FC = () => {
               </div>
             </form>
           ) : (
-            <div style={{ padding: '36px 20px', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '20px', border: '2px dashed var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+            <div style={{ padding: '36px 20px', textAlign: 'center', backgroundColor: 'var(--surface-raised)', borderRadius: '20px', border: '2px dashed var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
               <QrCode size={56} style={{ color: '#0f766e' }} />
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Scan Physical Emergency Health Card QR</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>Scan Physical Emergency Health Card QR</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, maxWidth: '440px' }}>
                 Hold your camera or barcode scanner over the patient's JIVEXA Health Card to retrieve Level 1 Emergency Vitals.
               </p>
@@ -217,7 +217,7 @@ export const HealthIdLookup: React.FC = () => {
       </Card>
 
       {error && (
-        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '18px', padding: '18px 22px', color: '#dc2626', fontSize: '0.92rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ backgroundColor: 'var(--error-light)', border: '1px solid var(--error)', borderRadius: '18px', padding: '18px 22px', color: 'var(--error)', fontSize: '0.92rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '12px' }}>
           <AlertTriangle size={22} />
           <span>{error}</span>
         </div>
@@ -227,7 +227,7 @@ export const HealthIdLookup: React.FC = () => {
       {profile && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '24px', border: '1.5px solid var(--border)', padding: '32px', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          <div style={{ backgroundColor: 'var(--surface)', borderRadius: '24px', border: '1.5px solid var(--border)', padding: '32px', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column', gap: '28px' }}>
             
             {/* Header Section with Masked Name & Emergency Badge */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '24px' }}>
@@ -244,14 +244,14 @@ export const HealthIdLookup: React.FC = () => {
                   fontWeight: 900,
                   fontSize: '1.6rem',
                   boxShadow: '0 10px 22px -4px rgba(15,118,110,0.4)',
-                  border: '3px solid #ffffff'
+                  border: '3px solid var(--surface)'
                 }}>
                   {profile.maskedName.charAt(0)}
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0, color: 'var(--text-dark)' }}>{profile.maskedName}</h2>
-                    <span style={{ fontSize: '0.74rem', fontWeight: 800, backgroundColor: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, margin: 0, color: 'var(--text-main)' }}>{profile.maskedName}</h2>
+                    <span style={{ fontSize: '0.74rem', fontWeight: 800, backgroundColor: 'var(--primary-light)', color: 'var(--primary)', padding: '4px 10px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                       Level 1 Public Emergency View
                     </span>
                   </div>
@@ -263,8 +263,8 @@ export const HealthIdLookup: React.FC = () => {
 
               {/* Emergency Mode Active Status Indicator Badge */}
               <div style={{
-                backgroundColor: profile.emergencySharingEnabled ? '#ecfdf5' : '#f8fafc',
-                border: profile.emergencySharingEnabled ? '1.5px solid #10b981' : '1px solid var(--border)',
+                backgroundColor: profile.emergencySharingEnabled ? 'var(--secondary-light)' : 'var(--surface-raised)',
+                border: profile.emergencySharingEnabled ? '1.5px solid var(--secondary)' : '1px solid var(--border)',
                 borderRadius: '18px',
                 padding: '12px 20px',
                 display: 'flex',
@@ -272,12 +272,12 @@ export const HealthIdLookup: React.FC = () => {
                 gap: '10px',
                 boxShadow: profile.emergencySharingEnabled ? '0 6px 18px -4px rgba(16, 185, 129, 0.25)' : 'none'
               }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: profile.emergencySharingEnabled ? '#10b981' : '#94a3b8' }} className="pulse-dot" />
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: profile.emergencySharingEnabled ? 'var(--secondary)' : '#94a3b8' }} className="pulse-dot" />
                 <div>
-                  <span style={{ fontSize: '0.84rem', fontWeight: 900, color: profile.emergencySharingEnabled ? '#047857' : '#475569', display: 'block' }}>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 900, color: profile.emergencySharingEnabled ? 'var(--secondary)' : 'var(--text-muted)', display: 'block' }}>
                     {profile.emergencySharingEnabled ? '⚡ Emergency Mode ACTIVE' : '🔒 Standard Privacy Mode'}
                   </span>
-                  <span style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--secondary)', fontWeight: 700 }}>
                     First Responder Consent Valid for 12h
                   </span>
                 </div>
@@ -287,62 +287,62 @@ export const HealthIdLookup: React.FC = () => {
             {/* 4 CORE EMERGENCY METRIC CARDS */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '18px' }} className="grid-2-mobile">
               
-              <div style={{ border: '1px solid var(--border)', borderRadius: '18px', padding: '18px', backgroundColor: '#f8fafc' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>DEMOGRAPHICS</span>
-                <p style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--text-dark)', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.age} Yrs • {profile.gender}</p>
+              <div style={{ border: '1px solid var(--border)', borderRadius: '18px', padding: '18px', backgroundColor: 'var(--surface-raised)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>DEMOGRAPHICS</span>
+                <p style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.age} Yrs • {profile.gender}</p>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>English / Hindi</span>
               </div>
 
-              <div style={{ border: '1.5px solid #86efac', borderRadius: '18px', padding: '18px', backgroundColor: '#f0fdf4' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.04em' }}>BLOOD GROUP</span>
-                <p style={{ fontSize: '1.2rem', fontWeight: 900, color: '#166534', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.bloodGroup}</p>
-                <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 700, marginTop: '4px', display: 'block' }}>Universal Donor Compatible</span>
+              <div style={{ border: '1.5px solid var(--secondary)', borderRadius: '18px', padding: '18px', backgroundColor: 'var(--secondary-light)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>BLOOD GROUP</span>
+                <p style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--secondary)', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.bloodGroup}</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--secondary)', fontWeight: 700, marginTop: '4px', display: 'block' }}>Universal Donor Compatible</span>
               </div>
 
-              <div style={{ border: '1.5px solid #fecaca', borderRadius: '18px', padding: '18px', backgroundColor: '#fef2f2' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>⚠️ CRITICAL ALLERGIES</span>
-                <p style={{ fontSize: '0.92rem', fontWeight: 900, color: '#991b1b', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.allergies}</p>
-                <span style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 700, marginTop: '4px', display: 'block' }}>Check Before Administering Penicillin</span>
+              <div style={{ border: '1.5px solid var(--error)', borderRadius: '18px', padding: '18px', backgroundColor: 'var(--error-light)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--error)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>⚠️ CRITICAL ALLERGIES</span>
+                <p style={{ fontSize: '0.92rem', fontWeight: 900, color: 'var(--error)', marginTop: '6px', margin: '6px 0 0 0' }}>{profile.allergies}</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--error)', fontWeight: 700, marginTop: '4px', display: 'block' }}>Check Before Administering Penicillin</span>
               </div>
 
-              <div style={{ border: '1.5px solid #fde68a', borderRadius: '18px', padding: '18px', backgroundColor: '#fffbeb' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em' }}>EMERGENCY CONTACT</span>
-                <p style={{ fontSize: '0.92rem', fontWeight: 900, color: '#78350f', marginTop: '6px', margin: '6px 0 0 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ border: '1.5px solid var(--warning)', borderRadius: '18px', padding: '18px', backgroundColor: 'var(--warning-light)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>EMERGENCY CONTACT</span>
+                <p style={{ fontSize: '0.92rem', fontWeight: 900, color: 'var(--warning)', marginTop: '6px', margin: '6px 0 0 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <PhoneCall size={16} /> {profile.maskedEmergencyContact}
                 </p>
-                <span style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 700, marginTop: '4px', display: 'block' }}>Primary Family Kin</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--warning)', fontWeight: 700, marginTop: '4px', display: 'block' }}>Primary Family Kin</span>
               </div>
 
             </div>
 
             {/* CHRONIC CONDITIONS & REGISTERED HOSPITAL */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }} className="grid-2-mobile">
-              <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <Activity size={24} style={{ color: '#0284c7', flexShrink: 0 }} />
+              <div style={{ backgroundColor: 'var(--primary-light)', border: '1px solid var(--border)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <Activity size={24} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                 <div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase' }}>CHRONIC HEALTH CONDITIONS</span>
-                  <p style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0c4a6e', margin: '2px 0 0 0' }}>{profile.chronicConditions}</p>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase' }}>CHRONIC HEALTH CONDITIONS</span>
+                  <p style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)', margin: '2px 0 0 0' }}>{profile.chronicConditions}</p>
                 </div>
               </div>
 
-              <div style={{ backgroundColor: '#f5f3ff', border: '1px solid #ddd6fe', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <Hospital size={24} style={{ color: '#7c3aed', flexShrink: 0 }} />
+              <div style={{ backgroundColor: 'var(--accent-light)', border: '1px solid var(--border)', padding: '16px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <Hospital size={24} style={{ color: 'var(--accent)', flexShrink: 0 }} />
                 <div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#6d28d9', textTransform: 'uppercase' }}>REGISTERED PRIMARY HOSPITAL</span>
-                  <p style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4c1d95', margin: '2px 0 0 0' }}>{profile.primaryHospital}</p>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase' }}>REGISTERED PRIMARY HOSPITAL</span>
+                  <p style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)', margin: '2px 0 0 0' }}>{profile.primaryHospital}</p>
                 </div>
               </div>
             </div>
 
             {/* FIRST RESPONDER 1-CLICK AMBULANCE ACTION BAR */}
-            <div style={{ backgroundColor: '#fff5f5', border: '1.5px solid #feb2b2', borderRadius: '20px', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ backgroundColor: 'var(--error-light)', border: '1.5px solid var(--error)', borderRadius: '20px', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#e53e3e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(229, 62, 62, 0.4)' }}>
                   <Siren size={22} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 900, color: '#9b2c2c', margin: 0 }}>First Responder Emergency Action</h4>
-                  <span style={{ fontSize: '0.8rem', color: '#c53030' }}>Need urgent medical dispatch or hospital notification for this patient?</span>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--error)', margin: 0 }}>First Responder Emergency Action</h4>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Need urgent medical dispatch or hospital notification for this patient?</span>
                 </div>
               </div>
 
@@ -353,8 +353,8 @@ export const HealthIdLookup: React.FC = () => {
             </div>
 
             {/* PROTECTED CLINICAL DATA PRIVACY SHIELD */}
-            <div style={{ backgroundColor: '#f8fafc', border: '1.5px border-dashed var(--border)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-dark)', fontWeight: 900, fontSize: '1rem' }}>
+            <div style={{ backgroundColor: 'var(--surface-raised)', border: '1.5px dashed var(--border)', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-main)', fontWeight: 900, fontSize: '1rem' }}>
                 <Lock size={20} style={{ color: '#0f766e' }} />
                 <span>Protected Clinical Data (Level 2 & Level 3 Access Control)</span>
               </div>
@@ -364,16 +364,16 @@ export const HealthIdLookup: React.FC = () => {
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', fontSize: '0.86rem', color: 'var(--text-muted)' }} className="grid-2-mobile">
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#ffffff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   🔒 Diagnostic Lab & Imaging Reports
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#ffffff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   🔒 Active Prescription History
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#ffffff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   🔒 Practitioner Consultation Notes
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#ffffff', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   🔒 Historical Medical EHR File History
                 </span>
               </div>
@@ -382,7 +382,7 @@ export const HealthIdLookup: React.FC = () => {
                 <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                   Are you a verified practitioner? Log in to your doctor workstation to request access.
                 </span>
-                <a href="#/login?role=DOCTOR" style={{ fontSize: '0.86rem', fontWeight: 900, color: '#0f766e', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#e0f2fe', padding: '8px 16px', borderRadius: '10px' }}>
+                <a href="#/login?role=DOCTOR" style={{ fontSize: '0.86rem', fontWeight: 900, color: 'var(--primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--primary-light)', padding: '8px 16px', borderRadius: '10px' }}>
                   <UserCheck size={16} /> Doctor Login & Verification ↗
                 </a>
               </div>
@@ -393,6 +393,74 @@ export const HealthIdLookup: React.FC = () => {
         </div>
       )}
 
+      {/* HEALTH ID LOOKUP WORKFLOW GUIDE SECTION */}
+      <div style={{
+        backgroundColor: 'var(--surface)',
+        color: 'var(--text-main)',
+        borderRadius: '24px',
+        border: '1px solid var(--border)',
+        padding: '32px',
+        boxShadow: 'var(--shadow-xl)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '24px'
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Workflow Guide
+          </span>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
+            How Emergency Health ID Verification Works
+          </h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.6' }}>
+            A transparent 4-step protocol designed for zero-delay response while safeguarding patient medical privacy.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }} className="grid-2-mobile">
+          <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.95rem' }}>
+              01
+            </div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>Scan or Enter JHID</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
+              First responder inputs the unique 14-digit Health ID or scans the patient's physical QR badge.
+            </p>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--secondary-light)', color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.95rem' }}>
+              02
+            </div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>Instant Level 1 Access</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
+              System authenticates responder credentials and presents masked Level 1 emergency vitals.
+            </p>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--accent-light)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.95rem' }}>
+              03
+            </div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>Critical Vitals Check</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
+              Review blood group compatibility, severe drug allergies, and reach emergency family contacts.
+            </p>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--surface-raised)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--error-light)', color: 'var(--error)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.95rem' }}>
+              04
+            </div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>Ambulance Dispatch</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
+              Initiate 1-click GPS 108 ambulance dispatch and alert the nearest ICU receiving station.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
+

@@ -14,13 +14,13 @@ export const About: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', backgroundColor: '#f8fafc', overflowX: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', backgroundColor: 'var(--background)', overflowX: 'hidden' }}>
       
       {/* 1. Modern Hero Section */}
       <section style={{ 
         padding: '90px 0 70px 0', 
-        background: 'radial-gradient(ellipse at 50% -20%, rgba(0, 112, 243, 0.12) 0%, rgba(248, 250, 252, 1) 70%)',
-        borderBottom: '1px solid #e2e8f0'
+        background: 'radial-gradient(ellipse at 50% -20%, rgba(0, 112, 243, 0.12) 0%, var(--background) 70%)',
+        borderBottom: '1px solid var(--border)'
       }}>
         <div className="container" style={{ textAlign: 'center', maxWidth: '860px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '0 24px' }}>
           
@@ -41,11 +41,11 @@ export const About: React.FC = () => {
             <span>THE HUMAN HEALTH OPERATING SYSTEM</span>
           </div>
 
-          <h1 style={{ fontSize: '3.2rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: '1.12' }}>
+          <h1 style={{ fontSize: '3.2rem', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.04em', lineHeight: '1.12' }}>
             Healthcare, <span style={{ background: 'linear-gradient(135deg, #0070f3 0%, #0f9d58 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Connected & Intelligent</span>.
           </h1>
 
-          <p style={{ color: '#475569', fontSize: '1.2rem', lineHeight: '1.65', maxWidth: '680px', margin: '0 auto' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', lineHeight: '1.65', maxWidth: '680px', margin: '0 auto' }}>
             JIVEXA unifies Patients, Doctors, Pharmacies, Ambulance Fleets, and National Health Vaults into one seamless, zero-friction ecosystem.
           </p>
 
@@ -58,26 +58,26 @@ export const About: React.FC = () => {
             maxWidth: '780px',
             marginTop: '24px',
             padding: '20px',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--surface)',
             borderRadius: '16px',
-            border: '1px solid #cbd5e1',
-            boxShadow: '0 10px 30px -10px rgba(0,0,0,0.06)'
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-md)'
           }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center' }}>
               <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0070f3' }}>24 / 7</span>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>AI Health Triage</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>AI Health Triage</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
               <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f9d58' }}>100%</span>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>ABHA Vault Sync</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>ABHA Vault Sync</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
               <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#ea4335' }}>&lt; 3 Min</span>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Emergency Radar</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Emergency Radar</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
               <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#f4b400' }}>5 Roles</span>
-              <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>1 Unified OS</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>1 Unified OS</span>
             </div>
           </div>
 
@@ -94,13 +94,13 @@ export const About: React.FC = () => {
       </section>
 
       {/* 2. Core Capabilities & Human Design */}
-      <section style={{ padding: '80px 0', backgroundColor: '#ffffff' }}>
+      <section style={{ padding: '80px 0', backgroundColor: 'var(--surface)' }}>
         <div className="container" style={{ maxWidth: '1140px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '50px' }}>
           
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <span style={{ fontSize: '0.8rem', color: '#0070f3', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Core Principles</span>
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>Engineered for Clarity & Speed</h2>
-            <p style={{ color: '#64748b', fontSize: '1.05rem', lineHeight: '1.6' }}>
+            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.03em' }}>Engineered for Clarity & Speed</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: '1.6' }}>
               We stripped away complex medical jargon and fragmented apps to create a clean, human-first health experience.
             </p>
           </div>
@@ -109,126 +109,126 @@ export const About: React.FC = () => {
             
             {/* Card 1 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(0, 112, 243, 0.1)', color: '#0070f3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Sparkles size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>24/7 AI Neural Triage</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>24/7 AI Neural Triage</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 Instant symptom risk scoring powered by deterministic, zero-hallucination multi-model AI trained on evidence-based medicine.
               </p>
             </div>
 
             {/* Card 2 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(15, 157, 88, 0.1)', color: '#0f9d58', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Shield size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>ABHA Digital Health Vault</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>ABHA Digital Health Vault</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 100% interoperable 14-digit national health records. Carry your entire medical history securely in one encrypted place.
               </p>
             </div>
 
             {/* Card 3 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(234, 67, 53, 0.1)', color: '#ea4335', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Activity size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Pre-Hospital ICU Telemetry</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>Pre-Hospital ICU Telemetry</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 Emergency ambulance fleet dispatch streaming patient vitals directly to hospital ICUs before the ambulance arrives.
               </p>
             </div>
 
             {/* Card 4 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(244, 180, 0, 0.1)', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Stethoscope size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Verified Doctor Consults</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>Verified Doctor Consults</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 Direct access to top specialists with digital prescription issuance, consultation summaries, and follow-up tracking.
               </p>
             </div>
 
             {/* Card 5 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(147, 51, 234, 0.1)', color: '#9333ea', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Pill size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Live Pharmacy Stock Sync</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>Live Pharmacy Stock Sync</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 Check real-time medicine availability across local pharmacies and order verified prescriptions with 1-tap fulfillment.
               </p>
             </div>
 
             {/* Card 6 */}
             <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              backgroundColor: 'var(--surface-raised)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '28px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              boxShadow: 'var(--shadow-sm)'
             }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(0, 112, 243, 0.1)', color: '#0070f3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Lock size={24} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Bank-Grade Security</h3>
-              <p style={{ fontSize: '0.92rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>Bank-Grade Security</h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0 }}>
                 JWT token authorization, Bcrypt salted password security, and strict field-level Zod credential validations.
               </p>
             </div>
@@ -268,28 +268,28 @@ export const HowItWorks: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', backgroundColor: '#f8fafc', overflowX: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', backgroundColor: 'var(--background)', overflowX: 'hidden' }}>
       
       {/* Hero */}
       <section style={{ 
         padding: '80px 0 60px 0', 
-        background: 'radial-gradient(ellipse at 50% -20%, rgba(15, 157, 88, 0.1) 0%, rgba(248, 250, 252, 1) 70%)',
-        borderBottom: '1px solid #e2e8f0',
+        background: 'radial-gradient(ellipse at 50% -20%, rgba(15, 157, 88, 0.12) 0%, var(--background) 70%)',
+        borderBottom: '1px solid var(--border)',
         textAlign: 'center'
       }}>
         <div className="container" style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '0 24px' }}>
           <span style={{ fontSize: '0.8rem', color: '#0f9d58', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Workflow Guide</span>
-          <h1 style={{ fontSize: '3rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', lineHeight: '1.15' }}>
+          <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.03em', lineHeight: '1.15' }}>
             How JIVEXA Connects <span style={{ color: '#0f9d58' }}>Your Entire Healthcare Journey</span>
           </h1>
-          <p style={{ color: '#475569', fontSize: '1.15rem', lineHeight: '1.6' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', lineHeight: '1.6' }}>
             From pre-hospital AI triage to pharmacy fulfillment and ABHA record sync—everything works in perfect harmony.
           </p>
         </div>
       </section>
 
       {/* Interactive Step-by-Step Flow */}
-      <section style={{ padding: '80px 0', backgroundColor: '#ffffff' }}>
+      <section style={{ padding: '80px 0', backgroundColor: 'var(--surface)' }}>
         <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
           
           {/* Step 1 */}
@@ -298,14 +298,14 @@ export const HowItWorks: React.FC = () => {
               01
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>24/7 AI Triage & Lab PDF Analysis</h3>
-              <p style={{ color: '#475569', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>24/7 AI Triage & Lab PDF Analysis</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
                 Ask any health question or upload a lab report PDF. Our multi-model Groq AI server extracts key clinical parameters and delivers instant, evidence-based guidance.
               </p>
             </div>
           </div>
 
-          <div style={{ width: '2px', height: '40px', backgroundColor: '#cbd5e1', marginLeft: '31px' }} />
+          <div style={{ width: '2px', height: '40px', backgroundColor: 'var(--border)', marginLeft: '31px' }} />
 
           {/* Step 2 */}
           <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '24px', alignItems: 'flex-start' }}>
@@ -313,14 +313,14 @@ export const HowItWorks: React.FC = () => {
               02
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>Book Verified Doctor Consultations</h3>
-              <p style={{ color: '#475569', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Book Verified Doctor Consultations</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
                 Connect with certified cardiologists, dermatologists, pediatricians, and general physicians for in-person or video consultations with digital prescription issuance.
               </p>
             </div>
           </div>
 
-          <div style={{ width: '2px', height: '40px', backgroundColor: '#cbd5e1', marginLeft: '31px' }} />
+          <div style={{ width: '2px', height: '40px', backgroundColor: 'var(--border)', marginLeft: '31px' }} />
 
           {/* Step 3 */}
           <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '24px', alignItems: 'flex-start' }}>
@@ -328,14 +328,14 @@ export const HowItWorks: React.FC = () => {
               03
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>Emergency Ambulance GPS Radar</h3>
-              <p style={{ color: '#475569', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Emergency Ambulance GPS Radar</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
                 In critical emergencies, request instant dispatch. Live ambulance GPS radar streams your vitals to the receiving hospital ICU before arrival.
               </p>
             </div>
           </div>
 
-          <div style={{ width: '2px', height: '40px', backgroundColor: '#cbd5e1', marginLeft: '31px' }} />
+          <div style={{ width: '2px', height: '40px', backgroundColor: 'var(--border)', marginLeft: '31px' }} />
 
           {/* Step 4 */}
           <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '24px', alignItems: 'flex-start' }}>
@@ -343,8 +343,8 @@ export const HowItWorks: React.FC = () => {
               04
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>Pharmacy Fulfillment & ABHA Health Vault</h3>
-              <p style={{ color: '#475569', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Pharmacy Fulfillment & ABHA Health Vault</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: '1.65', fontSize: '1.02rem', margin: 0 }}>
                 Fulfill digital prescriptions at partner pharmacies with live stock checks, and automatically sync your records to your 14-digit national ABHA Health Vault.
               </p>
             </div>
@@ -362,11 +362,11 @@ export const ForDoctors: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ padding: '80px 0', backgroundColor: '#f8fafc' }}>
+    <div style={{ padding: '80px 0', backgroundColor: 'var(--background)' }}>
       <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '40px', textAlign: 'center' }}>
         <span style={{ fontSize: '0.8rem', color: '#0070f3', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Clinical Workspace</span>
-        <h1 style={{ fontSize: '3rem', fontWeight: 900, color: '#0f172a' }}>Empowering Doctors with Smart Triage & Digital Workflows</h1>
-        <p style={{ color: '#475569', fontSize: '1.15rem', maxWidth: '640px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--text-main)' }}>Empowering Doctors with Smart Triage & Digital Workflows</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '640px', margin: '0 auto' }}>
           Manage patient queues, view AI-summarized lab reports, issue digital prescriptions, and access ABHA longitudinal records in seconds.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
@@ -387,11 +387,11 @@ export const ForPharmacies: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ padding: '80px 0', backgroundColor: '#f8fafc' }}>
+    <div style={{ padding: '80px 0', backgroundColor: 'var(--background)' }}>
       <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '40px', textAlign: 'center' }}>
         <span style={{ fontSize: '0.8rem', color: '#0f9d58', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Pharmacy Portal</span>
-        <h1 style={{ fontSize: '3rem', fontWeight: 900, color: '#0f172a' }}>Streamline Prescription Orders & Medicine Inventory</h1>
-        <p style={{ color: '#475569', fontSize: '1.15rem', maxWidth: '640px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--text-main)' }}>Streamline Prescription Orders & Medicine Inventory</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '640px', margin: '0 auto' }}>
           Receive verified digital prescription orders, update live stock inventory, and fulfill patient medicine deliveries effortlessly.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
@@ -431,11 +431,11 @@ export const FAQs: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '80px 0', backgroundColor: '#ffffff' }}>
+    <div style={{ padding: '80px 0', backgroundColor: 'var(--background)' }}>
       <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <span style={{ fontSize: '0.8rem', color: '#0070f3', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Help Center</span>
-          <h1 style={{ fontSize: '2.6rem', fontWeight: 900, color: '#0f172a' }}>Frequently Asked Questions</h1>
+          <h1 style={{ fontSize: '2.6rem', fontWeight: 900, color: 'var(--text-main)' }}>Frequently Asked Questions</h1>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -444,20 +444,20 @@ export const FAQs: React.FC = () => {
               key={idx}
               onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
               style={{
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--border)',
                 borderRadius: '12px',
                 padding: '20px 24px',
-                backgroundColor: openIndex === idx ? '#f8fafc' : '#ffffff',
+                backgroundColor: openIndex === idx ? 'var(--surface-raised)' : 'var(--surface)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{item.q}</h3>
-                {openIndex === idx ? <ChevronUp size={20} style={{ color: '#0070f3' }} /> : <ChevronDown size={20} style={{ color: '#64748b' }} />}
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>{item.q}</h3>
+                {openIndex === idx ? <ChevronUp size={20} style={{ color: '#0070f3' }} /> : <ChevronDown size={20} style={{ color: 'var(--text-muted)' }} />}
               </div>
               {openIndex === idx && (
-                <p style={{ marginTop: '12px', color: '#475569', fontSize: '0.98rem', lineHeight: '1.6', margin: '12px 0 0 0' }}>
+                <p style={{ marginTop: '12px', color: 'var(--text-muted)', fontSize: '0.98rem', lineHeight: '1.6', margin: '12px 0 0 0' }}>
                   {item.a}
                 </p>
               )}
@@ -476,34 +476,34 @@ export const Contact: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <div style={{ padding: '80px 0', backgroundColor: '#f8fafc' }}>
+    <div style={{ padding: '80px 0', backgroundColor: 'var(--background)' }}>
       <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <span style={{ fontSize: '0.8rem', color: '#0070f3', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Get In Touch</span>
-          <h1 style={{ fontSize: '2.6rem', fontWeight: 900, color: '#0f172a' }}>We'd Love to Hear From You</h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>Have questions about JIVEXA Health OS? Our team is available 24/7.</p>
+          <h1 style={{ fontSize: '2.6rem', fontWeight: 900, color: 'var(--text-main)' }}>We'd Love to Hear From You</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>Have questions about JIVEXA Health OS? Our team is available 24/7.</p>
         </div>
 
-        <Card style={{ padding: '36px', borderRadius: '16px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff' }}>
+        <Card style={{ padding: '36px', borderRadius: '16px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '40px 0', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
               <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(15, 157, 88, 0.1)', color: '#0f9d58', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Check size={28} />
               </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>Message Received!</h3>
-              <p style={{ color: '#64748b' }}>Thank you for reaching out. A team member will respond shortly.</p>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>Message Received!</h3>
+              <p style={{ color: 'var(--text-muted)' }}>Thank you for reaching out. A team member will respond shortly.</p>
             </div>
           ) : (
             <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <Input label="Full Name" placeholder="John Doe" required />
               <Input label="Email Address" type="email" placeholder="user@domain.com" required />
               <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '6px', display: 'block' }}>Message</label>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px', display: 'block' }}>Message</label>
                 <textarea 
                   rows={4} 
                   placeholder="How can we help you?" 
                   required 
-                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontFamily: 'inherit', fontSize: '0.95rem' }}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text-main)', fontFamily: 'inherit', fontSize: '0.95rem' }}
                 />
               </div>
               <Button type="submit" size="lg" style={{ height: '48px', fontWeight: 700, marginTop: '8px' }}>
@@ -518,35 +518,36 @@ export const Contact: React.FC = () => {
 };
 
 export const Resources: React.FC = () => (
-  <div style={{ padding: '80px 0', textAlign: 'center', backgroundColor: '#f8fafc' }}>
-    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a' }}>JIVEXA Resources & Guides</h1>
-    <p style={{ color: '#64748b', fontSize: '1.1rem', marginTop: '12px' }}>Explore healthcare articles, ABHA health ID integration docs, and clinical guides.</p>
+  <div style={{ padding: '80px 0', textAlign: 'center', backgroundColor: 'var(--background)' }}>
+    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-main)' }}>JIVEXA Resources & Guides</h1>
+    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '12px' }}>Explore healthcare articles, ABHA health ID integration docs, and clinical guides.</p>
   </div>
 );
 
 export const PrivacyPolicy: React.FC = () => (
-  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
-    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '16px' }}>Privacy Policy</h1>
-    <p style={{ color: '#475569', lineHeight: '1.7' }}>
+  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', backgroundColor: 'var(--background)', color: 'var(--text-main)' }}>
+    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '16px' }}>Privacy Policy</h1>
+    <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>
       At JIVEXA Health OS, your health privacy and medical record security are fundamental. We encrypt all patient data and adhere strictly to national ABHA data protection standards.
     </p>
   </div>
 );
 
 export const Terms: React.FC = () => (
-  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
-    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '16px' }}>Terms of Service</h1>
-    <p style={{ color: '#475569', lineHeight: '1.7' }}>
+  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', backgroundColor: 'var(--background)', color: 'var(--text-main)' }}>
+    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '16px' }}>Terms of Service</h1>
+    <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>
       By using JIVEXA Health OS, you agree to our platform terms. JIVEXA provides AI-assisted clinical triage and ecosystem connection, but does not replace direct clinical emergency diagnosis.
     </p>
   </div>
 );
 
 export const Disclaimer: React.FC = () => (
-  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
-    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '16px' }}>Medical Disclaimer</h1>
-    <p style={{ color: '#475569', lineHeight: '1.7' }}>
+  <div style={{ padding: '80px 0', maxWidth: '800px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', backgroundColor: 'var(--background)', color: 'var(--text-main)' }}>
+    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '16px' }}>Medical Disclaimer</h1>
+    <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>
       JIVEXA Health AI Bot and PDF Analyzer provide simulated evidence-based health guidance. In case of life-threatening emergencies, always dial local emergency response services immediately.
     </p>
   </div>
 );
+
