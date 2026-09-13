@@ -310,9 +310,8 @@ export const nodeAuthSubmitVerification = async (payload: Record<string, any>): 
     };
   } catch (err: any) {
     return {
-      success: true,
-      message: 'Professional verification credentials submitted.',
-      accountStatus: 'VERIFIED'
+      success: false,
+      error: err.message || 'Verification submission failed. Connection error.'
     };
   }
 };

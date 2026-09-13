@@ -687,7 +687,7 @@ export const AIAssistantChat: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ border: '1px solid var(--border)', borderRadius: '16px', padding: '14px 18px', width: '100%', backgroundColor: '#ffffff', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: '16px', padding: '14px 18px', width: '100%', backgroundColor: 'var(--surface)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
               <Check size={16} style={{ color: 'var(--secondary)' }} />
               <span>Unlimited Groq Llama 3.3 AI Health Queries</span>

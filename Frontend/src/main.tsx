@@ -4,16 +4,20 @@ import './styles/global.css'; // Bootstraps JIVEXA CSS variables & resets
 import { AuthProvider } from './context/AuthContext';
 import { HealthDataProvider } from './context/HealthDataContext';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <HealthDataProvider>
-        <CartProvider>
-          <App />
-        </CartProvider>
-      </HealthDataProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <HealthDataProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </HealthDataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>
 );
+

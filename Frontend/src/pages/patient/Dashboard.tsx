@@ -779,7 +779,7 @@ export const PatientDashboard: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
-                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a' }}>{dailySteps.toLocaleString()}</span>
+                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-main)' }}>{dailySteps.toLocaleString()}</span>
                 <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ {stepsGoal.toLocaleString()} steps</span>
                 <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary)', marginLeft: 'auto' }}>
                   {Math.round((dailySteps / stepsGoal) * 100)}%
@@ -852,7 +852,7 @@ export const PatientDashboard: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
-                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a' }}>{dailyWater.toLocaleString()}</span>
+                <span style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-main)' }}>{dailyWater.toLocaleString()}</span>
                 <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>/ {waterGoal.toLocaleString()} ml</span>
                 <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0284c7', marginLeft: 'auto' }}>
                   {Math.round((dailyWater / waterGoal) * 100)}%
@@ -979,11 +979,11 @@ export const PatientDashboard: React.FC = () => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Diagnosed Conditions</span>
-                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.conditions || 'Mild Asthma'}</span>
+                <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{patientProfile?.conditions || 'Mild Asthma'}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>Emergency Contact</span>
-                <span style={{ fontWeight: 700, color: '#0f172a' }}>{patientProfile?.emergencyContact || (user?.email ? `${user.name} (${user.email})` : 'Emergency Contact Not Set')}</span>
+                <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{patientProfile?.emergencyContact || (user?.email ? `${user.name} (${user.email})` : 'Emergency Contact Not Set')}</span>
               </div>
               <Button 
                 variant="outline" 
@@ -1015,7 +1015,7 @@ export const PatientDashboard: React.FC = () => {
                 >
                   <Clipboard size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                   <div style={{ overflow: 'hidden', flex: 1 }}>
-                    <span style={{ display: 'block', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: '#0f172a' }}>{rec.name}</span>
+                    <span style={{ display: 'block', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: 'var(--text-main)' }}>{rec.name}</span>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>{rec.date} • {rec.type}</span>
                   </div>
                 </div>

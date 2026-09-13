@@ -33,7 +33,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
       <div
         className="animate-fade-in"
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--surface)',
           borderRadius: 'var(--radius-xl)',
           width: '100%',
           maxWidth: '560px',
@@ -41,7 +41,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
           overflowY: 'auto',
           padding: '28px',
           boxShadow: 'var(--shadow-xl)',
-          border: '1px solid rgba(226, 232, 240, 0.9)',
+          border: '1px solid var(--border)',
           position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}

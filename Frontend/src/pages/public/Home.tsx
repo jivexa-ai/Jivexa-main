@@ -95,7 +95,7 @@ export const Home: React.FC = () => {
       desc: 'AI analyzes your health context, flags risks, and helps you understand your health data more clearly.',
       preview: (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ alignSelf: 'flex-start', backgroundColor: '#f1f3f5', padding: '7px 11px', borderRadius: '10px 10px 10px 0', fontSize: '0.78rem' }}>Is my HbA1c reading normal?</div>
+          <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--surface-raised)', padding: '7px 11px', borderRadius: '10px 10px 10px 0', fontSize: '0.78rem', color: 'var(--text-main)' }}>Is my HbA1c reading normal?</div>
           <div style={{ alignSelf: 'flex-end', backgroundColor: 'var(--primary-light)', padding: '7px 11px', borderRadius: '10px 10px 0 10px', fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 600 }}>6.8% is in the diabetic range. Let me explain what this means for you...</div>
         </div>
       ),
@@ -238,11 +238,11 @@ export const Home: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', overflowX: 'hidden' }}>
 
       {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-      <section className="hero-section" style={{ position: 'relative', padding: '100px 0', overflow: 'hidden', background: 'radial-gradient(circle at 80% 20%, var(--primary-light) 0%, #ffffff 60%)' }}>
+      <section className="hero-section" style={{ position: 'relative', padding: '100px 0', overflow: 'hidden', background: 'radial-gradient(circle at 80% 20%, var(--primary-light) 0%, var(--background) 60%)' }}>
         <div className="container grid-2-mobile" style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: '60px', alignItems: 'center' }}>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', zIndex: 10 }}>
-            <div className="hero-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 16px', width: 'max-content', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="hero-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-full)', padding: '6px 16px', width: 'max-content', boxShadow: 'var(--shadow-sm)' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--secondary)', display: 'inline-block' }} className="pulse-dot" />
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Next-Gen AI HealthTech Platform</span>
             </div>
@@ -267,7 +267,7 @@ export const Home: React.FC = () => {
               <Link
                 to="/how-it-works"
                 className="btn-secondary-hero"
-                style={{ border: '1px solid var(--border)', color: 'var(--text-main)', backgroundColor: 'white', padding: '16px 32px', borderRadius: 'var(--radius-sm)', fontWeight: 700, fontSize: '1.05rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', transition: 'background-color 0.2s ease' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--text-main)', backgroundColor: 'var(--surface)', padding: '16px 32px', borderRadius: 'var(--radius-sm)', fontWeight: 700, fontSize: '1.05rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', transition: 'background-color 0.2s ease' }}
               >
                 Join the Ecosystem
               </Link>
@@ -300,22 +300,22 @@ export const Home: React.FC = () => {
               <circle cx="175" cy="158" r="4" fill="var(--primary)" className="pulse-dot" />
             </svg>
 
-            <div className="floating-card-1" style={{ position: 'absolute', right: '5%', top: '12%', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 4, width: '180px' }}>
+            <div className="floating-card-1" style={{ position: 'absolute', right: '5%', top: '12%', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 4, width: '180px' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Heart size={16} style={{ color: 'var(--primary)' }} className="pulse-slow" /></div>
-              <div><span style={{ fontSize: '0.65rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>AI Connected</span><h4 style={{ fontSize: '0.85rem', fontWeight: 800, margin: 0 }}>Health Vault Active</h4></div>
+              <div><span style={{ fontSize: '0.65rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>AI Connected</span><h4 style={{ fontSize: '0.85rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>Health Vault Active</h4></div>
             </div>
 
-            <div className="floating-card-2" style={{ position: 'absolute', right: '15%', bottom: '10%', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 4, width: '190px' }}>
+            <div className="floating-card-2" style={{ position: 'absolute', right: '15%', bottom: '10%', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 4, width: '190px' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--secondary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Activity size={16} style={{ color: 'var(--secondary)' }} /></div>
-              <div><span style={{ fontSize: '0.65rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>Rx Issued</span><h4 style={{ fontSize: '0.85rem', fontWeight: 800, margin: 0 }}>Pharmacy Notified</h4></div>
+              <div><span style={{ fontSize: '0.65rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>Rx Issued</span><h4 style={{ fontSize: '0.85rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>Pharmacy Notified</h4></div>
             </div>
 
-            <div className="floating-card-3" style={{ position: 'absolute', left: '5%', top: '18%', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: 'var(--shadow-md)', zIndex: 4 }}>
+            <div className="floating-card-3" style={{ position: 'absolute', left: '5%', top: '18%', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: 'var(--shadow-md)', zIndex: 4 }}>
               <Sparkles size={16} style={{ color: 'var(--secondary)' }} className="pulse-slow" />
-              <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>JIVEXA AI Active</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>JIVEXA AI Active</span>
             </div>
 
-            <div style={{ position: 'absolute', right: '12%', top: '30%', width: '230px', height: '155px', border: '1.5px dashed var(--secondary)', borderRadius: 'var(--radius-lg)', backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(4px)', zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '10px', padding: '16px' }} className="holo-panel">
+            <div style={{ position: 'absolute', right: '12%', top: '30%', width: '230px', height: '155px', border: '1.5px dashed var(--secondary)', borderRadius: 'var(--radius-lg)', backgroundColor: 'var(--surface)', backdropFilter: 'blur(4px)', zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '10px', padding: '16px' }} className="holo-panel">
               <span style={{ fontSize: '0.7rem', color: 'var(--secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Connected Ecosystem</span>
               <div style={{ width: '100%', height: '60px', position: 'relative' }}>
                 <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--primary)' }} className="pulse-dot" />
@@ -333,7 +333,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 2. PATIENT JOURNEY ──────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: '#ffffff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto' }}>
@@ -355,7 +355,7 @@ export const Home: React.FC = () => {
                       display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px',
                       borderRadius: 'var(--radius-md)', border: '1.5px solid',
                       borderColor: activeJourney === i ? 'var(--primary)' : 'var(--border)',
-                      backgroundColor: activeJourney === i ? 'var(--primary-light)' : 'white',
+                      backgroundColor: activeJourney === i ? 'var(--primary-light)' : 'var(--surface)',
                       cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease',
                       boxShadow: activeJourney === i ? '0 2px 12px rgba(13,148,136,0.12)' : 'none',
                     }}
@@ -372,7 +372,7 @@ export const Home: React.FC = () => {
               ))}
             </div>
 
-            <div style={{ backgroundColor: 'var(--primary-light)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: 'var(--shadow-md)', minHeight: '280px' }}>
+            <div style={{ backgroundColor: 'var(--surface-raised)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: 'var(--shadow-md)', minHeight: '280px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {journeySteps[activeJourney].icon}
@@ -380,7 +380,7 @@ export const Home: React.FC = () => {
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>{journeySteps[activeJourney].label}</h3>
               </div>
               <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: '1.65' }}>{journeySteps[activeJourney].desc}</p>
-              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
+              <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>Preview</span>
                 {journeySteps[activeJourney].preview}
               </div>
@@ -393,7 +393,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 3. DOCTOR SECTION ───────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: 'var(--primary-light)', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
@@ -409,7 +409,7 @@ export const Home: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               {doctorFeatures.map((f, i) => (
                 <Reveal key={f.title} delay={i * 80}>
-                  <div className="eco-card" style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
+                  <div className="eco-card" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{f.icon}</div>
                     <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>{f.title}</h3>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>{f.desc}</p>
@@ -419,7 +419,7 @@ export const Home: React.FC = () => {
             </div>
 
             <Reveal delay={120}>
-              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '28px', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column', gap: '18px' }} className="doctor-breath">
+              <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '28px', boxShadow: 'var(--shadow-xl)', display: 'flex', flexDirection: 'column', gap: '18px' }} className="doctor-breath">
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                   <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--secondary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Stethoscope size={22} style={{ color: 'var(--secondary)' }} /></div>
                   <div><h4 style={{ fontSize: '1rem', fontWeight: 800 }}>Dr. Priya Agarwal</h4><span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Cardiologist · JIVEXA Verified</span></div>
@@ -460,7 +460,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 4. AI CHAT SIMULATOR ────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', position: 'relative', overflow: 'hidden', backgroundColor: 'hsl(150, 45%, 97%)', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', position: 'relative', overflow: 'hidden', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
         <div className="container grid-2-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '60px', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <Reveal>
@@ -483,22 +483,22 @@ export const Home: React.FC = () => {
           </div>
 
           <div>
-            <div className="card chat-card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)', backgroundColor: 'white', display: 'flex', flexDirection: 'column', height: '420px', borderRadius: 'var(--radius-lg)' }}>
+            <div className="card chat-card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)', backgroundColor: 'var(--surface)', display: 'flex', flexDirection: 'column', height: '420px', borderRadius: 'var(--radius-lg)' }}>
               <div style={{ backgroundColor: 'var(--surface-raised)', borderBottom: '1px solid var(--border)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Sparkles size={16} /></div>
                   <div><h4 style={{ fontSize: '0.9rem', fontWeight: 700 }}>Jivexa Clinical Assistant</h4><span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 600 }}>AI Sandbox Mode</span></div>
                 </div>
-                <button onClick={clearChat} style={{ backgroundColor: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}>Clear Thread</button>
+                <button onClick={clearChat} style={{ backgroundColor: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-main)' }}>Clear Thread</button>
               </div>
               <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }} className="chat-thread-container">
                 {simulatedMessages.map((msg, index) => (
-                  <div key={index} style={{ alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%', backgroundColor: msg.sender === 'user' ? 'var(--primary)' : 'var(--background)', color: msg.sender === 'user' ? 'white' : 'var(--text-main)', padding: '12px 16px', borderRadius: msg.sender === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0', fontSize: '0.88rem', lineHeight: '1.5', boxShadow: 'var(--shadow-sm)', textAlign: 'left' }}>
+                  <div key={index} style={{ alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%', backgroundColor: msg.sender === 'user' ? 'var(--primary)' : 'var(--surface-raised)', color: msg.sender === 'user' ? 'white' : 'var(--text-main)', padding: '12px 16px', borderRadius: msg.sender === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0', fontSize: '0.88rem', lineHeight: '1.5', boxShadow: 'var(--shadow-sm)', textAlign: 'left' }}>
                     {msg.text}
                   </div>
                 ))}
                 {isTyping && (
-                  <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--background)', padding: '12px 20px', borderRadius: '12px 12px 12px 0', display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--surface-raised)', padding: '12px 20px', borderRadius: '12px 12px 12px 0', display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--text-muted)' }} className="typing-dot-1" />
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--text-muted)' }} className="typing-dot-2" />
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--text-muted)' }} className="typing-dot-3" />
@@ -509,7 +509,7 @@ export const Home: React.FC = () => {
                 <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Choose simulated query to run:</span>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {samplePrompts.map((p, idx) => (
-                    <button key={idx} onClick={() => handlePromptClick(idx)} disabled={isTyping} style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', backgroundColor: activePrompt === idx ? 'var(--primary-light)' : 'white', color: activePrompt === idx ? 'var(--primary)' : 'var(--text-main)', border: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, cursor: isTyping ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease' }}>
+                    <button key={idx} onClick={() => handlePromptClick(idx)} disabled={isTyping} style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', backgroundColor: activePrompt === idx ? 'var(--primary-light)' : 'var(--surface)', color: activePrompt === idx ? 'var(--primary)' : 'var(--text-main)', border: '1px solid var(--border)', fontSize: '0.78rem', fontWeight: 600, cursor: isTyping ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease' }}>
                       {p.title}
                     </button>
                   ))}
@@ -521,7 +521,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 5. PHARMACY SECTION ─────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: '#f9fbfb', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
@@ -537,7 +537,7 @@ export const Home: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               {pharmacyFeatures.map((f, i) => (
                 <Reveal key={f.title} delay={i * 80}>
-                  <div className="eco-card" style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
+                  <div className="eco-card" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s, box-shadow 0.2s' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{f.icon}</div>
                     <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>{f.title}</h3>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>{f.desc}</p>
@@ -547,7 +547,7 @@ export const Home: React.FC = () => {
             </div>
 
             <Reveal delay={100}>
-              <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '28px', boxShadow: 'var(--shadow-lg)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '28px', boxShadow: 'var(--shadow-lg)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fulfillment Flow</span>
                 {pharmacyFlow.map((step, i) => (
                   <React.Fragment key={step}>
@@ -578,7 +578,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 6. JIVEXA AI ECOSYSTEM DIAGRAM ──────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: '#ffffff', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto' }}>
@@ -668,12 +668,12 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 7. FEATURES GRID ────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: '#f9fbfb', borderTop: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--background)', borderTop: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
           <Reveal>
             <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Platform Capabilities</span>
-              <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '8px' }}>Everything You Need in One Ecosystem</h2>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '8px', color: 'var(--text-main)' }}>Everything You Need in One Ecosystem</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', marginTop: '12px' }}>
                 Comprehensive tools for every stakeholder in the connected healthcare journey.
               </p>
@@ -690,9 +690,9 @@ export const Home: React.FC = () => {
               { icon: <Shield size={22} />, color: 'primary', title: 'Privacy by Design', desc: 'End-to-end encryption, consent-based data sharing, and role-based access control for all health data.' },
             ].map((card, i) => (
               <Reveal key={card.title} delay={i * 70}>
-                <div className="feature-card-redesign" style={{ display: 'flex', flexDirection: 'column', gap: '14px', backgroundColor: 'white', padding: '28px', border: '1px solid hsl(150, 60%, 88%)', borderRadius: 'var(--radius-md)', transition: 'all 0.3s ease', boxShadow: '0 4px 14px rgba(13,148,136,0.04)', height: '100%' }}>
+                <div className="feature-card-redesign" style={{ display: 'flex', flexDirection: 'column', gap: '14px', backgroundColor: 'var(--surface)', padding: '28px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', transition: 'all 0.3s ease', boxShadow: 'var(--shadow-sm)', height: '100%' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: `var(--${card.color}-light)`, color: `var(--${card.color})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{card.icon}</div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>{card.title}</h3>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)' }}>{card.title}</h3>
                   <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>{card.desc}</p>
                 </div>
               </Reveal>
@@ -702,7 +702,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 8. TRUST & SECURITY ─────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', backgroundColor: 'var(--primary-light)', borderTop: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', backgroundColor: 'var(--background)', borderTop: '1px solid var(--border)' }}>
         <div className="container grid-2-mobile" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '60px', alignItems: 'center' }}>
           <Reveal>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -721,7 +721,7 @@ export const Home: React.FC = () => {
                   <div key={item.title} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ color: 'var(--primary)' }}>{item.icon}</span>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{item.title}</span>
+                      <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{item.title}</span>
                     </div>
                     <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>{item.body}</p>
                   </div>
@@ -732,7 +732,7 @@ export const Home: React.FC = () => {
 
           <Reveal delay={100}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{ width: '100%', maxWidth: '360px', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '32px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', boxShadow: 'var(--shadow-lg)' }}>
+              <div style={{ width: '100%', maxWidth: '360px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '32px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', boxShadow: 'var(--shadow-lg)' }}>
                 <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="pulse-slow">
                   <Lock size={28} />
                 </div>
@@ -750,7 +750,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ── 9. FINAL CTA ────────────────────────────────────────────────────── */}
-      <section style={{ padding: '100px 0', background: 'radial-gradient(circle at center, var(--primary-light) 0%, #ffffff 100%)', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
+      <section style={{ padding: '100px 0', background: 'radial-gradient(circle at center, var(--primary-light) 0%, var(--background) 100%)', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', maxWidth: '720px', margin: '0 auto', padding: '0 var(--space-md)' }}>
           <Reveal>
             <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>The Future of Connected Care</span>
@@ -772,7 +772,7 @@ export const Home: React.FC = () => {
               </button>
               <Link
                 to="/how-it-works"
-                style={{ border: '1px solid var(--border)', color: 'var(--text-main)', backgroundColor: 'white', padding: '16px 32px', borderRadius: 'var(--radius-sm)', fontWeight: 700, fontSize: '1.05rem', boxShadow: 'var(--shadow-sm)', transition: 'background-color 0.2s ease', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--text-main)', backgroundColor: 'var(--surface)', padding: '16px 32px', borderRadius: 'var(--radius-sm)', fontWeight: 700, fontSize: '1.05rem', boxShadow: 'var(--shadow-sm)', transition: 'background-color 0.2s ease', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
               >
                 Join the JIVEXA Ecosystem
               </Link>
