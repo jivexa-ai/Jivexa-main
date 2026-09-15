@@ -19,14 +19,20 @@ const getLiveGroqKey = (): string => {
 };
 
 const getApiBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL;
+  const envUrl =
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL;
   if (envUrl) {
     return `${envUrl.replace(/\/$/, '')}/api/ai`;
+  }
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('jivexa_backend_url')) {
+    return `${localStorage.getItem('jivexa_backend_url')!.replace(/\/$/, '')}/api/ai`;
   }
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     return '/api/ai';
   }
-  return 'http://localhost:4000/api/ai';
+  return 'https://jivexa-main.onrender.com/api/ai';
 };
 
 /**

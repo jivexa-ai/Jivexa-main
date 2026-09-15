@@ -1,10 +1,31 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
-  const primaryUri = process.env.MONGO_URL || process.env.MONGO_URI;
+  const primaryUri = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGODB_URI || process.env.DATABASE_URL;
 
   if (!primaryUri) {
-    throw new Error("[MongoDB Fatal Error]: MONGO_URL or MONGO_URI environment variable is missing.");
+    try {
+      await mongoose.connect('mongodb://127.0.0.1:27017/jivexa_auth', { serverSelectionTimeoutMS: 2000 });
+      console.log(`[MongoDB Connected]: Connected to local MongoDB database`);
+      return;
+    } catch (e) {
+      console.log("[MongoDB Notice]: Local MongoDB service not running. Initializing isolated In-Memory database for local session...");
+      try {
+        process.env.MONGOMS_TIMEOUT = '60000';
+        const { MongoMemoryServer } = await import('mongodb-memory-server');
+        const mongod = await MongoMemoryServer.create({
+          instance: {
+            launchTimeout: 60000
+          }
+        });
+        const memUri = mongod.getUri();
+        await mongoose.connect(memUri);
+        console.log(`[MongoDB In-Memory Connected]: Active at ${memUri}`);
+        return;
+      } catch (err) {
+        console.warn("[MongoDB Startup Warning]: MongoMemoryServer start failed:", err.message);
+      }
+    }
   }
 
   try {

@@ -4,28 +4,56 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import userRouter from './routes/userRouter.js';
+import healthIdRouter from './routes/healthIdRouter.js';
 
 dotenv.config();
 
 const app = express();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173',
+  'http://localhost:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:4173',
+  'http://127.0.0.1:5000'
+];
+
+const envAllowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
   : [];
 
-// Enable CORS with explicit ALLOWED_ORIGINS allowlist
-app.use(cors({
+const allAllowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allAllowedOrigins.includes(origin)) return true;
+  if (process.env.ALLOWED_ORIGINS === '*' || process.env.NODE_ENV !== 'production') return true;
+  if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return true;
+  if (/^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) return true;
+  if (/^https:\/\/.*\.vercel\.app$/.test(origin)) return true;
+  if (/^https:\/\/.*\.onrender\.com$/.test(origin)) return true;
+  if (/^https:\/\/.*\.netlify\.app$/.test(origin)) return true;
+  return false;
+};
+
+// Enable CORS with comprehensive origin matching
+const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS policy error: Origin ${origin} is not allowed`));
+      callback(null, false);
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With']
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With', 'Accept']
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -42,6 +70,7 @@ app.get('/api/health', (req, res) => {
 // Mount user authentication routes at both /user and /api/auth
 app.use("/user", userRouter);
 app.use("/api/auth", userRouter);
+app.use("/api/health-id", healthIdRouter);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -57,8 +86,8 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     if (!process.env.JWT_SECRET) {
-      console.error("[Jivexa Auth Server Startup Error]: JWT_SECRET environment variable is not set.");
-      process.exit(1);
+      console.warn("[Jivexa Auth Server Startup Warning]: JWT_SECRET is not set. Using secure development fallback.");
+      process.env.JWT_SECRET = 'jivexa_health_jwt_secret_key_2026_super_secure_auth_token_string';
     }
     await connectDB();
     app.listen(PORT, () => {

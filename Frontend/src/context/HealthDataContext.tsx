@@ -1638,19 +1638,39 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       };
     }
 
-    // Default mock patient search fallback for test / typed Health IDs (e.g., JIV-2026-255930, JIV-2026-849201, etc.)
-    return {
-      success: true,
-      patientInfo: {
-        userId: `usr_patient_${cleanId.replace(/[^A-Z0-9]/g, '')}`,
-        name: user?.name || 'Patient User',
-        healthId: cleanId,
-        bloodGroup: 'O+ Positive',
-        allergies: 'Penicillin (mild)',
-        conditions: 'Thyroid, Mild Asthma',
-        consentStatus: 'approved',
-        reports: sampleReports
+    // 3. MongoDB Backend Search
+    try {
+      const apiRes = await searchHealthIdApi(cleanId);
+      if (apiRes.success && apiRes.patient) {
+        const p = apiRes.patient;
+        const chronicStr = Array.isArray(p.healthProfile?.chronicConditions)
+          ? p.healthProfile.chronicConditions.join(', ')
+          : (p.healthProfile?.chronicConditions || 'None logged');
+        const allergiesStr = Array.isArray(p.healthProfile?.allergies)
+          ? p.healthProfile.allergies.join(', ')
+          : (p.healthProfile?.allergies || 'No known allergies');
+
+        return {
+          success: true,
+          patientInfo: {
+            userId: p.email || `usr_patient_${cleanId.replace(/[^A-Z0-9]/g, '')}`,
+            name: p.name || 'Patient User',
+            healthId: apiRes.healthId || cleanId,
+            bloodGroup: p.bloodGroup || 'O+',
+            allergies: allergiesStr,
+            conditions: chronicStr,
+            consentStatus: 'approved',
+            reports: sampleReports
+          }
+        };
       }
+    } catch (err) {
+      console.error('Error calling searchHealthIdApi in HealthDataContext:', err);
+    }
+
+    return {
+      success: false,
+      error: `Health ID "${cleanId}" not found in patient registry.`
     };
   };
 

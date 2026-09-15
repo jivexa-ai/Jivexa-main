@@ -1,9 +1,38 @@
 const getBackendUrls = (): string[] => {
-  const envUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL;
-  const urls: string[] = ['http://localhost:4000'];
-  if (envUrl && !urls.includes(envUrl)) {
-    urls.unshift(envUrl);
+  const envUrl =
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL;
+
+  const urls: string[] = [];
+
+  if (envUrl) {
+    const clean = envUrl.replace(/\/$/, '');
+    if (!urls.includes(clean)) urls.push(clean);
   }
+
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('jivexa_backend_url')) {
+    const local = localStorage.getItem('jivexa_backend_url')!.replace(/\/$/, '');
+    if (!urls.includes(local)) urls.push(local);
+  }
+
+  // If running in local development (localhost / 127.0.0.1), prioritize localhost:5000
+  const isLocalDev =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '0.0.0.0');
+
+  const defaults = isLocalDev
+    ? ['http://localhost:5000', 'http://127.0.0.1:5000', 'https://jivexa-main.onrender.com', 'http://localhost:4000']
+    : ['https://jivexa-main.onrender.com', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:4000'];
+
+  for (const d of defaults) {
+    if (!urls.includes(d)) {
+      urls.push(d);
+    }
+  }
+
   return urls;
 };
 
@@ -13,6 +42,7 @@ const fetchWithFallback = async (path: string, options: RequestInit): Promise<Re
   for (const baseUrl of urls) {
     try {
       const res = await fetch(`${baseUrl}${path}`, options);
+      // If we got an HTTP response (even 404), the server is connected
       return res;
     } catch (err) {
       lastError = err;

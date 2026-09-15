@@ -1,14 +1,27 @@
 import { UserRole, User } from '../context/AuthContext';
 
 export const getBackendUrl = (): string => {
-  const envUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL;
+  const envUrl =
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL;
   if (envUrl) {
     return envUrl.replace(/\/$/, '');
   }
   if (typeof localStorage !== 'undefined' && localStorage.getItem('jivexa_backend_url')) {
     return localStorage.getItem('jivexa_backend_url')!.replace(/\/$/, '');
   }
-  return 'http://localhost:5000';
+  
+  const isLocalDev =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '0.0.0.0');
+
+  if (isLocalDev) {
+    return 'http://localhost:5000';
+  }
+  return 'https://jivexa-main.onrender.com';
 };
 
 // Safe JSON parser to handle non-JSON responses
@@ -38,6 +51,7 @@ export interface NodeAuthResponse {
   email?: string;
   role?: UserRole;
   accountStatus?: string;
+  unauthenticated?: boolean;
 }
 
 export const nodeAuthSignup = async (
@@ -57,15 +71,8 @@ export const nodeAuthSignup = async (
       body: JSON.stringify(bodyObj)
     };
 
-    // 1. Try primary endpoint /user/signup or /api/auth/signup
-    let res = await safeFetchJson(`${backendUrl}/user/signup`, options);
-
-    if (!res.ok) {
-      const altRes = await safeFetchJson(`${backendUrl}/api/auth/signup`, options);
-      if (altRes.ok) {
-        res = altRes;
-      }
-    }
+    // Canonical endpoint: POST /api/auth/signup
+    const res = await safeFetchJson(`${backendUrl}/api/auth/signup`, options);
 
     if (!res.ok) {
       const errMsg = res.data?.message || res.data?.error || 'Registration failed on server.';
@@ -77,7 +84,11 @@ export const nodeAuthSignup = async (
       }
       return {
         success: false,
-        error: errMsg
+        error: errMsg,
+        requireOtp: res.data?.requireOtp,
+        email: res.data?.email || email,
+        maskedEmail: res.data?.maskedEmail,
+        previewUrl: res.data?.previewUrl
       };
     }
 
@@ -118,15 +129,8 @@ export const nodeAuthLogin = async (
       body: JSON.stringify({ email, password, role })
     };
 
-    // 1. Try primary endpoint /user/login or /api/auth/login
-    let res = await safeFetchJson(`${backendUrl}/user/login`, options);
-
-    if (!res.ok) {
-      const altRes = await safeFetchJson(`${backendUrl}/api/auth/login`, options);
-      if (altRes.ok) {
-        res = altRes;
-      }
-    }
+    // Canonical endpoint: POST /api/auth/login
+    const res = await safeFetchJson(`${backendUrl}/api/auth/login`, options);
 
     if (!res.ok) {
       const errMsg = res.data?.message || res.data?.error || 'Invalid credentials.';
@@ -138,7 +142,11 @@ export const nodeAuthLogin = async (
       }
       return {
         success: false,
-        error: errMsg
+        error: errMsg,
+        requireOtp: res.data?.requireOtp,
+        email: res.data?.email || email,
+        maskedEmail: res.data?.maskedEmail,
+        previewUrl: res.data?.previewUrl
       };
     }
 
@@ -164,13 +172,14 @@ export const nodeAuthLogin = async (
 export const nodeAuthLogout = async (): Promise<NodeAuthResponse> => {
   try {
     const backendUrl = getBackendUrl();
-    const token = localStorage.getItem('jivexa_node_jwt_token');
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('jivexa_node_jwt_token') : null;
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    await fetch(`${backendUrl}/user/logout`, {
+    // Canonical endpoint: POST /api/auth/logout
+    await fetch(`${backendUrl}/api/auth/logout`, {
       method: 'POST',
       headers,
       credentials: 'include'
@@ -186,29 +195,27 @@ export const nodeAuthLogout = async (): Promise<NodeAuthResponse> => {
 
 export const nodeAuthGetMe = async (): Promise<NodeAuthResponse> => {
   try {
-    const backendUrl = getBackendUrl();
-    const token = localStorage.getItem('jivexa_node_jwt_token');
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('jivexa_node_jwt_token') : null;
+    if (!token) {
+      // User is not logged in; return gracefully without unauthenticated network 401 errors
+      return { success: false, unauthenticated: true };
     }
 
-    let response = await fetch(`${backendUrl}/user/me`, {
+    const backendUrl = getBackendUrl();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    // Canonical endpoint: GET /api/auth/me
+    const response = await fetch(`${backendUrl}/api/auth/me`, {
       method: 'GET',
       headers,
       credentials: 'include'
     });
 
     if (!response.ok) {
-      response = await fetch(`${backendUrl}/api/auth/me`, {
-        method: 'GET',
-        headers,
-        credentials: 'include'
-      });
-    }
-
-    if (!response.ok) {
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         localStorage.removeItem('jivexa_node_jwt_token');
       }
       return { success: false, error: 'Session expired' };
@@ -227,7 +234,8 @@ export const nodeAuthGetMe = async (): Promise<NodeAuthResponse> => {
 export const nodeAuthSendOTP = async (email: string): Promise<NodeAuthResponse> => {
   try {
     const backendUrl = getBackendUrl();
-    const response = await fetch(`${backendUrl}/user/send-otp`, {
+    // Canonical endpoint: POST /api/auth/send-otp
+    const response = await fetch(`${backendUrl}/api/auth/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -258,7 +266,8 @@ export const nodeAuthSendOTP = async (email: string): Promise<NodeAuthResponse> 
 export const nodeAuthVerifyOTP = async (email: string, code: string): Promise<NodeAuthResponse> => {
   try {
     const backendUrl = getBackendUrl();
-    const response = await fetch(`${backendUrl}/user/verify-otp`, {
+    // Canonical endpoint: POST /api/auth/verify-otp
+    const response = await fetch(`${backendUrl}/api/auth/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -291,9 +300,16 @@ export const nodeAuthVerifyOTP = async (email: string, code: string): Promise<No
 export const nodeAuthSubmitVerification = async (payload: Record<string, any>): Promise<NodeAuthResponse> => {
   try {
     const backendUrl = getBackendUrl();
-    const response = await fetch(`${backendUrl}/user/submit-verification`, {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('jivexa_node_jwt_token') : null;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Canonical endpoint: POST /api/auth/submit-verification
+    const response = await fetch(`${backendUrl}/api/auth/submit-verification`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       credentials: 'include',
       body: JSON.stringify(payload)
     });

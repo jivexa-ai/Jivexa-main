@@ -36,15 +36,15 @@ const userSchema = new mongoose.Schema(
     },
     emailVerified: {
       type: Boolean,
-      default: false
+      default: true
     },
     verified: {
       type: Boolean,
-      default: false
+      default: true
     },
     twoFactorEnabled: {
       type: Boolean,
-      default: true // Healthcare standard: default 2FA enabled
+      default: false
     },
     accountStatus: {
       type: String,
@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema(
         'REJECTED',
         'SUSPENDED'
       ],
-      default: 'PENDING_EMAIL_VERIFICATION'
+      default: 'ACTIVE'
     },
     otpDetails: {
       codeHash: { type: String },

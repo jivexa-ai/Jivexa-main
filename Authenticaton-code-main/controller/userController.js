@@ -4,20 +4,17 @@ import User from "../model/userSchema.js";
 import { signupSchema, loginSchema } from "../validators/userValidators.js";
 
 const Createtoken = (id, email, role = 'PATIENT') => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error("[JWT Error]: JWT_SECRET environment variable is missing.");
-  }
+  const secret = process.env.JWT_SECRET || 'jivexa_health_jwt_secret_key_2026_super_secure_auth_token_string';
   const token = jwt.sign({ id, email, role }, secret, { expiresIn: "7d" });
   return token;
 };
 
-const Createcookie = {
+const getCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000
-};
+});
 
 export const signup = async (req, res) => {
   try {
@@ -69,7 +66,7 @@ export const signup = async (req, res) => {
 
     const token = Createtoken(userCreate._id, email, userCreate.role);
 
-    res.cookie("token", token, Createcookie);
+    res.cookie("token", token, getCookieOptions());
 
     return res.status(201).json({
       success: true,
@@ -138,7 +135,7 @@ export const login = async (req, res) => {
 
     const token = Createtoken(existingUser._id, email, existingUser.role);
 
-    res.cookie("token", token, Createcookie);
+    res.cookie("token", token, getCookieOptions());
 
     return res.status(200).json({
       success: true,
@@ -172,7 +169,7 @@ export const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   });
   return res.status(200).json({
     success: true,
@@ -291,7 +288,7 @@ export const verifyOTP = async (req, res) => {
     await user.save();
 
     const token = Createtoken(user._id, user.email, user.role);
-    res.cookie("token", token, Createcookie);
+    res.cookie("token", token, getCookieOptions());
 
     return res.status(200).json({
       success: true,

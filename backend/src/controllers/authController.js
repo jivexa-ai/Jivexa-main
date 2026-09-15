@@ -71,70 +71,14 @@ const registerUser = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        if (existingUser.emailVerified) {
-          // Account enumeration safe response
-          return res.status(409).json({
-            success: false,
-            error: 'An account with this email address already exists and is verified. Please Sign In.',
-            message: 'An account with this email address already exists and is verified. Please Sign In.'
-          });
-        }
-        // Update pending credentials & send fresh signup OTP
-        existingUser.name = name;
-        if (age) existingUser.age = age;
-        existingUser.password = password; // Mongoose pre-save hook hashes password
-        existingUser.role = userRole;
-        if (!existingUser.roleId) existingUser.roleId = roleId;
-        existingUser.emailVerified = false;
-        existingUser.accountStatus = initialAccountStatus;
-        existingUser.otpDetails = {
-          codeHash: otpEntry.otpHash,
-          purpose: 'signup_verification',
-          expiresAt: otpEntry.expiresAt,
-          resendAvailableAt: otpEntry.resendAvailableAt,
-          attempts: 0
-        };
-
-        if (req.body.nmcRegistrationNumber) {
-          existingUser.professionalDetails = {
-            nmcRegistrationNumber: req.body.nmcRegistrationNumber,
-            stateMedicalCouncil: req.body.stateMedicalCouncil || 'Karnataka Medical Council',
-            qualifications: req.body.qualifications || 'MBBS, MD',
-            specialty: req.body.specialty || 'General Medicine'
-          };
-        }
-        if (req.body.vehicleNumber) {
-          existingUser.vehicleDetails = {
-            vehicleNumber: req.body.vehicleNumber,
-            category: req.body.category || 'ICU Ambulance',
-            permitNumber: req.body.permitNumber || `PERMIT-${Date.now()}`
-          };
-        }
-        if (req.body.drugLicenseNumber) {
-          existingUser.licenseDetails = {
-            pharmacyName: req.body.pharmacyName || name,
-            drugLicenseNumber: req.body.drugLicenseNumber,
-            gstin: req.body.gstin || '29AAACJ1234F1Z5'
-          };
-        }
-
-        await existingUser.save();
-
-        const emailRes = await sendOTPEmail(email, otpEntry.plainOtp, name, userRole);
-
-        return res.status(200).json({
-          success: true,
-          requireOtp: true,
-          email: existingUser.email,
-          maskedEmail: maskEmail(existingUser.email),
-          role: existingUser.role,
-          roleId: existingUser.roleId,
-          message: `Verification OTP sent to ${maskEmail(existingUser.email)}. Please check your inbox.`,
-          previewUrl: emailRes.previewUrl
+        return res.status(409).json({
+          success: false,
+          error: 'Email address is already registered. Please sign in instead.',
+          message: 'Email address is already registered. Please sign in instead.'
         });
       }
 
-      // Create new user in DB
+      // Create new user in MongoDB
       const newUserObj = {
         roleId,
         name,
@@ -142,17 +86,10 @@ const registerUser = async (req, res) => {
         email,
         password,
         role: userRole,
-        emailVerified: false,
-        verified: false,
-        twoFactorEnabled: true,
-        accountStatus: initialAccountStatus,
-        otpDetails: {
-          codeHash: otpEntry.otpHash,
-          purpose: 'signup_verification',
-          expiresAt: otpEntry.expiresAt,
-          resendAvailableAt: otpEntry.resendAvailableAt,
-          attempts: 0
-        }
+        emailVerified: true,
+        verified: true,
+        twoFactorEnabled: false,
+        accountStatus: 'ACTIVE'
       };
 
       if (req.body.nmcRegistrationNumber) {
@@ -180,25 +117,41 @@ const registerUser = async (req, res) => {
 
       const user = await User.create(newUserObj);
 
-      const emailRes = await sendOTPEmail(email, otpEntry.plainOtp, name, userRole);
+      const token = generateToken(
+        user._id || user.id,
+        user.email,
+        user.role,
+        user.name,
+        user.roleId
+      );
+
+      res.cookie('token', token, getCookieOptions());
+
+      const userAuthData = user.toAuthJSON ? user.toAuthJSON() : {
+        id: user._id.toString(),
+        roleId: user.roleId,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        emailVerified: true,
+        verified: true,
+        accountStatus: user.accountStatus
+      };
 
       return res.status(201).json({
         success: true,
-        requireOtp: true,
-        email: user.email,
-        maskedEmail: maskEmail(user.email),
-        role: user.role,
-        roleId: user.roleId,
-        message: `Verification OTP sent to ${maskEmail(user.email)}. Please check your inbox.`,
-        previewUrl: emailRes.previewUrl
+        message: 'Account created successfully',
+        token,
+        user: userAuthData
       });
     } else {
       // Memory Store Fallback
       const existingUser = inMemoryUsers.find((u) => u.email === email);
-      if (existingUser && existingUser.emailVerified) {
+      if (existingUser) {
         return res.status(409).json({
           success: false,
-          error: 'An account with this email address already exists and is verified. Please Sign In.'
+          error: 'Email address is already registered. Please sign in instead.',
+          message: 'Email address is already registered. Please sign in instead.'
         });
       }
 
@@ -215,40 +168,42 @@ const registerUser = async (req, res) => {
         email,
         password: hashedPassword,
         role: userRole,
-        emailVerified: false,
-        verified: false,
-        twoFactorEnabled: true,
-        accountStatus: initialAccountStatus,
-        otpDetails: {
-          codeHash: otpEntry.otpHash,
-          purpose: 'signup_verification',
-          expiresAt: otpEntry.expiresAt,
-          resendAvailableAt: otpEntry.resendAvailableAt,
-          attempts: 0
-        },
+        emailVerified: true,
+        verified: true,
+        twoFactorEnabled: false,
+        accountStatus: 'ACTIVE',
         professionalDetails: req.body.nmcRegistrationNumber ? { nmcRegistrationNumber: req.body.nmcRegistrationNumber } : undefined,
         vehicleDetails: req.body.vehicleNumber ? { vehicleNumber: req.body.vehicleNumber } : undefined,
         licenseDetails: req.body.drugLicenseNumber ? { drugLicenseNumber: req.body.drugLicenseNumber } : undefined,
         createdAt: new Date().toISOString()
       };
 
-      if (existingUser) {
-        Object.assign(existingUser, memUser);
-      } else {
-        inMemoryUsers.push(memUser);
-      }
+      inMemoryUsers.push(memUser);
 
-      const emailRes = await sendOTPEmail(email, otpEntry.plainOtp, name, userRole);
+      const token = generateToken(
+        memUser.id,
+        memUser.email,
+        memUser.role,
+        memUser.name,
+        memUser.roleId
+      );
+
+      res.cookie('token', token, getCookieOptions());
 
       return res.status(201).json({
         success: true,
-        requireOtp: true,
-        email: memUser.email,
-        maskedEmail: maskEmail(memUser.email),
-        role: memUser.role,
-        roleId: memUser.roleId,
-        message: `Verification OTP sent to ${maskEmail(memUser.email)}. Please check your inbox.`,
-        previewUrl: emailRes.previewUrl
+        message: 'Account created successfully',
+        token,
+        user: {
+          id: memUser.id,
+          roleId: memUser.roleId,
+          name: memUser.name,
+          email: memUser.email,
+          role: memUser.role,
+          emailVerified: true,
+          verified: true,
+          accountStatus: memUser.accountStatus
+        }
       });
     }
   } catch (error) {
@@ -560,64 +515,11 @@ const loginUser = async (req, res) => {
       }
     }
 
-    // SECURITY CHECK 1: Email Verification
+    // Auto-verify email upon valid password verification
     if (!user.emailVerified) {
-      const otpEntry = await createOTPEntry('signup_verification');
-      user.otpDetails = {
-        codeHash: otpEntry.otpHash,
-        purpose: 'signup_verification',
-        expiresAt: otpEntry.expiresAt,
-        resendAvailableAt: otpEntry.resendAvailableAt,
-        attempts: 0
-      };
-      if (mongoose.connection.readyState === 1) await user.save();
-
-      const emailRes = await sendOTPEmail(user.email, otpEntry.plainOtp, user.name, user.role);
-
-      return res.status(403).json({
-        success: false,
-        requireOtp: true,
-        email: user.email,
-        maskedEmail: maskEmail(user.email),
-        error: 'Your email address is unverified. We dispatched a new 6-digit verification code to your email.',
-        previewUrl: emailRes.previewUrl
-      });
-    }
-
-    // SECURITY CHECK 2: Healthcare 2FA Verification Step
-    if (user.twoFactorEnabled && !req.body.twoFactorCode) {
-      const otpEntry = await createOTPEntry('login_2fa');
-      user.otpDetails = {
-        codeHash: otpEntry.otpHash,
-        purpose: 'login_2fa',
-        expiresAt: otpEntry.expiresAt,
-        resendAvailableAt: otpEntry.resendAvailableAt,
-        attempts: 0
-      };
-      if (mongoose.connection.readyState === 1) await user.save();
-
-      const emailRes = await sendOTPEmail(user.email, otpEntry.plainOtp, user.name, user.role);
-
-      return res.status(200).json({
-        success: true,
-        require2FA: true,
-        email: user.email,
-        maskedEmail: maskEmail(user.email),
-        message: `2FA Login Security Code sent to ${maskEmail(user.email)}. Please verify code to complete sign in.`,
-        previewUrl: emailRes.previewUrl
-      });
-    }
-
-    // If 2FA code is provided, verify login_2fa OTP
-    if (user.twoFactorEnabled && req.body.twoFactorCode) {
-      const verification = await verifyOTPEntry(user.otpDetails, req.body.twoFactorCode, 'login_2fa');
-      if (!verification.valid) {
-        return res.status(400).json({
-          success: false,
-          error: verification.message
-        });
-      }
-      user.otpDetails = null; // Clear single-use 2FA OTP
+      user.emailVerified = true;
+      user.verified = true;
+      user.accountStatus = 'ACTIVE';
       if (mongoose.connection.readyState === 1) await user.save();
     }
 

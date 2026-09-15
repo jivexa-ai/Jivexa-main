@@ -31,20 +31,30 @@ export const HealthIdLookup: React.FC = () => {
       const p = res.patient;
       const rawName = p.name || user?.name || 'Patient User';
       const nameParts = rawName.split(' ');
-      const maskedName = nameParts.map(part => part.charAt(0) + '*'.repeat(Math.max(1, part.length - 1))).join(' ');
-      const rawPhone = p.phoneNumber || p.email || user?.email || '+91 98765 43210';
+      const maskedName = nameParts.map((part: string) => part.charAt(0) + '*'.repeat(Math.max(1, part.length - 1))).join(' ');
+      const rawPhone = p.phoneNumber || p.emergencyContact?.phone || p.email || user?.email || '+91 98765 43210';
       const maskedPhone = rawPhone.length > 6 ? rawPhone.substring(0, 4) + '*****' + rawPhone.slice(-2) : rawPhone;
+
+      const chronicDisplay = Array.isArray(p.healthProfile?.chronicConditions)
+        ? p.healthProfile.chronicConditions.join(', ')
+        : (p.healthProfile?.chronicConditions || 'None Logged');
+
+      const allergiesDisplay = Array.isArray(p.healthProfile?.allergies)
+        ? p.healthProfile.allergies.join(', ')
+        : (p.healthProfile?.allergies || (p.healthProfile && typeof p.healthProfile === 'string' ? p.healthProfile : 'No Severe Allergies Logged'));
+
+      const hospitalDisplay = p.emergencyContact?.hospital || p.address || 'Emergency Trauma Network';
 
       setProfile({
         healthId: res.healthId || searchQuery.toUpperCase(),
         fullName: p.name,
         maskedName: maskedName,
-        age: p.dateOfBirth ? (new Date().getFullYear() - new Date(p.dateOfBirth).getFullYear()) || 26 : 26,
-        gender: p.gender || 'Male',
-        bloodGroup: p.bloodGroup || 'O+ Positive',
-        allergies: (p.healthProfile && p.healthProfile.allergies) || 'No Severe Allergies Logged',
-        chronicConditions: 'Type-2 Diabetes (Controlled), Asthma',
-        primaryHospital: 'Manipal Hospital, Indiranagar',
+        age: p.dateOfBirth ? (new Date().getFullYear() - new Date(p.dateOfBirth).getFullYear()) || 28 : 28,
+        gender: p.gender || 'Not Specified',
+        bloodGroup: p.bloodGroup || 'O+',
+        allergies: allergiesDisplay,
+        chronicConditions: chronicDisplay,
+        primaryHospital: hospitalDisplay,
         email: p.email,
         phoneNumber: p.phoneNumber,
         maskedEmergencyContact: maskedPhone,

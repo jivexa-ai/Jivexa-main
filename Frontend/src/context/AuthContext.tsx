@@ -399,37 +399,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const nodeRes = await nodeAuthSignup(sanitizedName, sanitizedEmail, sanitizedPassword, role, extraFields);
-      if (nodeRes.success && nodeRes.user) {
-        const userProfile: User = {
-          id: nodeRes.user.id || `usr_${Date.now()}`,
-          email: nodeRes.user.email || sanitizedEmail,
-          name: nodeRes.user.name || sanitizedName,
-          role: (nodeRes.user.role || role) as UserRole,
-          verified: Boolean(nodeRes.user.verified ?? true),
-          emailVerified: Boolean(nodeRes.user.emailVerified ?? true),
-          accountStatus: nodeRes.user.accountStatus || 'ACTIVE',
-          onboarded: true,
-          professionalDetails: nodeRes.user.professionalDetails || (extraFields?.nmcRegistrationNumber ? { nmcRegistrationNumber: extraFields.nmcRegistrationNumber, stateMedicalCouncil: extraFields.stateMedicalCouncil } : undefined),
-          vehicleDetails: nodeRes.user.vehicleDetails || (extraFields?.vehicleNumber ? { vehicleNumber: extraFields.vehicleNumber } : undefined),
-          licenseDetails: nodeRes.user.licenseDetails || (extraFields?.drugLicenseNumber ? { drugLicenseNumber: extraFields.drugLicenseNumber, gstin: extraFields.gstin } : undefined)
-        };
+      if (nodeRes.success) {
+        if (nodeRes.user) {
+          const userProfile: User = {
+            id: nodeRes.user.id || `usr_${Date.now()}`,
+            email: nodeRes.user.email || sanitizedEmail,
+            name: nodeRes.user.name || sanitizedName,
+            role: (nodeRes.user.role || role) as UserRole,
+            verified: Boolean(nodeRes.user.verified ?? true),
+            emailVerified: Boolean(nodeRes.user.emailVerified ?? true),
+            accountStatus: nodeRes.user.accountStatus || 'ACTIVE',
+            onboarded: true,
+            professionalDetails: nodeRes.user.professionalDetails || (extraFields?.nmcRegistrationNumber ? { nmcRegistrationNumber: extraFields.nmcRegistrationNumber, stateMedicalCouncil: extraFields.stateMedicalCouncil } : undefined),
+            vehicleDetails: nodeRes.user.vehicleDetails || (extraFields?.vehicleNumber ? { vehicleNumber: extraFields.vehicleNumber } : undefined),
+            licenseDetails: nodeRes.user.licenseDetails || (extraFields?.drugLicenseNumber ? { drugLicenseNumber: extraFields.drugLicenseNumber, gstin: extraFields.gstin } : undefined)
+          };
 
-        setUser(userProfile);
-        localStorage.setItem('jivexa_session_user', JSON.stringify(userProfile));
-        setIsLoading(false);
-        return { 
-          success: true, 
-          role: userProfile.role,
-          requireOtp: nodeRes.requireOtp,
-          maskedEmail: nodeRes.maskedEmail,
-          previewUrl: nodeRes.previewUrl,
-          message: nodeRes.message
-        };
+          setUser(userProfile);
+          localStorage.setItem('jivexa_session_user', JSON.stringify(userProfile));
+          setIsLoading(false);
+          return { 
+            success: true, 
+            role: userProfile.role,
+            requireOtp: nodeRes.requireOtp,
+            maskedEmail: nodeRes.maskedEmail,
+            previewUrl: nodeRes.previewUrl,
+            message: nodeRes.message
+          };
+        } else {
+          setIsLoading(false);
+          return {
+            success: true,
+            role,
+            requireOtp: true,
+            email: nodeRes.email || sanitizedEmail,
+            maskedEmail: nodeRes.maskedEmail,
+            previewUrl: nodeRes.previewUrl,
+            message: nodeRes.message
+          };
+        }
       } else {
         setIsLoading(false);
         return { 
           success: false, 
-          error: nodeRes.error || 'Registration failed.' 
+          error: nodeRes.error || 'Registration failed.',
+          requireOtp: nodeRes.requireOtp,
+          email: nodeRes.email || sanitizedEmail,
+          maskedEmail: nodeRes.maskedEmail,
+          previewUrl: nodeRes.previewUrl
         };
       }
     } catch (e: any) {

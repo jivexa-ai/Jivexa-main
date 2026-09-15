@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGO_URI;
+    const mongoURI = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGODB_URI || process.env.DATABASE_URL;
 
     if (!mongoURI) {
-      throw new Error('MONGO_URI is missing in .env');
+      console.warn('[MongoDB] MONGO_URI / MONGO_URL is not defined. In-memory mode active.');
+      return;
     }
 
     mongoose.set('strictQuery', false);

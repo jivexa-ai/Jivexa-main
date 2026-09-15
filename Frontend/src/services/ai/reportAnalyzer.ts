@@ -241,7 +241,9 @@ export const processAndAnalyzeReport = async (
 
   // 1. Try Backend LLM Document Analyzer API
   try {
-    const res = await fetch('http://localhost:4000/api/ai/analyze-report', {
+    const backendBase = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || (typeof localStorage !== 'undefined' && localStorage.getItem('jivexa_backend_url')) || 'https://jivexa-main.onrender.com';
+    const cleanBase = backendBase.replace(/\/$/, '');
+    const res = await fetch(`${cleanBase}/api/ai/analyze-report`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fileName, documentText: textToAnalyze })
